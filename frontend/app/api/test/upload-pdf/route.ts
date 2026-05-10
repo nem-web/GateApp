@@ -19,6 +19,11 @@ export async function POST(req: Request) {
 
   const mimeType = file.type || "application/pdf";
   const sizeBytes = file.size;
+  const kindRaw = form.get("kind");
+  const kind =
+    kindRaw === "answer_key" || kindRaw === "question"
+      ? String(kindRaw)
+      : "question";
 
   if (!mimeType.includes("pdf")) {
     return NextResponse.json({ error: "Only PDF uploads are supported in this skeleton." }, { status: 400 });
@@ -30,11 +35,11 @@ export async function POST(req: Request) {
   await prisma.testPaperUpload.create({
     data: {
       userId,
-      kind: "question_pdf_skeleton",
+      kind,
       storagePath: "unstored",
       fileName: typeof fileName === "string" ? fileName : "upload.pdf",
       parsed: false,
-      metadata: { mimeType, sizeBytes, status: "received" },
+      metadata: { mimeType, sizeBytes, status: "received", kind },
     },
   });
 

@@ -1,351 +1,134 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
-import { TrendingUp, TrendingDown, Minus, Sparkles } from 'lucide-react'
-const cutoffData = [
-  { year: '2019', general: 29.5, obc: 26.6, sc: 19.6, st: 19.6 },
-  { year: '2020', general: 28.7, obc: 25.9, sc: 19.1, st: 19.1 },
-  { year: '2021', general: 25.0, obc: 22.5, sc: 16.7, st: 16.7 },
-  { year: '2022', general: 30.0, obc: 27.0, sc: 20.0, st: 20.0 },
-  { year: '2023', general: 32.5, obc: 29.2, sc: 21.7, st: 21.7 },
-  { year: '2024', general: 31.2, obc: 28.1, sc: 20.8, st: 20.8 },
-]
+import { useEffect, useMemo, useState } from 'react'
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-const iitCutoffs = [
-  { name: 'IIT Bombay', score2024: 850, score2023: 820, change: 'up' },
-  { name: 'IIT Delhi', score2024: 780, score2023: 790, change: 'down' },
-  { name: 'IIT Madras', score2024: 720, score2023: 700, change: 'up' },
-  { name: 'IIT Kanpur', score2024: 680, score2023: 680, change: 'same' },
-  { name: 'IIT Kharagpur', score2024: 650, score2023: 640, change: 'up' },
-  { name: 'IIT Roorkee', score2024: 620, score2023: 630, change: 'down' },
-  { name: 'IIT Guwahati', score2024: 580, score2023: 570, change: 'up' },
-  { name: 'IIT Hyderabad', score2024: 550, score2023: 540, change: 'up' },
-]
-
-const categoryColors = {
-  general: '#6C63FF',
-  obc: '#60A5FA',
-  sc: '#34D399',
-  st: '#FBBF24',
-}
+type CutoffRow = { year: number; category: string; marks: number | null }
 
 export default function CutoffsPage() {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'general' | 'obc' | 'sc' | 'st'>('all')
-  const [aiRank, setAiRank] = useState(420)
-  const [aiBranch, setAiBranch] = useState('CSE')
-  const [aiCategory, setAiCategory] = useState('General')
-  const [advisorText, setAdvisorText] = useState<string | null>(null)
-  const [advisorLoading, setAdvisorLoading] = useState(false)
+  const [rows, setRows] = useState<CutoffRow[]>([])
+  const [predicted, setPredicted] = useState<number>(0)
+  const [psuBand, setPsuBand] = useState<string>('')
+  const [scoreInput, setScoreInput] = useState(50)
+  const [advice, setAdvice] = useState<string | null>(null)
+  const [loadingAdvice, setLoadingAdvice] = useState(false)
 
-  const askAdvisor = async () => {
-    setAdvisorLoading(true)
-    setAdvisorText(null)
+  useEffect(() => {
+    ;(async () => {
+      const res = await fetch('/api/cutoffs', { cache: 'no-store' })
+      if (!res.ok) return
+      const data = await res.json()
+      setRows(Array.isArray(data.historical) ? data.historical : [])
+      setPredicted(Number(data.predictedGENQualifying2027 ?? 0))
+      setPsuBand(String(data.safeScores?.PSUCandidateBand ?? ''))
+    })()
+  }, [])
+
+  const byYear = useMemo(() => {
+    const map = new Map<number, Record<string, number>>()
+    for (const r of rows) {
+      if (r.marks == null) continue
+      if (!map.has(r.year)) map.set(r.year, {})
+      map.get(r.year)![r.category.toUpperCase()] = r.marks
+    }
+    return [...map.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([year, v]) => ({
+        year: String(year),
+        GEN: v.GEN ?? null,
+        OBC: v.OBC ?? null,
+        SC: v.SC ?? null,
+        ST: v.ST ?? null,
+      }))
+  }, [rows])
+
+  const latest = byYear[byYear.length - 1]
+
+  const analyzePsuSafeScore = async () => {
+    setLoadingAdvice(true)
+    setAdvice(null)
     try {
       const res = await fetch('/api/ai/college-advisor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rank: aiRank, branch: aiBranch, category: aiCategory }),
+        body: JSON.stringify({
+          rank: `not fixed; score=${scoreInput}`,
+          branch: 'GATE-EE',
+          category: 'General',
+        }),
       })
       const data = await res.json()
-      setAdvisorText(typeof data.content === 'string' ? data.content : data.error ?? null)
+      setAdvice(typeof data.content === 'string' ? data.content : data.error ?? null)
     } catch {
-      setAdvisorText('Could not reach AI advisor.')
+      setAdvice('Unable to generate PSU safe score analysis.')
     } finally {
-      setAdvisorLoading(false)
+      setLoadingAdvice(false)
     }
   }
 
   return (
-    <div className="mx-auto max-w-7xl p-4 lg:p-8">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="mb-8"
-          >
-            <h1 className="text-2xl font-semibold text-foreground">Cutoffs</h1>
-            <p className="text-muted-foreground mt-1">Historical GATE cutoffs and IIT admissions</p>
-          </motion.div>
+    <div className="mx-auto max-w-6xl p-4 lg:p-8">
+      <h1 className="text-2xl font-semibold text-foreground">Cutoffs</h1>
+      <p className="text-muted-foreground mt-1 mb-6">Historical GATE-EE cutoffs, prediction, and PSU-safe analysis</p>
 
-          {/* Category Filter */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut', delay: 0.05 }}
-            className="flex flex-wrap gap-2 mb-6"
-          >
-            {(['all', 'general', 'obc', 'sc', 'st'] as const).map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  selectedCategory === cat
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {cat === 'all' ? 'All Categories' : cat.toUpperCase()}
-              </button>
-            ))}
-          </motion.div>
+      <div className="bg-card border border-border rounded-xl p-5 mb-6">
+        <h2 className="text-base font-semibold text-foreground mb-3">Previous year EE cutoffs</h2>
+        <div className="h-[280px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={byYear}>
+              <XAxis dataKey="year" axisLine={false} tickLine={false} />
+              <YAxis axisLine={false} tickLine={false} />
+              <Tooltip />
+              <Line dataKey="GEN" stroke="#6366f1" strokeWidth={2} />
+              <Line dataKey="OBC" stroke="#3b82f6" strokeWidth={2} />
+              <Line dataKey="SC" stroke="#10b981" strokeWidth={2} />
+              <Line dataKey="ST" stroke="#f59e0b" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-          {/* Cutoff Chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut', delay: 0.1 }}
-            className="bg-card border border-border rounded-xl p-5 mb-6"
-          >
-            <h2 className="text-base font-semibold text-foreground mb-4">
-              GATE CS Qualifying Cutoff Trends
-            </h2>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={cutoffData}>
-                  <XAxis
-                    dataKey="year"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#9CA3AF', fontSize: 12 }}
-                  />
-                  <YAxis
-                    domain={[15, 35]}
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#9CA3AF', fontSize: 12 }}
-                    tickFormatter={(value) => `${value}%`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#1A1D27',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '8px',
-                    }}
-                    labelStyle={{ color: '#E5E7EB' }}
-                    formatter={(value: number) => [`${value}%`, '']}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: 20 }}
-                    formatter={(value) => (
-                      <span className="text-sm text-muted-foreground capitalize">{value}</span>
-                    )}
-                  />
-                  {(selectedCategory === 'all' || selectedCategory === 'general') && (
-                    <Line
-                      type="monotone"
-                      dataKey="general"
-                      stroke={categoryColors.general}
-                      strokeWidth={2}
-                      dot={{ fill: categoryColors.general, strokeWidth: 0, r: 4 }}
-                    />
-                  )}
-                  {(selectedCategory === 'all' || selectedCategory === 'obc') && (
-                    <Line
-                      type="monotone"
-                      dataKey="obc"
-                      stroke={categoryColors.obc}
-                      strokeWidth={2}
-                      dot={{ fill: categoryColors.obc, strokeWidth: 0, r: 4 }}
-                    />
-                  )}
-                  {(selectedCategory === 'all' || selectedCategory === 'sc') && (
-                    <Line
-                      type="monotone"
-                      dataKey="sc"
-                      stroke={categoryColors.sc}
-                      strokeWidth={2}
-                      dot={{ fill: categoryColors.sc, strokeWidth: 0, r: 4 }}
-                    />
-                  )}
-                  {(selectedCategory === 'all' || selectedCategory === 'st') && (
-                    <Line
-                      type="monotone"
-                      dataKey="st"
-                      stroke={categoryColors.st}
-                      strokeWidth={2}
-                      dot={{ fill: categoryColors.st, strokeWidth: 0, r: 4 }}
-                    />
-                  )}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-card border border-border rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Latest GEN cutoff</p>
+          <p className="text-2xl font-semibold text-foreground mt-1">{latest?.GEN ?? '-'} </p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Predicted GEN cutoff (2027)</p>
+          <p className="text-2xl font-semibold text-foreground mt-1">{predicted || '-'}</p>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">PSU safe score band</p>
+          <p className="text-2xl font-semibold text-foreground mt-1">{psuBand || '-'}</p>
+        </div>
+      </div>
 
-          {/* Latest Cutoffs */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut', delay: 0.15 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+      <div className="bg-card border border-border rounded-xl p-5">
+        <h2 className="text-base font-semibold text-foreground mb-3">PSU safe score analysis (AI)</h2>
+        <div className="flex gap-3 items-end">
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">Your expected marks/score</label>
+            <input
+              type="number"
+              value={scoreInput}
+              onChange={(e) => setScoreInput(Number(e.target.value))}
+              className="px-3 py-2 rounded border border-border bg-input text-sm"
+            />
+          </div>
+          <button
+            onClick={analyzePsuSafeScore}
+            disabled={loadingAdvice}
+            className="px-4 py-2 rounded bg-primary text-primary-foreground text-sm"
           >
-            {(['general', 'obc', 'sc', 'st'] as const).map((cat) => {
-              const latest = cutoffData[cutoffData.length - 1]
-              const prev = cutoffData[cutoffData.length - 2]
-              const change = latest[cat] - prev[cat]
-              return (
-                <div
-                  key={cat}
-                  className="bg-card border border-border rounded-xl p-4"
-                >
-                  <p className="text-xs text-muted-foreground uppercase mb-1">{cat}</p>
-                  <div className="flex items-end gap-2">
-                    <span className="text-2xl font-semibold text-foreground">
-                      {latest[cat]}%
-                    </span>
-                    <span
-                      className={`text-xs pb-1 ${
-                        change > 0 ? 'text-danger' : change < 0 ? 'text-success' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {change > 0 ? '+' : ''}{change.toFixed(1)}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">GATE 2024</p>
-                </div>
-              )
-            })}
-          </motion.div>
-
-          {/* IIT Cutoffs Table */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut', delay: 0.2 }}
-            className="bg-card border border-border rounded-xl overflow-hidden"
-          >
-            <div className="p-5 border-b border-border">
-              <h2 className="text-base font-semibold text-foreground">
-                IIT M.Tech Admission Cutoffs (General)
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Based on GATE score (out of 1000)
-              </p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left px-5 py-3 text-xs text-muted-foreground font-medium">
-                      Institute
-                    </th>
-                    <th className="text-right px-5 py-3 text-xs text-muted-foreground font-medium">
-                      2024 Cutoff
-                    </th>
-                    <th className="text-right px-5 py-3 text-xs text-muted-foreground font-medium">
-                      2023 Cutoff
-                    </th>
-                    <th className="text-center px-5 py-3 text-xs text-muted-foreground font-medium">
-                      Trend
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {iitCutoffs.map((iit, index) => (
-                    <tr
-                      key={iit.name}
-                      className={`border-b border-border/50 ${
-                        index % 2 === 0 ? 'bg-background/30' : ''
-                      }`}
-                    >
-                      <td className="px-5 py-3 text-sm text-foreground font-medium">
-                        {iit.name}
-                      </td>
-                      <td className="px-5 py-3 text-sm text-foreground text-right">
-                        {iit.score2024}
-                      </td>
-                      <td className="px-5 py-3 text-sm text-muted-foreground text-right">
-                        {iit.score2023}
-                      </td>
-                      <td className="px-5 py-3 text-center">
-                        {iit.change === 'up' && (
-                          <span className="inline-flex items-center gap-1 text-xs text-danger">
-                            <TrendingUp size={14} />
-                            Higher
-                          </span>
-                        )}
-                        {iit.change === 'down' && (
-                          <span className="inline-flex items-center gap-1 text-xs text-success">
-                            <TrendingDown size={14} />
-                            Lower
-                          </span>
-                        )}
-                        {iit.change === 'same' && (
-                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                            <Minus size={14} />
-                            Same
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut', delay: 0.25 }}
-            className="bg-card border border-border rounded-xl p-5 mt-8"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={18} className="text-primary" />
-              <h2 className="text-base font-semibold text-foreground">AI college advisor</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1">Approx. rank</label>
-                <input
-                  type="number"
-                  value={aiRank}
-                  onChange={(e) => setAiRank(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1">Branch</label>
-                <input
-                  value={aiBranch}
-                  onChange={(e) => setAiBranch(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1">Category</label>
-                <select
-                  value={aiCategory}
-                  onChange={(e) => setAiCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm"
-                >
-                  {['General', 'OBC', 'SC', 'ST'].map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={askAdvisor}
-                  disabled={advisorLoading}
-                  className="w-full py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:brightness-110 disabled:opacity-50"
-                >
-                  {advisorLoading ? 'Thinking…' : 'Get advice'}
-                </button>
-              </div>
-            </div>
-            {advisorText && (
-              <pre className="text-xs text-foreground/90 whitespace-pre-wrap rounded-lg bg-muted/30 border border-border p-4">
-                {advisorText}
-              </pre>
-            )}
-          </motion.div>
+            {loadingAdvice ? 'Analyzing...' : 'Analyze'}
+          </button>
+        </div>
+        {advice && (
+          <pre className="mt-4 text-xs whitespace-pre-wrap rounded-lg bg-muted/30 border border-border p-4 text-foreground/90">
+            {advice}
+          </pre>
+        )}
+      </div>
     </div>
   )
 }
-

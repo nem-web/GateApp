@@ -138,7 +138,7 @@ export async function GET() {
     const [user, syllabus] = await Promise.all([userPromise, syllabusPromise]);
     const syllabusTitles = new Set(syllabus.map((s) => s.title));
 
-    const gateDate = user?.gateDate ?? gateExam;
+    const gateDate = gateExam;
     const gateCountdown = Math.max(0, differenceInCalendarDays(startOfDay(gateDate), todayStart));
 
     const [
@@ -296,8 +296,7 @@ export async function GET() {
 
     const topicsDoneSlots = slots.filter((s) => s.completed).length;
 
-    const displayName =
-      user?.name ?? (user?.email?.includes("@") ? user.email.split("@")[0] : null) ?? "Student";
+    const displayName = user?.name ?? "Nem";
 
     const subjectIdToTitle = Object.fromEntries(syllabus.map((s) => [s.id, s.title]));
 
@@ -386,7 +385,7 @@ export async function GET() {
         completed: t.completed,
       })),
       meta: {
-        streamLabel: user?.streamLabel ?? "GATE - EE",
+        streamLabel: "GATE-EE",
         displayName,
       },
     };

@@ -9,6 +9,9 @@ type ApiCard = {
   front: string
   back: string
   subject: string
+  mastered?: boolean
+  easeFactor?: number
+  nextReview?: string
 }
 
 const GRADE: Record<'hard' | 'okay' | 'easy', number> = {
@@ -37,6 +40,9 @@ export default function FlashcardsPage() {
             front: String(c.front ?? ''),
             back: String(c.back ?? ''),
             subject: typeof c.subject === 'string' ? c.subject : 'GATE EE',
+            mastered: Boolean(c.mastered),
+            easeFactor: Number(c.easeFactor ?? 2.5),
+            nextReview: typeof c.nextReview === 'string' ? c.nextReview : undefined,
           })),
         )
       } catch {
@@ -85,6 +91,14 @@ export default function FlashcardsPage() {
   }
 
   const progressPercentage = cards.length ? (reviewedCount / cards.length) * 100 : 0
+  const masteredCount = cards.filter((c) => c.mastered).length
+  const dueCount = cards.filter((c) => !c.mastered).length
+  const avgConfidence = cards.length
+    ? (
+        cards.reduce((sum, c) => sum + Math.max(0, Math.min(100, ((c.easeFactor ?? 2.5) / 3) * 100)), 0) /
+        cards.length
+      ).toFixed(0)
+    : '0'
 
   return (
     <div className="mx-auto max-w-7xl p-4 lg:p-8">
@@ -168,16 +182,16 @@ export default function FlashcardsPage() {
             className="max-w-[480px] mx-auto mt-12 grid grid-cols-3 gap-4"
           >
             <div className="bg-card border border-border rounded-xl p-4 text-center">
-              <p className="text-2xl font-semibold text-danger">—</p>
-              <p className="text-xs text-muted-foreground mt-1">Needs work</p>
+              <p className="text-2xl font-semibold text-danger">{dueCount}</p>
+              <p className="text-xs text-muted-foreground mt-1">Due/learning</p>
             </div>
             <div className="bg-card border border-border rounded-xl p-4 text-center">
-              <p className="text-2xl font-semibold text-warning">—</p>
-              <p className="text-xs text-muted-foreground mt-1">Okay</p>
+              <p className="text-2xl font-semibold text-warning">{avgConfidence}%</p>
+              <p className="text-xs text-muted-foreground mt-1">Confidence</p>
             </div>
             <div className="bg-card border border-border rounded-xl p-4 text-center">
-              <p className="text-2xl font-semibold text-success">—</p>
-              <p className="text-xs text-muted-foreground mt-1">Easy recall</p>
+              <p className="text-2xl font-semibold text-success">{masteredCount}</p>
+              <p className="text-xs text-muted-foreground mt-1">Mastered</p>
             </div>
           </motion.div>
     </div>

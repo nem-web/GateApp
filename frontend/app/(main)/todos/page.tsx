@@ -11,15 +11,6 @@ interface Todo {
   completed: boolean
 }
 
-const fallbackTodos: Todo[] = [
-  { id: '1', task: 'Complete Graph Theory revision', priority: 'high', completed: false },
-  { id: '2', task: 'Solve 20 PYQ from 2023', priority: 'medium', completed: true },
-  { id: '3', task: 'Watch OS lecture on deadlocks', priority: 'low', completed: false },
-  { id: '4', task: 'Practice 50 MCQs on Data Structures', priority: 'high', completed: false },
-  { id: '5', task: 'Review Linear Algebra notes', priority: 'medium', completed: false },
-  { id: '6', task: 'Complete DBMS normalization worksheet', priority: 'medium', completed: true },
-]
-
 const priorityColors = {
   high: { bg: 'bg-danger/15', text: 'text-danger', dot: 'bg-danger' },
   medium: { bg: 'bg-warning/15', text: 'text-warning', dot: 'bg-warning' },
@@ -52,10 +43,11 @@ export default function TodosPage() {
       if (Array.isArray(data)) {
         setTodos(data.length ? data.map(mapApiTask) : [])
       } else {
-        setTodos(fallbackTodos)
+        setTodos([])
       }
     } catch {
-      setTodos(fallbackTodos)
+      setTodos([])
+      toast.error('Could not load tasks from database')
     } finally {
       setReady(true)
     }
@@ -78,20 +70,9 @@ export default function TodosPage() {
         setTodos((prev) => [mapApiTask(created), ...prev])
         toast.success('Task added')
       } else {
-        const t: Todo = {
-          id: `local-${Date.now()}`,
-          task: newTask.trim(),
-          priority: newPriority,
-          completed: false,
-        }
-        setTodos((prev) => [t, ...prev])
-        toast.message('Saved locally (database unavailable)')
+        toast.error('Failed to save task to database')
       }
     } catch {
-      setTodos((prev) => [
-        { id: `local-${Date.now()}`, task: newTask.trim(), priority: newPriority, completed: false },
-        ...prev,
-      ])
       toast.error('Could not sync task')
     }
     setNewTask('')
@@ -100,25 +81,28 @@ export default function TodosPage() {
   const toggleTodo = async (id: string, completed: boolean) => {
     const next = !completed
     setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, completed: next } : todo)))
-    if (id.startsWith('local-')) return
     try {
-      await fetch(`/api/tasks/${id}`, {
+      const res = await fetch(`/api/tasks/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: next }),
       })
+      if (!res.ok) throw new Error('sync failed')
     } catch {
+      setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, completed } : todo)))
       toast.error('Could not update task')
     }
   }
 
   const deleteTodo = async (id: string) => {
+    const previous = todos
     setTodos((prev) => prev.filter((todo) => todo.id !== id))
-    if (id.startsWith('local-')) return
     try {
-      await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('delete failed')
       toast.success('Task removed')
     } catch {
+      setTodos(previous)
       toast.error('Could not delete task')
     }
   }
@@ -127,10 +111,17 @@ export default function TodosPage() {
     setAiLoading(true)
     setAiSuggestion(null)
     try {
+      const dashboardRes = await fetch('/api/dashboard', { cache: 'no-store' })
+      const dashboard = dashboardRes.ok ? await dashboardRes.json() : null
+      const weakSubjects = Array.isArray(dashboard?.weakSubjects) ? dashboard.weakSubjects : []
+      const openTasks = todos.filter((t) => !t.completed).map((t) => t.task)
+      const recentScores = Array.isArray(dashboard?.recentScores) ? dashboard.recentScores : []
+      const streak = typeof dashboard?.stats?.studyStreak === 'number' ? dashboard.stats.studyStreak : undefined
+
       const res = await fetch('/api/ai/task-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weakTopics: ['Graph Theory', 'TOC', 'Computer Networks'] }),
+        body: JSON.stringify({ weakSubjects, openTasks, recentScores, streak }),
       })
       const data = await res.json()
       setAiSuggestion(typeof data.content === 'string' ? data.content : data.error ?? null)

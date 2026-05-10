@@ -148,7 +148,7 @@ function reasonLabel(r: WeakTopicInsight['reasons'][number]): string {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardPayload | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<'auth' | 'other' | null>(null)
+  const [error, setError] = useState<'other' | null>(null)
 
   useEffect(() => {
     const ac = new AbortController()
@@ -160,7 +160,7 @@ export default function DashboardPage() {
         const res = await fetch('/api/dashboard', { signal: ac.signal, cache: 'no-store' })
         if (!res.ok) {
           if (!cancelled) {
-            setError(res.status === 401 ? 'auth' : 'other')
+            setError('other')
             setData(null)
           }
           return
@@ -224,11 +224,6 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">{stats.gateCountdown} days to go</p>
           </div>
         </div>
-        {error === 'auth' && (
-          <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-            Sign in to load streaks, hours, weak-topic signals, and subject progress tied to your account.
-          </p>
-        )}
         {error === 'other' && !loading && (
           <p className="mt-4 rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             Unable to refresh the dashboard. Check <code className="text-xs">DATABASE_URL</code> and retry.

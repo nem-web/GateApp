@@ -20,6 +20,8 @@ import {
   Sparkles,
   Layers,
   HelpCircle,
+  Trash2,
+  Upload,
 } from 'lucide-react'
 
 type NoteFolder = {
@@ -33,49 +35,57 @@ export default function NotesPage() {
   const [folders, setFolders] = useState<NoteFolder[]>([])
   const [expandedFolders, setExpandedFolders] = useState<string[]>([])
   const [selectedNote, setSelectedNote] = useState<{ id: string; title: string } | null>(null)
+  const [selectedSubject, setSelectedSubject] = useState<string>('Engineering Mathematics')
   const [aiOutput, setAiOutput] = useState<{ type: string; content: string } | null>(null)
   const [isAiLoading, setIsAiLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [noteContent, setNoteContent] = useState('')
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null)
+
+  const loadNotes = async () => {
+    const res = await fetch('/api/notes', { cache: 'no-store' })
+    if (!res.ok) throw new Error('load failed')
+    const data = await res.json()
+    const rows = Array.isArray(data.notes) ? data.notes : []
+    const map = new Map<string, { id: string; title: string; lastEdited: string }[]>()
+    for (const n of rows as Array<Record<string, unknown>>) {
+      const subject =
+        typeof n.subject === 'string' ? n.subject : typeof n.subjectId === 'string' ? 'Subject' : 'Notes'
+      if (!map.has(subject)) map.set(subject, [])
+      const updatedRaw = n.updatedAt
+      let lastEdited = ''
+      try {
+        if (updatedRaw instanceof Date) lastEdited = updatedRaw.toLocaleDateString()
+        else if (typeof updatedRaw === 'string') lastEdited = new Date(updatedRaw).toLocaleDateString()
+      } catch {
+        lastEdited = ''
+      }
+      map.get(subject)!.push({
+        id: String(n.id ?? ''),
+        title: typeof n.title === 'string' ? n.title : 'Untitled',
+        lastEdited,
+      })
+    }
+    const nextFolders: NoteFolder[] = [...map.entries()].map(([name, notes]) => ({
+      id: name,
+      name,
+      icon: '📘',
+      notes,
+    }))
+    nextFolders.sort((a, b) => a.name.localeCompare(b.name))
+    setFolders(nextFolders)
+    setExpandedFolders((prev) => {
+      if (prev.length > 0) return prev
+      return nextFolders.slice(0, 2).map((f) => f.id)
+    })
+  }
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        const res = await fetch('/api/notes')
-        if (!res.ok) return
-        const data = await res.json()
-        const rows = Array.isArray(data.notes) ? data.notes : []
+        await loadNotes()
         if (cancelled) return
-        const map = new Map<string, { id: string; title: string; lastEdited: string }[]>()
-        for (const n of rows as Array<Record<string, unknown>>) {
-          const subject =
-            typeof n.subject === 'string' ? n.subject : typeof n.subjectId === 'string' ? 'Subject' : 'Notes'
-          if (!map.has(subject)) map.set(subject, [])
-          const updatedRaw = n.updatedAt
-          let lastEdited = ''
-          try {
-            if (updatedRaw instanceof Date) lastEdited = updatedRaw.toLocaleDateString()
-            else if (typeof updatedRaw === 'string') lastEdited = new Date(updatedRaw).toLocaleDateString()
-          } catch {
-            lastEdited = ''
-          }
-          map.get(subject)!.push({
-            id: String(n.id ?? ''),
-            title: typeof n.title === 'string' ? n.title : 'Untitled',
-            lastEdited,
-          })
-        }
-        const nextFolders: NoteFolder[] = [...map.entries()].map(([name, notes]) => ({
-          id: name,
-          name,
-          icon: '📘',
-          notes,
-        }))
-        nextFolders.sort((a, b) => a.name.localeCompare(b.name))
-        setFolders(nextFolders)
-        setExpandedFolders((prev) => {
-          if (prev.length > 0) return prev
-          return nextFolders.slice(0, 2).map((f) => f.id)
-        })
       } catch {
         if (!cancelled) setFolders([])
       }
@@ -92,15 +102,40 @@ export default function NotesPage() {
         placeholder: 'Start writing your notes...',
       }),
     ],
-    content: selectedNote
-      ? `<h1>${selectedNote.title}</h1><p>Your notes content goes here...</p>`
-      : '',
+    content: selectedNote ? noteContent : '',
     editorProps: {
       attributes: {
         class: 'prose prose-invert max-w-none focus:outline-none min-h-[400px] px-4 py-3',
       },
     },
+    onUpdate: ({ editor: ed }) => {
+      setNoteContent(ed.getHTML())
+    },
   })
+
+  useEffect(() => {
+    if (!editor) return
+    editor.commands.setContent(selectedNote ? noteContent : '', false)
+  }, [editor, noteContent, selectedNote?.id])
+
+  useEffect(() => {
+    if (!selectedNote) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch(`/api/notes/${selectedNote.id}`, { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json()
+        if (!cancelled) {
+          setNoteContent(typeof data.content === 'string' ? data.content : '')
+          if (typeof data.subject === 'string') setSelectedSubject(data.subject)
+        }
+      } catch {}
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [selectedNote?.id])
 
   const toggleFolder = (id: string) => {
     setExpandedFolders((prev) =>
@@ -139,6 +174,67 @@ export default function NotesPage() {
     }
   }
 
+  useEffect(() => {
+    if (!selectedNote) return
+    const timer = setTimeout(async () => {
+      try {
+        setSaving(true)
+        const res = await fetch(`/api/notes/${selectedNote.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: selectedNote.title,
+            content: noteContent,
+            subject: selectedSubject,
+          }),
+        })
+        if (!res.ok) return
+        setLastSavedAt(new Date().toLocaleTimeString())
+      } finally {
+        setSaving(false)
+      }
+    }, 900)
+    return () => clearTimeout(timer)
+  }, [noteContent, selectedNote?.id, selectedSubject, selectedNote?.title])
+
+  const createNote = async () => {
+    const title = `New note ${new Date().toLocaleDateString()}`
+    const res = await fetch('/api/notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        content: '<p></p>',
+        subject: selectedSubject || 'Engineering Mathematics',
+      }),
+    })
+    if (!res.ok) return
+    const note = await res.json()
+    await loadNotes()
+    setSelectedNote({ id: note.id, title: note.title })
+    setNoteContent(note.content ?? '<p></p>')
+  }
+
+  const deleteCurrentNote = async () => {
+    if (!selectedNote) return
+    const res = await fetch(`/api/notes/${selectedNote.id}`, { method: 'DELETE' })
+    if (!res.ok) return
+    setSelectedNote(null)
+    setNoteContent('')
+    await loadNotes()
+  }
+
+  const uploadPdfForCurrentNote = async (file: File) => {
+    if (!selectedNote) return
+    const form = new FormData()
+    form.append('file', file)
+    await fetch(`/api/notes/${selectedNote.id}/pdf`, {
+      method: 'POST',
+      body: form,
+    })
+    await loadNotes()
+  }
+
   return (
     <div className="flex h-[calc(100dvh-9rem)] w-full max-w-[100vw] overflow-hidden lg:h-[calc(100vh-7rem)]">
           {/* Left Panel - Folder Tree */}
@@ -148,7 +244,10 @@ export default function NotesPage() {
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className="w-[260px] border-r border-border p-4 flex-shrink-0 overflow-y-auto hidden md:block"
           >
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:brightness-110 transition-all mb-4">
+            <button
+              onClick={createNote}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:brightness-110 transition-all mb-4"
+            >
               <Plus size={16} />
               New Note
             </button>
@@ -260,6 +359,29 @@ export default function NotesPage() {
               <button className="p-2 rounded hover:bg-secondary transition-colors text-muted-foreground">
                 <Image size={16} />
               </button>
+              <div className="ml-auto flex items-center gap-2">
+                <label className="inline-flex items-center gap-1.5 px-2 py-1 rounded border border-border text-xs text-muted-foreground hover:bg-secondary cursor-pointer">
+                  <Upload size={13} />
+                  PDF
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) void uploadPdfForCurrentNote(file)
+                    }}
+                  />
+                </label>
+                <button
+                  onClick={deleteCurrentNote}
+                  disabled={!selectedNote}
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded border border-border text-xs text-muted-foreground hover:bg-secondary disabled:opacity-50"
+                >
+                  <Trash2 size={13} />
+                  Delete
+                </button>
+              </div>
             </div>
 
             {/* Editor */}
@@ -268,10 +390,15 @@ export default function NotesPage() {
                 <EditorContent editor={editor} className="h-full" />
               ) : (
                 <div className="h-full flex items-center justify-center text-muted-foreground">
-                  <p>Select a note to start editing</p>
+                  <p>Create or select a note to start editing</p>
                 </div>
               )}
             </div>
+            {selectedNote && (
+              <div className="px-4 py-2 border-t border-border text-xs text-muted-foreground">
+                {saving ? 'Saving...' : `Saved${lastSavedAt ? ` at ${lastSavedAt}` : ''}`}
+              </div>
+            )}
           </motion.div>
 
           {/* Right Panel - AI Tools */}

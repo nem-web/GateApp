@@ -64,7 +64,7 @@ export default function AIInsightCard({
       ) : insightText ? (
         <p className="text-sm leading-relaxed text-foreground/90">{insightText}</p>
       ) : (
-        <p className="text-sm text-muted-foreground">Sign in &amp; add API keys — we&apos;ll summarise your week.</p>
+        <p className="text-sm text-muted-foreground">No insight generated yet. Try regenerate.</p>
       )}
 
       <button
