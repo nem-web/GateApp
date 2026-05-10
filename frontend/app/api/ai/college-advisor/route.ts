@@ -6,3 +6,4 @@ export async function POST(req: Request) {
     `Student approximate GATE rank: ${b.rank}, branch: ${b.branch}, category: ${b.category}. Recommend target IIT/NIT/IIIT programs with short reasoning.`,
   );
 }
+

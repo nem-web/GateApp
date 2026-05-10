@@ -2,30 +2,42 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getEffectiveUserId } from "@/lib/session";
+import { getSessionUserId } from "@/lib/session";
+import { GATE_EXAM_DATE_ISO } from "@/lib/gate-ee";
 
 export async function GET() {
-  const userId = await getEffectiveUserId();
+  const userId = await getSessionUserId();
   const session = await getServerSession(authOptions);
 
   if (!userId) {
-    return NextResponse.json({
-      id: "offline",
-      name: session?.user?.name ?? "Demo Student",
-      email: session?.user?.email ?? null,
-      branch: "CSE",
-      gateDate: new Date("2025-02-01").toISOString(),
-      targetExam: "GATE — CS",
-    });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      weakSubjectLinks: {
+        include: { subject: true },
+        orderBy: { priority: "desc" },
+      },
+    },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  const gateDate = user.gateDate?.toISOString() ?? GATE_EXAM_DATE_ISO;
+
   return NextResponse.json({
     id: userId,
-    name: user?.name ?? session?.user?.name ?? "Demo Student",
-    email: user?.email ?? session?.user?.email ?? null,
-    branch: user?.branch ?? "CSE",
-    gateDate: user?.gateDate?.toISOString() ?? null,
-    targetExam: user?.branch ? `GATE — ${user.branch}` : "GATE — CS",
+    name: user.name,
+    email: user.email ?? session?.user?.email ?? null,
+    branch: user.branch ?? "EE",
+    gateDate,
+    targetExam: user.streamLabel ?? "GATE - EE",
+    streamLabel: user.streamLabel ?? "GATE - EE",
+    hoursPerDay: user.hoursPerDay ?? 4,
+    weakSubjects: user.weakSubjectLinks.map((l) => l.subject.title),
   });
 }

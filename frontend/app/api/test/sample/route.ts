@@ -1,35 +1,46 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getSessionUserId } from "@/lib/session";
+import { GATE_EE_SAMPLE_PACK_SLUG } from "@/lib/test-packs";
 
-/** Sample GATE-style MCQs for “Take test” until DB-backed tests ship. */
 export async function GET() {
-  return NextResponse.json({
-    title: "Practice drill — Data Structures & Algorithms",
-    durationMinutes: 15,
-    questions: [
-      {
-        id: "q1",
-        subject: "Data Structures",
-        topic: "Trees",
-        text: "Which traversal of a binary tree visits nodes in sorted order for a BST?",
-        options: ["Preorder", "Inorder", "Postorder", "Level order"],
-        correctIndex: 1,
+  const userId = await getSessionUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const pack = await prisma.testPack.findUnique({
+      where: { slug: GATE_EE_SAMPLE_PACK_SLUG },
+      include: {
+        questions: {
+          orderBy: { id: "asc" },
+          include: { subject: true },
+        },
       },
-      {
-        id: "q2",
-        subject: "Algorithms",
-        topic: "Complexity",
-        text: "Average-case time complexity of QuickSort (random pivot, balanced splits)?",
-        options: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"],
-        correctIndex: 1,
-      },
-      {
-        id: "q3",
-        subject: "Discrete Math",
-        topic: "Graphs",
-        text: "A connected undirected graph with V vertices and V−1 edges is always…",
-        options: ["Complete", "A tree", "Bipartite", "Eulerian"],
-        correctIndex: 1,
-      },
-    ],
-  });
+    });
+
+    if (!pack || pack.questions.length === 0) {
+      return NextResponse.json(
+        {
+          error: "Sample GATE EE drill is unavailable. Seed the catalog with `npx prisma db seed`.",
+        },
+        { status: 503 },
+      );
+    }
+
+    return NextResponse.json({
+      slug: pack.slug,
+      title: pack.title,
+      durationMinutes: pack.durationMinutes,
+      questions: pack.questions.map((q) => ({
+        id: q.id,
+        subject: q.subject.title,
+        topic: q.topic,
+        text: q.prompt,
+        options: [...q.options],
+      })),
+    });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
+  }
 }

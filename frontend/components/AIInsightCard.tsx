@@ -2,17 +2,22 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Sparkles, RefreshCw } from 'lucide-react'
-import { aiInsights } from '@/lib/mockData'
+import { RefreshCw, Sparkles } from 'lucide-react'
 
 type ScorePoint = { date: string; score: number }
 
-export default function AIInsightCard({ recentScores }: { recentScores: ScorePoint[] }) {
-  const [insightText, setInsightText] = useState<string>(aiInsights[0])
-  const [isLoading, setIsLoading] = useState(false)
+export default function AIInsightCard({
+  recentScores,
+  pending = false,
+}: {
+  recentScores: ScorePoint[]
+  pending?: boolean
+}) {
+  const [insightText, setInsightText] = useState<string>('')
+  const [loading, setLoading] = useState(false)
 
   const fetchInsight = useCallback(async () => {
-    setIsLoading(true)
+    setLoading(true)
     try {
       const res = await fetch('/api/ai/dashboard-insight', {
         method: 'POST',
@@ -23,55 +28,54 @@ export default function AIInsightCard({ recentScores }: { recentScores: ScorePoi
       const text = typeof data.content === 'string' ? data.content : data.error
       if (text) setInsightText(text)
     } catch {
-      setInsightText(aiInsights[Math.floor(Math.random() * aiInsights.length)])
+      setInsightText('AI insight is temporarily unavailable — check keys or session.')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }, [recentScores])
 
   useEffect(() => {
-    fetchInsight()
-  }, [fetchInsight])
+    if (pending) return
+    void fetchInsight()
+  }, [fetchInsight, pending])
+
+  const busy = pending || loading
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
+    <motion.section
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.15, ease: 'easeOut', delay: 0.2 }}
-      className={`relative bg-card border rounded-xl p-5 ${
-        isLoading ? 'border-primary animate-pulse' : 'border-primary/30'
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1], delay: 0.14 }}
+      className={`rounded-2xl border border-primary/25 bg-card/90 p-5 shadow-sm backdrop-blur-sm ${
+        busy ? 'border-primary/50' : ''
       }`}
-      style={{
-        boxShadow: isLoading ? '0 0 20px rgba(108, 99, 255, 0.2)' : 'none',
-      }}
     >
-      <div className="flex items-center gap-2 mb-3">
+      <div className="mb-3 flex items-center gap-2">
         <Sparkles size={18} className="text-primary" />
-        <span className="text-sm font-medium text-primary">AI Insight</span>
+        <span className="text-sm font-semibold text-primary">Coach insight</span>
       </div>
 
-      {isLoading ? (
-        <p className="text-sm text-muted-foreground italic">
-          Thinking
-          <span className="thinking-dots">
-            <span>.</span>
-            <span>.</span>
-            <span>.</span>
-          </span>
-        </p>
+      {busy ? (
+        <div className="space-y-2">
+          <div className="h-3 animate-pulse rounded bg-muted/50" />
+          <div className="h-3 w-[92%] animate-pulse rounded bg-muted/35" />
+          <div className="h-3 w-5/6 animate-pulse rounded bg-muted/35" />
+        </div>
+      ) : insightText ? (
+        <p className="text-sm leading-relaxed text-foreground/90">{insightText}</p>
       ) : (
-        <p className="text-sm text-foreground/90 italic leading-relaxed">{insightText}</p>
+        <p className="text-sm text-muted-foreground">Sign in &amp; add API keys — we&apos;ll summarise your week.</p>
       )}
 
       <button
         type="button"
-        onClick={fetchInsight}
-        disabled={isLoading}
-        className="mt-4 flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+        onClick={() => void fetchInsight()}
+        disabled={busy}
+        className="mt-4 flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
       >
-        <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />
+        <RefreshCw size={14} className={busy ? 'animate-spin' : ''} />
         Regenerate
       </button>
-    </motion.div>
+    </motion.section>
   )
 }

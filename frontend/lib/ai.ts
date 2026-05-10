@@ -78,3 +78,4 @@ export async function callAI(userId: string | null, type: string, prompt: string
 
   return { ok: true as const, content };
 }
+

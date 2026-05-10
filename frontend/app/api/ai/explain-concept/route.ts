@@ -6,3 +6,4 @@ export async function POST(req: Request) {
     `Explain the hardest concept in this note in simple GATE-focused language:\n${String(b.text ?? "")}`,
   );
 }
+

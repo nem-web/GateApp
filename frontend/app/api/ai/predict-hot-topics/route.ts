@@ -6,3 +6,4 @@ export async function POST(req: Request) {
     `Given topic frequencies ${JSON.stringify(b.frequencies ?? [])}, list top 5 likely hot GATE CS topics next year with brief reasoning.`,
   );
 }
+

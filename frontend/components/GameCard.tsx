@@ -102,3 +102,4 @@ export default function GameCard({ name, description, icon, color, featured = fa
     </motion.div>
   )
 }
+

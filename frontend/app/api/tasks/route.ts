@@ -1,36 +1,61 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getEffectiveUserId } from "@/lib/session";
+import { getSessionUserId } from "@/lib/session";
+import { resolveSubject } from "@/lib/subject-resolve";
 
 export async function GET() {
+  const userId = await getSessionUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
-    const userId = await getEffectiveUserId();
-    if (!userId) return NextResponse.json([]);
     const tasks = await prisma.task.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      include: { subject: true },
     });
-    return NextResponse.json(tasks);
+    const payload = tasks.map(({ subject: subj, ...t }) => ({
+      ...t,
+      subjectTag: subj?.title ?? t.topicTag ?? null,
+      subjectTitle: subj?.title ?? null,
+    }));
+    return NextResponse.json(payload);
   } catch {
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
   }
 }
 
 export async function POST(req: Request) {
-  const userId = await getEffectiveUserId();
-  if (!userId) {
-    return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
-  }
+  const userId = await getSessionUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
+
+  let subjectId: string | undefined;
+  if (typeof body.subjectId === "string") {
+    subjectId = body.subjectId;
+  } else if (typeof body.subjectTag === "string" || typeof body.subject === "string") {
+    const resolved = await resolveSubject(
+      prisma,
+      typeof body.subject === "string" ? body.subject : body.subjectTag,
+    );
+    subjectId = resolved.id;
+  }
+
   const task = await prisma.task.create({
     data: {
       userId,
-      title: body.title,
+      title: String(body.title ?? "Task"),
       priority: body.priority ?? "medium",
       dueDate: body.dueDate ? new Date(body.dueDate) : null,
-      subjectTag: body.subjectTag ?? null,
+      subjectId,
+      topicTag: body.topicTag ?? null,
       repeat: body.repeat ?? null,
     },
+    include: { subject: true },
   });
-  return NextResponse.json(task);
+
+  return NextResponse.json({
+    ...task,
+    subjectTag: task.subject?.title ?? task.topicTag,
+    subjectTitle: task.subject?.title ?? null,
+  });
 }

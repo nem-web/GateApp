@@ -5,3 +5,4 @@ export async function POST(req: Request) {
   const count = Array.isArray(body?.questions) ? body.questions.length : 0;
   return NextResponse.json({ message: "Upload scaffold received", count });
 }
+

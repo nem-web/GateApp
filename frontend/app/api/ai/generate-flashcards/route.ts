@@ -6,3 +6,4 @@ export async function POST(req: Request) {
     `Generate flashcards as JSON array of objects { "front", "back" } from:\n${String(b.text ?? "")}`,
   );
 }
+

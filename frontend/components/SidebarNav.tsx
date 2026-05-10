@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { motion } from 'framer-motion'
+import type { LucideIcon } from 'lucide-react'
 import {
   Home,
   Calendar,
@@ -22,7 +23,15 @@ import {
   Menu,
   X,
 } from 'lucide-react'
-const navItems = [
+type NavItem = {
+  name: string
+  href: string
+  icon: LucideIcon
+  disabled?: boolean
+  badge?: string
+}
+
+const navItems: NavItem[] = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Study Plan', href: '/study-plan', icon: Calendar },
   { name: 'To-Do List', href: '/todos', icon: CheckSquare },
@@ -235,3 +244,4 @@ export default function SidebarNav() {
     </>
   )
 }
+

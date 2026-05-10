@@ -116,3 +116,4 @@ export default function FlipCard({ front, back, subject, onDifficulty, onSkip }:
     </div>
   )
 }
+

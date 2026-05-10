@@ -6,3 +6,4 @@ export async function POST(req: Request) {
     `Recommend the next 3 GATE video topics to watch given weak subjects ${JSON.stringify(b.weakSubjects ?? [])}. Short bullets.`,
   );
 }
+

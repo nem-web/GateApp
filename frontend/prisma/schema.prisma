@@ -7,140 +7,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Canonical GATE EE syllabus taxonomy (seeded).
+model Subject {
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  title            String             @unique
+  branch           String             @default("EE")
+  sortOrder        Int                @default(0)
+  notes            Note[]
+  flashcards       Flashcard[]
+  lectures         Lecture[]
+  timetableSlots   TimetableSlot[]
+  pyqPapers        PyqPaper[]
+  topicStats       TopicPerformance[]
+  tasks            Task[]
+  questions        Question[]
+  studySessions    StudySessionLog[]
+  userWeakSubjects UserWeakSubject[]
+}
+
 model User {
-  id            String            @id @default(cuid())
-  name          String?
-  email         String            @unique
-  password      String?
-  gateDate      DateTime?
-  branch        String?
-  hoursPerDay   Int?
-  weakSubjects  String[]          @default([])
-  createdAt     DateTime          @default(now())
-  studyPlans    StudyPlan[]
-  tasks         Task[]
-  notes         Note[]
-  flashcards    Flashcard[]
-  lectures      LectureProgress[]
-  testResults   TestResult[]
-  aiSuggestions AISuggestion[]
-  tests         Test[]
-  accounts      Account[]
-  sessions      Session[]
+  id                 String               @id @default(cuid())
+  name               String?
+  email              String               @unique
+  password           String?
+  gateDate           DateTime?
+  branch             String               @default("EE")
+  streamLabel        String               @default("GATE - EE")
+  hoursPerDay        Int                  @default(4)
+  studyStreakDays    Int                  @default(0)
+  lastStreakDate     DateTime?
+  createdAt          DateTime             @default(now())
+  accounts           Account[]
+  sessions           Session[]
+  tasks              Task[]
+  notes              Note[]
+  flashcards         Flashcard[]
+  flashcardReviews   FlashcardReview[]
+  timetableSlots     TimetableSlot[]
+  studyPlans         StudyPlan[]
+  studySessions      StudySessionLog[]
+  lectures           Lecture[]
+  lectureWatches     LectureWatch[]
+  testAttempts       TestAttempt[]
+  notePdfs           NotePdf[]
+  pyqPapers          PyqPaper[]
+  topicStats         TopicPerformance[]
+  authoredQuestions  Question[]           @relation("QuestionAuthor")
+  testPaperUploads   TestPaperUpload[]
+  aiSuggestions      AISuggestion[]
+  pdfReadingProgress PdfReadingProgress[]
+  streakDays         StreakDay[]
+  weakSubjectLinks   UserWeakSubject[]
 }
 
-model StudyPlan {
-  id          String   @id @default(cuid())
-  userId      String
-  weekNumber  Int
-  subject     String
-  topic       String
-  plannedDate DateTime
-  completed   Boolean  @default(false)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Task {
-  id         String   @id @default(cuid())
-  userId     String
-  title      String
-  priority   String
-  dueDate    DateTime?
-  subjectTag String?
-  completed  Boolean  @default(false)
-  repeat     String?
-  lectureRef String?
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Note {
-  id        String      @id @default(cuid())
+/// Join table for prioritized weak syllabus areas per user.
+model UserWeakSubject {
   userId    String
-  title     String
-  content   String      @db.Text
-  subject   String
-  topic     String?
-  tags      String[]    @default([])
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cards     Flashcard[]
-}
+  subjectId String
+  priority  Int     @default(0)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
-model Flashcard {
-  id         String   @id @default(cuid())
-  userId     String
-  noteId     String?
-  front      String
-  back       String
-  nextReview DateTime
-  easeFactor Float    @default(2.5)
-  interval   Int      @default(1)
-  note       Note?    @relation(fields: [noteId], references: [id], onDelete: SetNull)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model LectureProgress {
-  id        String   @id @default(cuid())
-  userId    String
-  videoId   String
-  watched   Boolean  @default(false)
-  bookmarks String[] @default([])
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model TestResult {
-  id               String   @id @default(cuid())
-  userId           String
-  score            Int
-  totalQ           Int
-  timeTaken        Int
-  subjectBreakdown Json
-  date             DateTime @default(now())
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model AISuggestion {
-  id          String   @id @default(cuid())
-  userId      String
-  type        String
-  content     String   @db.Text
-  generatedAt DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Question {
-  id            String   @id @default(cuid())
-  subject       String
-  topic         String
-  type          String
-  options       String[]
-  correctAnswer String
-  difficulty    String
-  year          Int
-  createdAt     DateTime @default(now())
-}
-
-model Test {
-  id        String   @id @default(cuid())
-  userId    String
-  score     Int?
-  timeTaken Int?
-  date      DateTime @default(now())
-  questions Json
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-/// Skeleton: PDF uploads for “create test”; parsing pipeline comes later.
-model TestPdfUpload {
-  id         String   @id @default(cuid())
-  userId     String
-  fileName   String
-  mimeType   String?
-  sizeBytes  Int?
-  status     String   @default("received")
-  createdAt  DateTime @default(now())
+  @@id([userId, subjectId])
+  @@index([userId])
 }
 
 model Account {
@@ -167,4 +97,323 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Calendar days counted toward streaks / consistency (maintained alongside derived signals).
+model StreakDay {
+  userId String
+  day    DateTime @db.Date
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, day])
+  @@index([userId])
+}
+
+model StudySessionLog {
+  id              String    @id @default(cuid())
+  userId          String
+  startedAt       DateTime  @default(now())
+  endedAt         DateTime?
+  durationMinutes Int       @default(0)
+  subjectId       String?
+  subject         Subject?  @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+}
+
+model StudyPlan {
+  id             String          @id @default(cuid())
+  userId         String
+  title          String          @default("Study plan")
+  source         String          @default("ai")
+  status         String          @default("draft")
+  slots          Json
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timetableSlots TimetableSlot[]
+
+  @@index([userId, createdAt])
+}
+
+model TimetableSlot {
+  id              String     @id @default(cuid())
+  userId          String
+  studyPlanId     String?
+  dayOfWeek       Int
+  startTime       String
+  durationMinutes Int        @default(60)
+  subjectId       String
+  topic           String?
+  completed       Boolean    @default(false)
+  source          String     @default("manual")
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studyPlan       StudyPlan? @relation(fields: [studyPlanId], references: [id], onDelete: SetNull)
+  subject         Subject    @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@index([userId, dayOfWeek])
+}
+
+model Task {
+  id         String    @id @default(cuid())
+  userId     String
+  title      String
+  priority   String
+  dueDate    DateTime?
+  subjectId  String?
+  topicTag   String?
+  completed  Boolean   @default(false)
+  repeat     String?
+  lectureRef String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject    Subject?  @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, completed])
+}
+
+model Note {
+  id              String      @id @default(cuid())
+  userId          String
+  title           String
+  content         String      @db.Text
+  subjectId       String
+  topic           String?
+  tags            String[]    @default([])
+  pdfStoragePath  String?
+  pdfFileName     String?
+  readingLastPage Int         @default(1)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject         Subject     @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  flashcards      Flashcard[]
+  notePdfs        NotePdf[]
+}
+
+model NotePdf {
+  id          String               @id @default(cuid())
+  noteId      String?
+  userId      String
+  storagePath String
+  fileName    String
+  pageCount   Int?
+  createdAt   DateTime             @default(now())
+  note        Note?                @relation(fields: [noteId], references: [id], onDelete: SetNull)
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  annotations NoteAnnotation[]
+  progress    PdfReadingProgress[]
+}
+
+model NoteAnnotation {
+  id        String   @id @default(cuid())
+  notePdfId String
+  page      Int
+  payload   Json
+  updatedAt DateTime @updatedAt
+  notePdf   NotePdf  @relation(fields: [notePdfId], references: [id], onDelete: Cascade)
+
+  @@unique([notePdfId, page])
+}
+
+model PdfReadingProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  notePdfId String
+  lastPage  Int      @default(1)
+  updatedAt DateTime @updatedAt
+  notePdf   NotePdf  @relation(fields: [notePdfId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notePdfId])
+}
+
+model Flashcard {
+  id          String            @id @default(cuid())
+  userId      String
+  noteId      String?
+  subjectId   String
+  topic       String?
+  front       String
+  back        String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  nextReview  DateTime          @default(now())
+  easeFactor  Float             @default(2.5)
+  interval    Int               @default(1)
+  repetitions Int               @default(0)
+  mastered    Boolean           @default(false)
+  source      String            @default("note")
+  note        Note?             @relation(fields: [noteId], references: [id], onDelete: SetNull)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject     Subject           @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  reviews     FlashcardReview[]
+
+  @@index([userId, nextReview])
+}
+
+model FlashcardReview {
+  id           String    @id @default(cuid())
+  flashcardId  String
+  userId       String
+  grade        Int
+  intervalDays Int
+  easeAfter    Float
+  reviewedAt   DateTime  @default(now())
+  flashcard    Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([flashcardId, userId])
+}
+
+model Lecture {
+  id              String         @id @default(cuid())
+  userId          String
+  title           String
+  subjectId       String
+  topic           String?
+  youtubeVideoId  String?
+  storagePath     String?
+  durationSeconds Int?
+  difficulty      String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject         Subject        @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  watches         LectureWatch[]
+
+  @@index([userId, subjectId])
+}
+
+model LectureWatch {
+  id                  String  @id @default(cuid())
+  lectureId           String
+  userId              String
+  watchedPercent      Float   @default(0)
+  lastPositionSeconds Int     @default(0)
+  bookmarks           Json?
+  completed           Boolean @default(false)
+  lecture             Lecture @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([lectureId, userId])
+}
+
+model PyqPaper {
+  id               String   @id @default(cuid())
+  userId           String
+  year             Int
+  subjectId        String
+  topic            String?
+  difficulty       String?
+  questionPdfPath  String?
+  solutionPdfPath  String?
+  answerKeyPdfPath String?
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject          Subject  @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, year, subjectId])
+  @@index([userId, year])
+}
+
+model GateEeCutoff {
+  id        String  @id @default(cuid())
+  year      Int
+  category  String
+  marks     Float?
+  airApprox Int?
+  remarks   String?
+
+  @@unique([year, category])
+}
+
+/// Aggregated correctness / attempts per syllabus subject — analytics surface for dashboards & AI.
+model TopicPerformance {
+  id        String   @id @default(cuid())
+  userId    String
+  subjectId String
+  attempts  Int      @default(0)
+  correct   Int      @default(0)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subjectId])
+}
+
+/// Grouped quiz content (seeded drills, future imports).
+model TestPack {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  title           String
+  durationMinutes Int           @default(25)
+  questions       Question[]
+  attempts        TestAttempt[]
+}
+
+model Question {
+  id                 String    @id @default(cuid())
+  testPackId         String?
+  userId             String?
+  subjectId          String
+  topic              String
+  prompt             String    @db.Text
+  type               String    @default("mcq")
+  options            String[]
+  correctOptionIndex Int
+  difficulty         String?
+  year               Int?
+  source             String    @default("manual")
+  createdAt          DateTime  @default(now())
+  testPack           TestPack? @relation(fields: [testPackId], references: [id], onDelete: Cascade)
+  subject            Subject   @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  author             User?     @relation("QuestionAuthor", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([testPackId])
+  @@index([subjectId])
+}
+
+model TestAttempt {
+  id               String    @id @default(cuid())
+  userId           String
+  testPackId       String?
+  title            String?
+  score            Int
+  totalQuestions   Int
+  timeTakenSeconds Int
+  correctIndices   Json?
+  userAnswers      Json
+  topicBreakdown   Json
+  weakTopics       String[]  @default([])
+  accuracy         Float
+  createdAt        DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testPack         TestPack? @relation(fields: [testPackId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
+
+model TestPaperUpload {
+  id          String   @id @default(cuid())
+  userId      String
+  kind        String
+  storagePath String
+  fileName    String
+  yearHint    Int?
+  parsed      Boolean  @default(false)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AISuggestion {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  content     String   @db.Text
+  generatedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

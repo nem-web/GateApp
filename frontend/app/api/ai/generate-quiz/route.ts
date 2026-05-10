@@ -6,3 +6,4 @@ export async function POST(req: Request) {
     `Generate 5 GATE-style MCQs from this note. Format: Q, options A–D, correct letter, one-line explanation.\n${String(b.text ?? "")}`,
   );
 }
+

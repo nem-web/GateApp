@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { callAI } from "@/lib/ai";
-import { getEffectiveUserId } from "@/lib/session";
+import { getSessionUserId } from "@/lib/session";
 
 export async function runAICall(
   type: string,
   body: unknown,
   promptBuilder: (body: Record<string, unknown>) => string,
 ) {
-  const userId = await getEffectiveUserId();
+  const userId = await getSessionUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const prompt = promptBuilder(body as Record<string, unknown>);
   const result = await callAI(userId, type, prompt);
   if (!result.ok) {
