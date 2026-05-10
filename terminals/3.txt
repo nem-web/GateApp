@@ -1,0 +1,6 @@
+---
+pid: 20252
+cwd: |
+  C:\Users\katha
+---
+PS C:\Users\katha>

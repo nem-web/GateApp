@@ -1,0 +1,239 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #0F1117;
+  --foreground: #E5E7EB;
+  --card: #1A1D27;
+  --card-foreground: #E5E7EB;
+  --popover: #1A1D27;
+  --popover-foreground: #E5E7EB;
+  --primary: #6C63FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2A2D3E;
+  --secondary-foreground: #E5E7EB;
+  --muted: #1E2130;
+  --muted-foreground: #9CA3AF;
+  --accent: #6C63FF;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #6C63FF;
+  --radius: 0.75rem;
+
+  /* Subject colors */
+  --mathematics: #818CF8;
+  --general-aptitude: #34D399;
+  --engineering-maths: #60A5FA;
+  --core-subject: #F472B6;
+  --aptitude-verbal: #FBBF24;
+
+  /* Status colors */
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  /* Chart colors */
+  --chart-1: #6C63FF;
+  --chart-2: #818CF8;
+  --chart-3: #34D399;
+  --chart-4: #60A5FA;
+  --chart-5: #F472B6;
+
+  /* Sidebar */
+  --sidebar: #0F1117;
+  --sidebar-foreground: #E5E7EB;
+  --sidebar-primary: #6C63FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(108, 99, 255, 0.1);
+  --sidebar-accent-foreground: #E5E7EB;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #6C63FF;
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'Inter Fallback', sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Custom subject colors */
+  --color-mathematics: var(--mathematics);
+  --color-general-aptitude: var(--general-aptitude);
+  --color-engineering-maths: var(--engineering-maths);
+  --color-core-subject: var(--core-subject);
+  --color-aptitude-verbal: var(--aptitude-verbal);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+  background-color: #1E2130;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Flip card animation */
+.flip-card {
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  backface-visibility: hidden;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* TipTap editor styles */
+.tiptap {
+  outline: none;
+  min-height: 400px;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #6B7280;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap h1 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tiptap ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.tiptap code {
+  background-color: rgba(108, 99, 255, 0.2);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono);
+}
+
+/* AI thinking dots animation */
+@keyframes thinking-dots {
+  0%, 20% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.thinking-dots span {
+  animation: thinking-dots 1.4s infinite;
+}
+
+.thinking-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thinking-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}

@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String            @id @default(cuid())
+  name          String?
+  email         String            @unique
+  password      String?
+  gateDate      DateTime?
+  branch        String?
+  hoursPerDay   Int?
+  weakSubjects  String[]          @default([])
+  createdAt     DateTime          @default(now())
+  studyPlans    StudyPlan[]
+  tasks         Task[]
+  notes         Note[]
+  flashcards    Flashcard[]
+  lectures      LectureProgress[]
+  testResults   TestResult[]
+  aiSuggestions AISuggestion[]
+  tests         Test[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model StudyPlan {
+  id          String   @id @default(cuid())
+  userId      String
+  weekNumber  Int
+  subject     String
+  topic       String
+  plannedDate DateTime
+  completed   Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id         String   @id @default(cuid())
+  userId     String
+  title      String
+  priority   String
+  dueDate    DateTime?
+  subjectTag String?
+  completed  Boolean  @default(false)
+  repeat     String?
+  lectureRef String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Note {
+  id        String      @id @default(cuid())
+  userId    String
+  title     String
+  content   String      @db.Text
+  subject   String
+  topic     String?
+  tags      String[]    @default([])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards     Flashcard[]
+}
+
+model Flashcard {
+  id         String   @id @default(cuid())
+  userId     String
+  noteId     String?
+  front      String
+  back       String
+  nextReview DateTime
+  easeFactor Float    @default(2.5)
+  interval   Int      @default(1)
+  note       Note?    @relation(fields: [noteId], references: [id], onDelete: SetNull)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LectureProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  watched   Boolean  @default(false)
+  bookmarks String[] @default([])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TestResult {
+  id               String   @id @default(cuid())
+  userId           String
+  score            Int
+  totalQ           Int
+  timeTaken        Int
+  subjectBreakdown Json
+  date             DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AISuggestion {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  content     String   @db.Text
+  generatedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  subject       String
+  topic         String
+  type          String
+  options       String[]
+  correctAnswer String
+  difficulty    String
+  year          Int
+  createdAt     DateTime @default(now())
+}
+
+model Test {
+  id        String   @id @default(cuid())
+  userId    String
+  score     Int?
+  timeTaken Int?
+  date      DateTime @default(now())
+  questions Json
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Skeleton: PDF uploads for “create test”; parsing pipeline comes later.
+model TestPdfUpload {
+  id         String   @id @default(cuid())
+  userId     String
+  fileName   String
+  mimeType   String?
+  sizeBytes  Int?
+  status     String   @default("received")
+  createdAt  DateTime @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
