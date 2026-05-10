@@ -17,7 +17,6 @@ import {
   Award,
   Gamepad2,
   ClipboardCheck,
-  Settings,
   Sun,
   Moon,
   User,
@@ -43,11 +42,11 @@ const navItems: NavItem[] = [
   { name: 'Cutoffs', href: '/cutoffs', icon: Award },
   { name: 'Games', href: '/games', icon: Gamepad2 },
   { name: 'Test', href: '/test', icon: ClipboardCheck },
-  { name: 'Admin', href: '/admin', icon: Settings },
 ]
 
 export default function SidebarNav() {
   const pathname = usePathname()
+  if (pathname.startsWith('/admin')) return null
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)

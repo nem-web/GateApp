@@ -12,6 +12,9 @@ export default function CutoffsPage() {
   const [scoreInput, setScoreInput] = useState(50)
   const [advice, setAdvice] = useState<string | null>(null)
   const [loadingAdvice, setLoadingAdvice] = useState(false)
+  const [manualYear, setManualYear] = useState(new Date().getFullYear())
+  const [manualCategory, setManualCategory] = useState('GEN')
+  const [manualMarks, setManualMarks] = useState<number>(30)
 
   useEffect(() => {
     ;(async () => {
@@ -64,6 +67,25 @@ export default function CutoffsPage() {
     } finally {
       setLoadingAdvice(false)
     }
+  }
+
+  const addManualCutoff = async () => {
+    const res = await fetch('/api/cutoffs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        year: manualYear,
+        category: manualCategory,
+        marks: manualMarks,
+      }),
+    })
+    if (!res.ok) return
+    const refreshed = await fetch('/api/cutoffs', { cache: 'no-store' })
+    if (!refreshed.ok) return
+    const data = await refreshed.json()
+    setRows(Array.isArray(data.historical) ? data.historical : [])
+    setPredicted(Number(data.predictedGENQualifying2027 ?? 0))
+    setPsuBand(String(data.safeScores?.PSUCandidateBand ?? ''))
   }
 
   return (
@@ -128,6 +150,38 @@ export default function CutoffsPage() {
             {advice}
           </pre>
         )}
+      </div>
+
+      <div className="bg-card border border-border rounded-xl p-5 mt-6">
+        <h2 className="text-base font-semibold text-foreground mb-3">Add cutoff manually</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input
+            type="number"
+            value={manualYear}
+            onChange={(e) => setManualYear(Number(e.target.value))}
+            className="px-3 py-2 rounded border border-border bg-input text-sm"
+          />
+          <select
+            value={manualCategory}
+            onChange={(e) => setManualCategory(e.target.value)}
+            className="px-3 py-2 rounded border border-border bg-input text-sm"
+          >
+            {['GEN', 'OBC', 'SC', 'ST', 'EWS', 'PWD'].map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            value={manualMarks}
+            onChange={(e) => setManualMarks(Number(e.target.value))}
+            className="px-3 py-2 rounded border border-border bg-input text-sm"
+          />
+          <button onClick={addManualCutoff} className="px-4 py-2 rounded bg-primary text-primary-foreground text-sm">
+            Save cutoff
+          </button>
+        </div>
       </div>
     </div>
   )

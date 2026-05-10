@@ -7,16 +7,21 @@ export async function runAICall(
   body: unknown,
   promptBuilder: (body: Record<string, unknown>) => string,
 ) {
-  const userId = await getSessionUserId();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const userId = await getSessionUserId();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const prompt = promptBuilder(body as Record<string, unknown>);
-  const result = await callAI(userId, type, prompt);
-  if (!result.ok) {
-    return NextResponse.json(
-      { error: result.content, content: result.content },
-      { status: result.unavailable ? 503 : 500 },
-    );
+    const prompt = promptBuilder(body as Record<string, unknown>);
+    const result = await callAI(userId, type, prompt);
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: result.content, content: result.content },
+        { status: result.unavailable ? 503 : 500 },
+      );
+    }
+    return NextResponse.json({ content: result.content });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "AI call failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-  return NextResponse.json({ content: result.content });
 }

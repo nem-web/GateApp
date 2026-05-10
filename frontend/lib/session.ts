@@ -9,14 +9,14 @@ const SINGLE_USER_STREAM = "GATE-EE";
 let defaultUserPromise: Promise<string> | null = null;
 
 async function ensureSingleUserId(): Promise<string> {
-  const existing = await prisma.user.findUnique({
+  const user = await prisma.user.upsert({
     where: { email: SINGLE_USER_EMAIL },
-    select: { id: true },
-  });
-  if (existing?.id) return existing.id;
-
-  const created = await prisma.user.create({
-    data: {
+    update: {
+      name: SINGLE_USER_NAME,
+      streamLabel: SINGLE_USER_STREAM,
+      branch: "EE",
+    },
+    create: {
       email: SINGLE_USER_EMAIL,
       name: SINGLE_USER_NAME,
       branch: "EE",
@@ -25,7 +25,7 @@ async function ensureSingleUserId(): Promise<string> {
     },
     select: { id: true },
   });
-  return created.id;
+  return user.id;
 }
 
 /** Authenticated NextAuth user id only — no demo / implicit users. */

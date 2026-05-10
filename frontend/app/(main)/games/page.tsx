@@ -20,6 +20,8 @@ export default function GamesPage() {
   const [target, setTarget] = useState(memoryItems[0])
   const [hits, setHits] = useState(0)
   const [tries, setTries] = useState(0)
+  const [uploadedGameName, setUploadedGameName] = useState<string | null>(null)
+  const [uploadedHtml, setUploadedHtml] = useState<string | null>(null)
 
   const current = formulaQuiz[quizIdx]
   const accuracy = useMemo(() => (tries ? Math.round((hits / tries) * 100) : 0), [hits, tries])
@@ -50,6 +52,12 @@ export default function GamesPage() {
     setHits(0)
     setTries(0)
     setTarget(memoryItems[0])
+  }
+
+  const onUploadHtml = async (file: File) => {
+    const text = await file.text()
+    setUploadedGameName(file.name)
+    setUploadedHtml(text)
   }
 
   return (
@@ -90,6 +98,38 @@ export default function GamesPage() {
           </div>
           <p className="mt-3 text-sm text-foreground">Score: {hits}/{tries} ({accuracy}%)</p>
           <button onClick={restartMemory} className="mt-3 px-4 py-2 rounded bg-primary text-primary-foreground text-sm">Restart memory game</button>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-xl p-5 mt-6">
+        <h2 className="text-base font-semibold text-foreground">Run uploaded HTML game</h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          Upload a standalone HTML file. It runs inside a sandboxed screen.
+        </p>
+        <div className="mt-3 flex items-center gap-3">
+          <input
+            type="file"
+            accept=".html,text/html"
+            onChange={(e) => {
+              const f = e.target.files?.[0]
+              if (f) void onUploadHtml(f)
+            }}
+          />
+          {uploadedGameName && <span className="text-xs text-muted-foreground">{uploadedGameName}</span>}
+        </div>
+        <div className="mt-4 border border-border rounded-lg overflow-hidden bg-black/30">
+          {uploadedHtml ? (
+            <iframe
+              title="uploaded-html-game"
+              sandbox="allow-scripts allow-forms allow-modals allow-pointer-lock"
+              srcDoc={uploadedHtml}
+              className="w-full h-[520px] bg-white"
+            />
+          ) : (
+            <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">
+              Upload HTML to preview and play it here.
+            </div>
+          )}
         </div>
       </div>
     </div>
