@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { FileText, Eye } from 'lucide-react'
+import { FileText, Eye, KeyRound } from 'lucide-react'
+import { SUBJECT_COLORS } from '@/lib/gate-ee'
 
 interface PYQCardProps {
   year: number
@@ -10,15 +11,9 @@ interface PYQCardProps {
   topics: string[]
   onViewPDF: () => void
   onViewSolution: () => void
+  onViewKey?: () => void
+  hasAnswerKey?: boolean
   delay?: number
-}
-
-const subjectColors: Record<string, string> = {
-  'Computer Science': '#F472B6',
-  'Mathematics': '#818CF8',
-  'Engineering Maths': '#60A5FA',
-  'General Aptitude': '#34D399',
-  'Verbal Ability': '#FBBF24',
 }
 
 const difficultyColors = {
@@ -34,9 +29,11 @@ export default function PYQCard({
   topics,
   onViewPDF,
   onViewSolution,
+  onViewKey,
+  hasAnswerKey = false,
   delay = 0,
 }: PYQCardProps) {
-  const color = subjectColors[subject] || '#6C63FF'
+  const color = SUBJECT_COLORS[subject] || '#6C63FF'
 
   return (
     <motion.div
@@ -77,23 +74,31 @@ export default function PYQCard({
         ))}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className={`grid gap-2 ${hasAnswerKey ? 'grid-cols-3' : 'grid-cols-2'}`}>
         <button
           onClick={onViewPDF}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:brightness-110 transition-all"
+          className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:brightness-110 transition-all"
         >
           <FileText size={14} />
-          View PDF
+          Paper
         </button>
         <button
           onClick={onViewSolution}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-secondary transition-all"
+          className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-secondary transition-all"
         >
           <Eye size={14} />
           Solution
         </button>
+        {hasAnswerKey && onViewKey && (
+          <button
+            onClick={onViewKey}
+            className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-secondary transition-all"
+          >
+            <KeyRound size={14} />
+            Key
+          </button>
+        )}
       </div>
     </motion.div>
   )
 }
-

@@ -8,9 +8,17 @@ type ScorePoint = { date: string; score: number }
 
 export default function AIInsightCard({
   recentScores,
+  weakSubjects,
+  consistency,
+  flashcardsDue,
+  tasksOpen,
   pending = false,
 }: {
   recentScores: ScorePoint[]
+  weakSubjects: string[]
+  consistency?: number | null
+  flashcardsDue?: number | null
+  tasksOpen?: number | null
   pending?: boolean
 }) {
   const [insightText, setInsightText] = useState<string>('')
@@ -22,7 +30,13 @@ export default function AIInsightCard({
       const res = await fetch('/api/ai/dashboard-insight', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recentScores }),
+        body: JSON.stringify({
+          recentScores,
+          weakSubjects,
+          consistency: consistency ?? undefined,
+          flashcardsDue: flashcardsDue ?? undefined,
+          tasksOpen: tasksOpen ?? undefined,
+        }),
       })
       const data = await res.json()
       const text = typeof data.content === 'string' ? data.content : data.error

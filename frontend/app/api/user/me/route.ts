@@ -31,12 +31,12 @@ export async function GET() {
 
   return NextResponse.json({
     id: userId,
-    name: user.name,
+    name: user.name ?? "Nem",
     email: user.email ?? session?.user?.email ?? null,
     branch: user.branch ?? "EE",
     gateDate,
-    targetExam: user.streamLabel ?? "GATE - EE",
-    streamLabel: user.streamLabel ?? "GATE - EE",
+    targetExam: "GATE-EE",
+    streamLabel: "GATE-EE",
     hoursPerDay: user.hoursPerDay ?? 4,
     weakSubjects: user.weakSubjectLinks.map((l) => l.subject.title),
   });

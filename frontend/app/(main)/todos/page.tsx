@@ -11,15 +11,6 @@ interface Todo {
   completed: boolean
 }
 
-const fallbackTodos: Todo[] = [
-  { id: '1', task: 'Complete Graph Theory revision', priority: 'high', completed: false },
-  { id: '2', task: 'Solve 20 PYQ from 2023', priority: 'medium', completed: true },
-  { id: '3', task: 'Watch OS lecture on deadlocks', priority: 'low', completed: false },
-  { id: '4', task: 'Practice 50 MCQs on Data Structures', priority: 'high', completed: false },
-  { id: '5', task: 'Review Linear Algebra notes', priority: 'medium', completed: false },
-  { id: '6', task: 'Complete DBMS normalization worksheet', priority: 'medium', completed: true },
-]
-
 const priorityColors = {
   high: { bg: 'bg-danger/15', text: 'text-danger', dot: 'bg-danger' },
   medium: { bg: 'bg-warning/15', text: 'text-warning', dot: 'bg-warning' },
@@ -52,10 +43,10 @@ export default function TodosPage() {
       if (Array.isArray(data)) {
         setTodos(data.length ? data.map(mapApiTask) : [])
       } else {
-        setTodos(fallbackTodos)
+        setTodos([])
       }
     } catch {
-      setTodos(fallbackTodos)
+      setTodos([])
     } finally {
       setReady(true)
     }
@@ -127,15 +118,39 @@ export default function TodosPage() {
     setAiLoading(true)
     setAiSuggestion(null)
     try {
+      const [dashboardRes, timetableRes] = await Promise.all([
+        fetch('/api/dashboard', { cache: 'no-store' }),
+        fetch('/api/timetable'),
+      ])
+      const dashboard = dashboardRes.ok ? await dashboardRes.json() : null
+      const timetable = timetableRes.ok ? await timetableRes.json() : null
+      const weakSubjects = Array.isArray(dashboard?.weakTopicAnalysis)
+        ? dashboard.weakTopicAnalysis.map((w: { subject?: string }) => w.subject).filter(Boolean)
+        : Array.isArray(dashboard?.weakSubjects)
+          ? dashboard.weakSubjects
+          : []
+      const backlog = Array.isArray(timetable?.slots)
+        ? timetable.slots
+            .filter((s: { completed?: boolean }) => !s.completed)
+            .map((s: { subject?: string; topic?: string }) =>
+              [s.subject, s.topic].filter(Boolean).join(': '),
+            )
+        : []
       const res = await fetch('/api/ai/task-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weakTopics: ['Graph Theory', 'TOC', 'Computer Networks'] }),
+        body: JSON.stringify({
+          weakSubjects,
+          openTasks: todos.filter((t) => !t.completed).map((t) => t.task),
+          recentScores: dashboard?.recentScores ?? [],
+          streak: dashboard?.stats?.studyStreak ?? null,
+          backlog,
+        }),
       })
       const data = await res.json()
       setAiSuggestion(typeof data.content === 'string' ? data.content : data.error ?? null)
     } catch {
-      setAiSuggestion('AI unavailable. Set ANTHROPIC_API_KEY and try again.')
+      setAiSuggestion('AI unavailable. Check configured API keys and try again.')
     } finally {
       setAiLoading(false)
     }
@@ -322,4 +337,3 @@ export default function TodosPage() {
     </div>
   )
 }
-

@@ -11,8 +11,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'GATEPrep Pro - Your GATE Exam Companion',
-  description: 'A comprehensive study platform for GATE exam preparation with AI-powered insights, flashcards, PYQ papers, and personalized study plans.',
-  keywords: ['GATE', 'exam preparation', 'study', 'engineering', 'CS', 'GATE 2025'],
+  description: 'A comprehensive study platform for GATE EE preparation with AI-powered insights, flashcards, PYQ papers, and personalized study plans.',
+  keywords: ['GATE', 'GATE EE', 'exam preparation', 'electrical engineering', 'study', 'GATE 2027'],
 }
 
 export const viewport: Viewport = {
@@ -37,4 +37,3 @@ export default function RootLayout({
     </html>
   )
 }
-

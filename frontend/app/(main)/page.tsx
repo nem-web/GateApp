@@ -349,7 +349,14 @@ export default function DashboardPage() {
           )}
         </motion.section>
 
-        <AIInsightCard recentScores={recentScores} pending={loading} />
+      <AIInsightCard
+        recentScores={recentScores}
+        weakSubjects={weakSubjects}
+        consistency={stats.studyConsistencyPct ?? null}
+        flashcardsDue={stats.flashcardsDue ?? null}
+        tasksOpen={stats.tasksOpen ?? null}
+        pending={loading}
+      />
       </div>
 
       {/* Weak topic analysis */}

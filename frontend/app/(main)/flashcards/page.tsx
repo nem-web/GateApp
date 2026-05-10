@@ -21,32 +21,55 @@ export default function FlashcardsPage() {
   const [cards, setCards] = useState<ApiCard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [reviewedCount, setReviewedCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  const shuffle = useCallback(<T,>(arr: T[]) => {
+    const next = [...arr]
+    for (let i = next.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[next[i], next[j]] = [next[j], next[i]]
+    }
+    return next
+  }, [])
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        const res = await fetch('/api/flashcards')
-        if (!res.ok) return
-        const data = await res.json()
-        const raw = Array.isArray(data.cards) ? data.cards : []
+        const [cardRes, dashboardRes] = await Promise.all([
+          fetch('/api/flashcards?due=1'),
+          fetch('/api/dashboard', { cache: 'no-store' }),
+        ])
+        const fallbackRes = cardRes.ok ? null : await fetch('/api/flashcards')
+        const cardData = cardRes.ok ? await cardRes.json() : fallbackRes?.ok ? await fallbackRes.json() : null
+        const raw = Array.isArray(cardData?.cards) ? cardData.cards : []
+        const dashboard = dashboardRes.ok ? await dashboardRes.json() : null
+        const weakSubjects = Array.isArray(dashboard?.weakTopicAnalysis)
+          ? dashboard.weakTopicAnalysis.map((w: { subject?: string }) => w.subject).filter(Boolean)
+          : Array.isArray(dashboard?.weakSubjects)
+            ? dashboard.weakSubjects
+            : []
+        const weakSet = new Set(weakSubjects.map((s: string) => s.toLowerCase()))
+        const mapped = raw.map((c: Record<string, unknown>) => ({
+          id: String(c.id ?? ''),
+          front: String(c.front ?? ''),
+          back: String(c.back ?? ''),
+          subject: typeof c.subject === 'string' ? c.subject : 'GATE EE',
+        }))
+        const weakCards = mapped.filter((c) => weakSet.has(c.subject.toLowerCase()))
+        const otherCards = mapped.filter((c) => !weakSet.has(c.subject.toLowerCase()))
         if (cancelled) return
-        setCards(
-          raw.map((c: Record<string, unknown>) => ({
-            id: String(c.id ?? ''),
-            front: String(c.front ?? ''),
-            back: String(c.back ?? ''),
-            subject: typeof c.subject === 'string' ? c.subject : 'GATE EE',
-          })),
-        )
+        setCards([...shuffle(weakCards), ...shuffle(otherCards)])
       } catch {
         if (!cancelled) setCards([])
+      } finally {
+        if (!cancelled) setLoading(false)
       }
     })()
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [shuffle])
 
   useEffect(() => {
     setCurrentIndex(0)
@@ -126,7 +149,9 @@ export default function FlashcardsPage() {
             transition={{ duration: 0.15, ease: 'easeOut', delay: 0.1 }}
             className="flex justify-center"
           >
-            {currentCard ? (
+            {loading ? (
+              <p className="text-sm text-muted-foreground text-center">Loading flashcards…</p>
+            ) : currentCard ? (
               <FlipCard
                 front={currentCard.front}
                 back={currentCard.back}
@@ -136,7 +161,7 @@ export default function FlashcardsPage() {
               />
             ) : (
               <p className="text-sm text-muted-foreground text-center max-w-md">
-                No flashcards yet. Create some from the Notes workspace or add them via the API after signing in.
+                No flashcards due yet. Create some from the Notes workspace or add them via the API.
               </p>
             )}
           </motion.div>

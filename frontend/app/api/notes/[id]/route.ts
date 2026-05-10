@@ -17,10 +17,17 @@ function notePayload(note: {
   updatedAt: Date;
   createdAt: Date;
   subject?: { title: string };
+  notePdfs?: { id: string; fileName: string; storagePath: string; createdAt: Date }[];
 }) {
   return {
     ...note,
     subject: note.subject?.title,
+    pdfs: note.notePdfs?.map((p) => ({
+      id: p.id,
+      fileName: p.fileName,
+      storagePath: p.storagePath,
+      createdAt: p.createdAt,
+    })),
   };
 }
 
@@ -30,7 +37,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const note = await prisma.note.findFirst({
     where: { id, userId },
-    include: { subject: true },
+    include: { subject: true, notePdfs: { orderBy: { createdAt: "desc" } } },
   });
   if (!note) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(notePayload(note));
@@ -40,7 +47,10 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   const { id } = await ctx.params;
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const existing = await prisma.note.findFirst({ where: { id, userId }, include: { subject: true } });
+  const existing = await prisma.note.findFirst({
+    where: { id, userId },
+    include: { subject: true, notePdfs: { orderBy: { createdAt: "desc" } } },
+  });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const body = await req.json();
 
@@ -59,7 +69,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
       ...(body.tags !== undefined && { tags: Array.isArray(body.tags) ? body.tags.map(String) : [] }),
       ...(body.readingLastPage !== undefined && { readingLastPage: Number(body.readingLastPage) }),
     },
-    include: { subject: true },
+    include: { subject: true, notePdfs: { orderBy: { createdAt: "desc" } } },
   });
   return NextResponse.json(notePayload(note));
 }

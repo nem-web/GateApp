@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
+import { GATE_EXAM_DATE_ISO } from '@/lib/gate-ee'
 import { motion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -53,7 +54,7 @@ export default function SidebarNav() {
     name: string
     targetExam: string
     gateDate: string | null
-  }>({ name: '…', targetExam: 'GATE', gateDate: null })
+  }>({ name: 'Nem', targetExam: 'GATE-EE', gateDate: null })
 
   useEffect(() => {
     setMounted(true)
@@ -74,7 +75,7 @@ export default function SidebarNav() {
       .catch(() => {})
   }, [])
 
-  const gate = profile.gateDate ? new Date(profile.gateDate) : new Date('2025-02-01')
+  const gate = profile.gateDate ? new Date(profile.gateDate) : new Date(GATE_EXAM_DATE_ISO)
   const daysLeft = Math.max(
     0,
     Math.ceil((gate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
@@ -244,4 +245,3 @@ export default function SidebarNav() {
     </>
   )
 }
-

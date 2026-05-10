@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { RotateCcw, Edit2 } from 'lucide-react'
+import { SUBJECT_COLORS } from '@/lib/gate-ee'
 
 interface FlipCardProps {
   front: string
@@ -15,14 +16,7 @@ interface FlipCardProps {
 export default function FlipCard({ front, back, subject, onDifficulty, onSkip }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
 
-  const subjectColors: Record<string, string> = {
-    'Computer Science': '#F472B6',
-    'Mathematics': '#818CF8',
-    'Engineering Maths': '#60A5FA',
-    'General Aptitude': '#34D399',
-  }
-
-  const color = subjectColors[subject] || '#6C63FF'
+  const color = SUBJECT_COLORS[subject] || '#6C63FF'
 
   return (
     <div className="w-full max-w-[480px]">
@@ -116,4 +110,3 @@ export default function FlipCard({ front, back, subject, onDifficulty, onSkip }:
     </div>
   )
 }
-

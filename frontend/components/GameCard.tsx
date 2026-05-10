@@ -10,9 +10,18 @@ interface GameCardProps {
   color: string
   featured?: boolean
   delay?: number
+  onPlay?: () => void
 }
 
-export default function GameCard({ name, description, icon, color, featured = false, delay = 0 }: GameCardProps) {
+export default function GameCard({
+  name,
+  description,
+  icon,
+  color,
+  featured = false,
+  delay = 0,
+  onPlay,
+}: GameCardProps) {
   if (featured) {
     return (
       <motion.div
@@ -37,6 +46,8 @@ export default function GameCard({ name, description, icon, color, featured = fa
             </div>
             <p className="text-sm text-muted-foreground mb-4 max-w-md">{description}</p>
             <button
+              type="button"
+              onClick={onPlay}
               className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all"
               style={{
                 backgroundColor: color,
@@ -94,6 +105,8 @@ export default function GameCard({ name, description, icon, color, featured = fa
         </div>
       </div>
       <button
+        type="button"
+        onClick={onPlay}
         className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-secondary transition-all"
       >
         <Play size={14} />
@@ -102,4 +115,3 @@ export default function GameCard({ name, description, icon, color, featured = fa
     </motion.div>
   )
 }
-

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { GATE_EE_SUBJECTS } from "../lib/gate-ee";
+import { GATE_EE_SUBJECTS, GATE_EXAM_DATE_ISO } from "../lib/gate-ee";
 import { subjectSlugFromTitle } from "../lib/subject-resolve";
 
 /**
@@ -123,6 +123,25 @@ async function main() {
       },
     });
   }
+
+  await prisma.user.upsert({
+    where: { email: "nem@gateprep.local" },
+    update: {
+      name: "Nem",
+      branch: "EE",
+      streamLabel: "GATE-EE",
+      gateDate: new Date(GATE_EXAM_DATE_ISO),
+      hoursPerDay: 4,
+    },
+    create: {
+      email: "nem@gateprep.local",
+      name: "Nem",
+      branch: "EE",
+      streamLabel: "GATE-EE",
+      gateDate: new Date(GATE_EXAM_DATE_ISO),
+      hoursPerDay: 4,
+    },
+  });
 }
 
 main()
@@ -132,4 +151,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-
