@@ -59,6 +59,7 @@ model User {
   pdfReadingProgress PdfReadingProgress[]
   streakDays         StreakDay[]
   weakSubjectLinks   UserWeakSubject[]
+  htmlGames          HtmlGame[]
 }
 
 /// Join table for prioritized weak syllabus areas per user.
@@ -328,6 +329,18 @@ model GateEeCutoff {
   remarks   String?
 
   @@unique([year, category])
+}
+
+model HtmlGame {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  html      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, updatedAt])
 }
 
 /// Aggregated correctness / attempts per syllabus subject — analytics surface for dashboards & AI.

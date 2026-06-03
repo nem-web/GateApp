@@ -17,10 +17,16 @@ function notePayload(note: {
   updatedAt: Date;
   createdAt: Date;
   subject?: { title: string };
+  notePdfs?: { id: string; fileName: string; createdAt: Date }[];
 }) {
   return {
     ...note,
     subject: note.subject?.title,
+    pdfs: note.notePdfs?.map((pdf) => ({
+      id: pdf.id,
+      fileName: pdf.fileName,
+      createdAt: pdf.createdAt,
+    })) ?? [],
   };
 }
 
@@ -30,7 +36,13 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const note = await prisma.note.findFirst({
     where: { id, userId },
-    include: { subject: true },
+    include: {
+      subject: true,
+      notePdfs: {
+        orderBy: { createdAt: "desc" },
+        select: { id: true, fileName: true, createdAt: true },
+      },
+    },
   });
   if (!note) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(notePayload(note));

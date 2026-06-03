@@ -2,16 +2,15 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, X, Clock } from 'lucide-react'
-import { GATE_EE_SUBJECTS, GATE_EXAM_DATE_ISO, SUBJECT_COLORS } from '@/lib/gate-ee'
+import { Sparkles, X, Clock, Plus } from 'lucide-react'
+import { canonicalGateEESubject, GATE_EE_SUBJECTS, SUBJECT_COLORS } from '@/lib/gate-ee'
 
-const timeSlots = [
-  '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
-  '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
-  '18:00', '19:00', '20:00', '21:00', '22:00', '23:00',
-]
+const DEFAULT_GRID_START_MINUTES = 6 * 60
+const DEFAULT_GRID_END_MINUTES = 23 * 60
+const GRID_STEP_MINUTES = 30
 const subjectColorMap: Record<string, string> = SUBJECT_COLORS
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
+const COMBINED_FOLDERS = ['overall', 'all lectures', 'combined', 'complete course', 'full course', 'gate ee']
 
 type PlannerSlot = {
   id?: string
@@ -31,6 +30,78 @@ type SlotEditor =
       durationMinutes?: number
     }
   | null
+
+type LectureFolderOption = {
+  label: string
+  subject: string
+}
+
+function timeToMinutes(value: string | null | undefined, fallback: number): number {
+  if (!value) return fallback
+  const [hh, mm] = value.split(':').map(Number)
+  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return fallback
+  return Math.min(23 * 60 + 59, Math.max(0, hh * 60 + mm))
+}
+
+function minutesToTime(minutes: number): string {
+  const clamped = Math.min(23 * 60 + 59, Math.max(0, Math.round(minutes)))
+  const hh = Math.floor(clamped / 60)
+  const mm = clamped % 60
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
+}
+
+function buildDisplayTimeSlots(startTime: string, endTime: string, weeklySchedule: WeeklyRow[]): string[] {
+  const start = timeToMinutes(startTime, DEFAULT_GRID_START_MINUTES)
+  const end = timeToMinutes(endTime, DEFAULT_GRID_END_MINUTES)
+  const rangeStart = end > start ? Math.min(start, DEFAULT_GRID_START_MINUTES) : DEFAULT_GRID_START_MINUTES
+  const rangeEnd = end > start ? Math.max(end, DEFAULT_GRID_END_MINUTES) : DEFAULT_GRID_END_MINUTES
+  const first = Math.floor(rangeStart / GRID_STEP_MINUTES) * GRID_STEP_MINUTES
+  const last = Math.ceil(rangeEnd / GRID_STEP_MINUTES) * GRID_STEP_MINUTES
+  const times = new Set<string>()
+
+  for (let minutes = first; minutes <= last; minutes += GRID_STEP_MINUTES) {
+    times.add(minutesToTime(minutes))
+  }
+
+  for (const day of weeklySchedule) {
+    for (const slot of day.slots) {
+      times.add(slot.time)
+    }
+  }
+
+  return [...times].sort((a, b) => timeToMinutes(a, 0) - timeToMinutes(b, 0))
+}
+
+function inferSubjectFromLectureFolder(folder: string | null | undefined, fallbackSubject: string): string | null {
+  const raw = folder?.trim() ?? ''
+  const normalized = raw.toLowerCase()
+  if (!raw) return canonicalGateEESubject(fallbackSubject)
+  if (COMBINED_FOLDERS.some((word) => normalized === word || normalized.includes(word))) return null
+
+  const exact = canonicalGateEESubject(raw)
+  if ((GATE_EE_SUBJECTS as readonly string[]).includes(exact)) return exact
+
+  for (const subject of GATE_EE_SUBJECTS) {
+    if (normalized.includes(subject.toLowerCase())) return subject
+  }
+
+  const aliasPairs: Array<[string, string]> = [
+    ['math', 'Engineering Mathematics'],
+    ['network', 'Network Theory'],
+    ['signal', 'Signals and Systems'],
+    ['control', 'Control Systems'],
+    ['machine', 'Electrical Machines'],
+    ['power system', 'Power Systems'],
+    ['power electronic', 'Power Electronics'],
+    ['analog', 'Analog Electronics'],
+    ['digital', 'Digital Electronics'],
+    ['measurement', 'Measurements'],
+    ['emft', 'Electromagnetic Fields'],
+    ['electromagnetic', 'Electromagnetic Fields'],
+    ['aptitude', 'Aptitude'],
+  ]
+  return aliasPairs.find(([needle]) => normalized.includes(needle))?.[1] ?? canonicalGateEESubject(fallbackSubject)
+}
 
 function buildWeekly(
   rows: Array<{
@@ -61,10 +132,14 @@ export default function StudyPlanPage() {
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklyRow[]>(() =>
     DAY_LABELS.map((d) => ({ day: d, slots: [] })),
   )
-  const syllabusPreview = useMemo(() => [...GATE_EE_SUBJECTS].slice(0, 4), [])
   const [hoursPerDay, setHoursPerDay] = useState(6)
-  const [gateExamDate, setGateExamDate] = useState(GATE_EXAM_DATE_ISO.slice(0, 10))
+  const [startTime, setStartTime] = useState('07:00')
+  const [endTime, setEndTime] = useState('23:00')
+  const [holiday, setHoliday] = useState(false)
   const [studyStyle, setStudyStyle] = useState<'Light' | 'Balanced' | 'Heavy'>('Balanced')
+  const [folderFocusOptions, setFolderFocusOptions] = useState<LectureFolderOption[]>([])
+  const [focusSelect, setFocusSelect] = useState('')
+  const [selectedFocus, setSelectedFocus] = useState<string[]>([])
   const [aiPlanText, setAiPlanText] = useState<string | null>(null)
   const [aiPreviewSlots, setAiPreviewSlots] = useState<
     Array<{
@@ -81,6 +156,10 @@ export default function StudyPlanPage() {
   const [slotSubject, setSlotSubject] = useState('')
   const [slotTopic, setSlotTopic] = useState('')
   const [slotDuration, setSlotDuration] = useState(60)
+  const displayTimeSlots = useMemo(
+    () => buildDisplayTimeSlots(startTime, endTime, weeklySchedule),
+    [endTime, startTime, weeklySchedule],
+  )
 
   const refreshTimetable = async () => {
     const res = await fetch('/api/timetable', { cache: 'no-store' })
@@ -108,7 +187,58 @@ export default function StudyPlanPage() {
     }
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/lectures', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json()
+        const rows = Array.isArray(data.lectures) ? data.lectures : []
+        const options = new Map<string, LectureFolderOption>()
+        for (const row of rows) {
+          const topic = typeof row.topic === 'string' ? row.topic : ''
+          const fallback = typeof row.subject === 'string' ? row.subject : 'Engineering Mathematics'
+          const subject = inferSubjectFromLectureFolder(topic, fallback)
+          if (!subject) continue
+          const label = topic.trim() && topic.trim().toLowerCase() !== subject.toLowerCase() ? `${topic.trim()} (${subject})` : subject
+          options.set(subject, { label, subject })
+        }
+        const next = [...options.values()].sort((a, b) => a.subject.localeCompare(b.subject))
+        if (!cancelled) {
+          setFolderFocusOptions(next)
+          setFocusSelect(next[0]?.subject ?? '')
+        }
+      } catch {
+        if (!cancelled) setFolderFocusOptions([])
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const addFocusSubject = () => {
+    if (!focusSelect) return
+    setSelectedFocus((current) => (current.includes(focusSelect) ? current : [...current, focusSelect]))
+  }
+
+  const focusOptions = useMemo(() => {
+    const options = new Map<string, LectureFolderOption>()
+    for (const subjectName of GATE_EE_SUBJECTS) {
+      options.set(subjectName, { subject: subjectName, label: subjectName })
+    }
+    for (const option of folderFocusOptions) {
+      options.set(option.subject, option)
+    }
+    return [...options.values()].sort((a, b) => a.subject.localeCompare(b.subject))
+  }, [folderFocusOptions])
+
   const generateAiPlan = async () => {
+    if (endTime <= startTime) {
+      setAiPlanText('End time must be later than start time.')
+      return
+    }
     setAiLoading(true)
     setAiPlanText(null)
     setAiPreviewSlots([])
@@ -117,9 +247,12 @@ export default function StudyPlanPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          gateDate: gateExamDate,
           hoursPerDay,
-          weak: GATE_EE_SUBJECTS.slice(6, 9),
+          startTime,
+          endTime,
+          holiday,
+          focusSubjects: selectedFocus,
+          weak: selectedFocus.length ? selectedFocus : GATE_EE_SUBJECTS.slice(6, 9),
           style: studyStyle,
         }),
       })
@@ -138,6 +271,10 @@ export default function StudyPlanPage() {
   }
 
   const rescheduleWithAi = async () => {
+    if (endTime <= startTime) {
+      setAiPlanText('End time must be later than start time.')
+      return
+    }
     setAiLoading(true)
     try {
       const missed = weeklySchedule.flatMap((d) =>
@@ -146,12 +283,26 @@ export default function StudyPlanPage() {
       const res = await fetch('/api/ai/reschedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ missed }),
+        body: JSON.stringify({
+          missed,
+          hoursPerDay,
+          startTime,
+          endTime,
+          holiday,
+          focusSubjects: selectedFocus,
+          selectedSubjects: selectedFocus,
+          fullDayFree: holiday,
+          studyHoursPerDay: hoursPerDay,
+          style: studyStyle,
+        }),
       })
       const data = await res.json()
       if (Array.isArray(data.previewSlots)) {
         setAiPreviewSlots(data.previewSlots)
-        setAiPlanText(`Generated ${data.previewSlots.length} rescheduled slots. Review and apply.`)
+        const focusLabel = selectedFocus.length ? selectedFocus.join(', ') : 'balanced GATE EE subjects'
+        setAiPlanText(
+          `Generated ${data.previewSlots.length} rescheduled slots using ${hoursPerDay}h/day, ${startTime}-${endTime}, ${holiday ? 'full-day-free spacing' : 'normal spacing'}, and focus: ${focusLabel}. Review and apply.`,
+        )
       } else {
         setAiPlanText(typeof data.error === 'string' ? data.error : 'Unexpected AI response.')
       }
@@ -249,16 +400,11 @@ export default function StudyPlanPage() {
           <span className="text-sm font-medium text-primary">AI Plan Generator</span>
         </div>
 
+        <p className="mb-4 rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+          GATE exam date is fixed: <span className="font-medium text-foreground">5 February 2027</span>
+        </p>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-          <div>
-            <label className="block text-xs text-muted-foreground mb-2">GATE Exam Date</label>
-            <input
-              type="date"
-              value={gateExamDate}
-              onChange={(e) => setGateExamDate(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-            />
-          </div>
           <div>
             <label className="block text-xs text-muted-foreground mb-2">
               Hours per day: <span className="text-foreground font-medium">{hoursPerDay}h</span>
@@ -273,21 +419,74 @@ export default function StudyPlanPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-muted-foreground mb-2">Syllabus focus</label>
-            <div className="flex flex-wrap gap-1.5">
-              {syllabusPreview.map((subjectName) => {
-                const fg = SUBJECT_COLORS[subjectName] ?? '#CBD5F5'
-                return (
-                  <span
-                    key={subjectName}
-                    className="text-[11px] px-2 py-1 rounded cursor-default transition-all border border-border"
-                    style={{ color: fg, backgroundColor: `${fg}1A` }}
-                  >
-                    {subjectName.split(' ')[0]}
-                  </span>
-                )
-              })}
+            <label className="block text-xs text-muted-foreground mb-2">Study window</label>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              />
             </div>
+          </div>
+          <label className="flex items-center gap-2 rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={holiday}
+              onChange={(e) => setHoliday(e.target.checked)}
+              className="accent-primary"
+            />
+            Holiday / full day free
+          </label>
+          <div>
+              <label className="block text-xs text-muted-foreground mb-2">Selected subjects</label>
+              <div className="flex gap-2">
+                <select
+                  value={focusSelect}
+                onChange={(e) => setFocusSelect(e.target.value)}
+                className="min-w-0 flex-1 px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                >
+                <option value="">Select subject or lecture folder</option>
+                {focusOptions.map((option) => (
+                  <option key={option.subject} value={option.subject}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={addFocusSubject}
+                disabled={!focusSelect}
+                className="inline-flex items-center justify-center rounded-lg border border-border px-3 text-sm text-foreground hover:bg-secondary disabled:opacity-50"
+                title="Add focus subject"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+            {selectedFocus.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {selectedFocus.map((subjectName) => {
+                  const fg = SUBJECT_COLORS[subjectName] ?? '#CBD5F5'
+                  return (
+                    <button
+                      type="button"
+                      key={subjectName}
+                      onClick={() => setSelectedFocus((current) => current.filter((name) => name !== subjectName))}
+                      className="rounded border border-border px-2 py-1 text-[11px]"
+                      style={{ color: fg, backgroundColor: `${fg}1A` }}
+                    >
+                      {subjectName} x
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-xs text-muted-foreground mb-2">Study Style</label>
@@ -375,7 +574,7 @@ export default function StudyPlanPage() {
             </div>
 
             <div className="max-h-[500px] overflow-y-auto">
-              {timeSlots.map((time) => (
+              {displayTimeSlots.map((time) => (
                 <div key={time} className="grid grid-cols-8 border-b border-border/50">
                   <div className="p-2 text-xs text-muted-foreground text-right pr-3">{time}</div>
                   {weeklySchedule.map((day) => {

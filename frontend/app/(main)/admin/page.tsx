@@ -6,7 +6,7 @@ import { GATE_EE_SUBJECTS } from '@/lib/gate-ee'
 export default function AdminPage() {
   const [counts, setCounts] = useState<Record<string, number>>({})
   const [lectureTitle, setLectureTitle] = useState('')
-  const [lectureSubject, setLectureSubject] = useState(GATE_EE_SUBJECTS[0])
+  const [lectureSubject, setLectureSubject] = useState<string>(GATE_EE_SUBJECTS[0])
 
   useEffect(() => {
     ;(async () => {

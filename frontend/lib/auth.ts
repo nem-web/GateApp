@@ -31,7 +31,11 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 365 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+  },
   providers,
   callbacks: {
     async jwt({ token, user }) {

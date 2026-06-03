@@ -3,16 +3,21 @@ import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { GATE_EE_SAMPLE_PACK_SLUG } from "@/lib/test-packs";
 
-export async function GET() {
+export async function GET(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    const url = new URL(req.url);
+    const requestedSlug = url.searchParams.get("packSlug")?.trim();
+    const packSlug = requestedSlug || GATE_EE_SAMPLE_PACK_SLUG;
+
     const pack = await prisma.testPack.findUnique({
-      where: { slug: GATE_EE_SAMPLE_PACK_SLUG },
+      where: { slug: packSlug },
       include: {
         questions: {
-          orderBy: { id: "asc" },
+          where: requestedSlug ? { userId } : undefined,
+          orderBy: requestedSlug ? [{ createdAt: "asc" }, { id: "asc" }] : { id: "asc" },
           include: { subject: true },
         },
       },
@@ -21,7 +26,9 @@ export async function GET() {
     if (!pack || pack.questions.length === 0) {
       return NextResponse.json(
         {
-          error: "Sample GATE EE drill is unavailable. Seed the catalog with `npx prisma db seed`.",
+          error: requestedSlug
+            ? "Saved test is unavailable or has no questions."
+            : "Sample GATE EE drill is unavailable. Seed the catalog with `npx prisma db seed`.",
         },
         { status: 503 },
       );
@@ -31,6 +38,7 @@ export async function GET() {
       slug: pack.slug,
       title: pack.title,
       durationMinutes: pack.durationMinutes,
+      ready: pack.questions.every((q) => q.source !== "pdf_upload_pending_key"),
       questions: pack.questions.map((q) => ({
         id: q.id,
         subject: q.subject.title,

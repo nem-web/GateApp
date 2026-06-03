@@ -1,4 +1,5 @@
 import { runAICall } from "../_shared";
+import { GATE_EE_WEIGHTAGE_PROMPT } from "@/lib/gate-ee";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -8,6 +9,7 @@ export async function POST(req: Request) {
       "Suggest exactly 5 numbered, actionable study tasks for ONE student.",
       "Every task MUST relate to GATE EE syllabus only (machines, power systems, control, measurements, etc.).",
       "Never suggest generic CS/software topics.",
+      `Use this GATE EE 2017-2025 subject weightage when ranking tasks: ${GATE_EE_WEIGHTAGE_PROMPT}`,
       "",
       `Weak subjects: ${JSON.stringify(b.weakSubjects ?? [])}`,
       `Open incomplete tasks: ${JSON.stringify(b.openTasks ?? [])}`,

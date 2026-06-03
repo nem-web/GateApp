@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
-import { resolveSubject } from "@/lib/subject-resolve";
+import { subjectSlugFromTitle } from "@/lib/subject-resolve";
 
 type Incoming = {
   dayOfWeek: number;
@@ -22,6 +22,36 @@ export async function POST(req: Request) {
   }
 
   const slotsSnapshot = rows as unknown as Prisma.InputJsonValue;
+  const subjects = await prisma.subject.findMany({ orderBy: { sortOrder: "asc" } });
+  const fallbackSubject = subjects[0];
+  if (!fallbackSubject) {
+    return NextResponse.json(
+      { error: "Subjects are not seeded. Run `npm run db:seed` in frontend." },
+      { status: 500 },
+    );
+  }
+
+  const subjectsByTitle = new Map(subjects.map((s) => [s.title.toLowerCase(), s]));
+  const subjectsBySlug = new Map(subjects.map((s) => [s.slug, s]));
+  const normalizedRows = rows.map((r) => {
+    const rawSubject = String(r.subject ?? "").trim();
+    const subject =
+      subjectsByTitle.get(rawSubject.toLowerCase()) ??
+      subjectsBySlug.get(subjectSlugFromTitle(rawSubject)) ??
+      subjects.find((s) => s.title.toLowerCase().includes(rawSubject.toLowerCase())) ??
+      fallbackSubject;
+
+    return {
+      userId,
+      dayOfWeek: Math.min(6, Math.max(0, Number(r.dayOfWeek))),
+      startTime: String(r.startTime ?? "09:00").slice(0, 5),
+      durationMinutes: Math.min(240, Math.max(15, Number(r.durationMinutes ?? 60))),
+      subjectId: subject.id,
+      topic: r.topic ? String(r.topic) : null,
+      completed: false,
+      source: String(body.slotSource ?? "ai_applied"),
+    };
+  });
 
   await prisma.$transaction(async (tx) => {
     const plan = await tx.studyPlan.create({
@@ -35,25 +65,12 @@ export async function POST(req: Request) {
     });
 
     await tx.timetableSlot.deleteMany({ where: { userId } });
-
-    await Promise.all(
-      rows.map(async (r) => {
-        const subject = await resolveSubject(tx, String(r.subject ?? ""));
-        return tx.timetableSlot.create({
-          data: {
-            userId,
-            studyPlanId: plan.id,
-            dayOfWeek: Math.min(6, Math.max(0, Number(r.dayOfWeek))),
-            startTime: String(r.startTime ?? "09:00"),
-            durationMinutes: Math.min(240, Math.max(15, Number(r.durationMinutes ?? 60))),
-            subjectId: subject.id,
-            topic: r.topic ? String(r.topic) : null,
-            completed: false,
-            source: String(body.slotSource ?? "ai_applied"),
-          },
-        });
-      }),
-    );
+    await tx.timetableSlot.createMany({
+      data: normalizedRows.map((row) => ({
+        ...row,
+        studyPlanId: plan.id,
+      })),
+    });
   });
 
   const slots = await prisma.timetableSlot.findMany({

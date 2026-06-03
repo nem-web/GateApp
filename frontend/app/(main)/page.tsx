@@ -52,7 +52,18 @@ type DashboardPayload = {
     studyConsistencyPct?: number
     mockTestsTaken?: number
   }
-  subjectProgress: { subject: string; subjectId?: string; progress: number; color: string }[]
+  subjectProgress: {
+    subject: string
+    subjectId?: string
+    progress: number
+    color: string
+    lectureDone?: number
+    lectureTotal?: number
+    averageWatchPercent?: number
+    testAccuracy?: number | null
+    weightageAverage?: number | null
+    weightageLatest?: number | null
+  }[]
   recentScores: { date: string; score: number }[]
   weakSubjects: string[]
   weakTopicAnalysis?: WeakTopicInsight[]
@@ -191,13 +202,13 @@ export default function DashboardPage() {
   const weakSubjects = data?.weakSubjects ?? []
 
   const examLabel = stats.gateExamDate
-    ? new Date(stats.gateExamDate + 'T12:00:00').toLocaleDateString(undefined, {
+    ? new Date(stats.gateExamDate + 'T12:00:00').toLocaleDateString('en-IN', {
         weekday: 'short',
         month: 'short',
         day: 'numeric',
         year: 'numeric',
       })
-    : new Date(GATE_EXAM_DATE_ISO).toLocaleDateString(undefined, {
+    : new Date(GATE_EXAM_DATE_ISO).toLocaleDateString('en-IN', {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
@@ -311,7 +322,7 @@ export default function DashboardPage() {
         >
           <div className="mb-5 flex items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-foreground">GATE EE subject progress</h2>
-            <span className="text-xs text-muted-foreground">From tests + timetable</span>
+            <span className="text-xs text-muted-foreground">From lectures + tests</span>
           </div>
           {loading ? (
             <div className="space-y-4">
@@ -327,6 +338,12 @@ export default function DashboardPage() {
                   subject={item.subject}
                   progress={item.progress}
                   color={item.color}
+                  lectureDone={item.lectureDone}
+                  lectureTotal={item.lectureTotal}
+                  averageWatchPercent={item.averageWatchPercent}
+                  testAccuracy={item.testAccuracy}
+                  weightageAverage={item.weightageAverage}
+                  weightageLatest={item.weightageLatest}
                   delay={0.05 * index}
                 />
               ))}
@@ -334,11 +351,10 @@ export default function DashboardPage() {
           ) : (
             <div className="flex flex-col items-center rounded-xl border border-dashed border-border/80 bg-muted/15 py-10 text-center">
               <Layers className="mb-3 h-8 w-8 text-muted-foreground/60" />
-              <p className="text-sm font-medium text-foreground">Subjects not seeded</p>
+              <p className="text-sm font-medium text-foreground">No lecture subjects yet</p>
               <p className="mt-1 max-w-md text-xs text-muted-foreground">
-                Run{' '}
-                <code className="rounded bg-muted px-1.5 py-0.5 text-[11px]">npx prisma db seed</code> to insert the
-                GATE EE catalog, then revisit.
+                Add or import lectures from the Lectures page. This panel will show only subjects that actually have
+                lectures.
               </p>
             </div>
           )}

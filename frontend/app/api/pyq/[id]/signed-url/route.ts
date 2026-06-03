@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
+import { isLocalStoragePath } from "@/lib/local-upload-storage";
 import { getSignedUrl } from "@/lib/supabase-admin";
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -21,6 +22,10 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
         : paper.questionPdfPath;
 
   if (!path) return NextResponse.json({ error: "PDF not uploaded for this slot" }, { status: 404 });
+
+  if (isLocalStoragePath(path)) {
+    return NextResponse.json({ url: new URL(`/api/pyq/${paper.id}/file?which=${which}`, req.url).toString() });
+  }
 
   try {
     const url = await getSignedUrl("pyq", path, 3600);

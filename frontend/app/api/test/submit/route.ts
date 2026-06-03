@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       where: { slug: packSlug },
       include: {
         questions: {
-          orderBy: { id: "asc" },
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
           include: { subject: true },
         },
       },
@@ -27,6 +27,17 @@ export async function POST(req: Request) {
 
     if (!pack || pack.questions.length === 0) {
       return NextResponse.json({ error: "Test pack unavailable" }, { status: 404 });
+    }
+
+    if (pack.slug !== GATE_EE_SAMPLE_PACK_SLUG && !pack.questions.some((q) => q.userId === userId)) {
+      return NextResponse.json({ error: "Test pack unavailable" }, { status: 404 });
+    }
+
+    if (pack.questions.some((q) => q.source === "pdf_upload_pending_key")) {
+      return NextResponse.json(
+        { error: "Upload and bind the answer key before taking this test." },
+        { status: 400 },
+      );
     }
 
     const answersRaw = Array.isArray(body.answers) ? body.answers.map(Number) : [];

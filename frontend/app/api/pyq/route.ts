@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
-import { uploadBuffer } from "@/lib/supabase-admin";
+import { toLocalStoragePath, writeLocalUpload } from "@/lib/local-upload-storage";
+import { getSupabaseAdmin, uploadBuffer } from "@/lib/supabase-admin";
 import { resolveSubject } from "@/lib/subject-resolve";
 
 export async function GET() {
@@ -38,8 +39,7 @@ export async function POST(req: Request) {
 
   const kind = String(form.get("kind") ?? "question");
   const year = Number(form.get("year") ?? new Date().getFullYear());
-  const subjectRow = await resolveSubject(prisma, form.get("subject") ? String(form.get("subject")) : null);
-  const topic = form.get("topic") ? String(form.get("topic")) : null;
+  const subjectRow = await resolveSubject(prisma, "Engineering Mathematics");
   const difficulty = form.get("difficulty") ? String(form.get("difficulty")) : null;
   const file = form.get("file");
 
@@ -49,17 +49,28 @@ export async function POST(req: Request) {
 
   const buf = Buffer.from(await file.arrayBuffer());
   const name = ((file as File).name || "paper.pdf").replace(/[^\w.\-]+/g, "_");
-  const path = `${userId}/pyq/${year}_${kind}_${Date.now()}_${name}`;
+  const relativePath = `${userId}/pyq/${year}_${kind}_${Date.now()}_${name}`;
+  let storagePath = relativePath;
+  let storageProvider: "supabase" | "local" = "supabase";
 
-  try {
-    await uploadBuffer({ bucket: "pyq", path, body: buf, contentType: "application/pdf" });
-  } catch {
-    return NextResponse.json(
-      {
-        error: "Upload failed. Ensure Supabase bucket `pyq` exists and credentials are set.",
-      },
-      { status: 503 },
-    );
+  if (getSupabaseAdmin()) {
+    try {
+      await uploadBuffer({ bucket: "pyq", path: relativePath, body: buf, contentType: "application/pdf" });
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error:
+            error instanceof Error
+              ? `Supabase Storage upload failed: ${error.message}`
+              : "Supabase Storage upload failed.",
+        },
+        { status: 503 },
+      );
+    }
+  } else {
+    await writeLocalUpload(relativePath, buf);
+    storagePath = toLocalStoragePath(relativePath);
+    storageProvider = "local";
   }
 
   const existing = await prisma.pyqPaper.findUnique({
@@ -71,10 +82,10 @@ export async function POST(req: Request) {
     paper = await prisma.pyqPaper.update({
       where: { id: existing.id },
       data: {
-        ...(kind === "question" && { questionPdfPath: path }),
-        ...(kind === "solution" && { solutionPdfPath: path }),
-        ...(kind === "key" && { answerKeyPdfPath: path }),
-        ...(topic !== null && { topic }),
+        ...(kind === "question" && { questionPdfPath: storagePath }),
+        ...(kind === "solution" && { solutionPdfPath: storagePath }),
+        ...(kind === "key" && { answerKeyPdfPath: storagePath }),
+        topic: null,
         ...(difficulty !== null && { difficulty }),
       },
       include: { subject: true },
@@ -85,11 +96,11 @@ export async function POST(req: Request) {
         userId,
         year,
         subjectId: subjectRow.id,
-        topic,
+        topic: null,
         difficulty,
-        questionPdfPath: kind === "question" ? path : null,
-        solutionPdfPath: kind === "solution" ? path : null,
-        answerKeyPdfPath: kind === "key" ? path : null,
+        questionPdfPath: kind === "question" ? storagePath : null,
+        solutionPdfPath: kind === "solution" ? storagePath : null,
+        answerKeyPdfPath: kind === "key" ? storagePath : null,
       },
       include: { subject: true },
     });
@@ -97,6 +108,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     ok: true,
+    storageProvider,
     paper: {
       ...paper,
       subject: paper.subject.title,

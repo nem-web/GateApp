@@ -31,6 +31,7 @@ export async function GET() {
 
   return NextResponse.json({
     id: userId,
+    isAuthenticated: Boolean(session?.user?.id),
     name: user.name,
     email: user.email ?? session?.user?.email ?? null,
     branch: user.branch ?? "EE",

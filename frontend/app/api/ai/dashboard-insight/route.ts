@@ -1,4 +1,5 @@
 import { runAICall } from "../_shared";
+import { GATE_EE_WEIGHTAGE_PROMPT } from "@/lib/gate-ee";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -6,6 +7,7 @@ export async function POST(req: Request) {
     [
       "You mentor GATE Electrical Engineering candidates.",
       "Give ONE short paragraph (3 sentences max) with a sharp insight: what to fix this week and why.",
+      `GATE EE 2017-2025 subject weightage: ${GATE_EE_WEIGHTAGE_PROMPT}`,
       `Weak EE subjects: ${JSON.stringify(b.weakSubjects ?? [])}`,
       `Recent mock trend: ${JSON.stringify(b.recentScores ?? [])}`,
       `Study consistency last 30d (% days active): ${b.consistency ?? "n/a"}`,

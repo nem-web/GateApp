@@ -12,6 +12,19 @@ const GROQ_MODEL = process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile";
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.0-flash";
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL ?? "claude-3-5-sonnet-latest";
 
+function getGeminiKey() {
+  if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY;
+
+  // Backward compatibility for earlier local env files that put a Google key here.
+  const legacyKey = process.env.ANTHROPIC_API_KEY;
+  return legacyKey?.startsWith("AIza") ? legacyKey : undefined;
+}
+
+function getAnthropicKey() {
+  const key = process.env.ANTHROPIC_API_KEY;
+  return key?.startsWith("sk-ant") ? key : undefined;
+}
+
 async function callGroq(prompt: string): Promise<string | null> {
   const key = process.env.GROQ_API_KEY;
   if (!key) return null;
@@ -41,7 +54,7 @@ async function callGroq(prompt: string): Promise<string | null> {
 }
 
 async function callGemini(prompt: string): Promise<string | null> {
-  const key = process.env.GEMINI_API_KEY;
+  const key = getGeminiKey();
   if (!key) return null;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`;
   try {
@@ -64,7 +77,7 @@ async function callGemini(prompt: string): Promise<string | null> {
 }
 
 async function callAnthropic(prompt: string): Promise<string | null> {
-  const key = process.env.ANTHROPIC_API_KEY;
+  const key = getAnthropicKey();
   if (!key) return null;
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -115,4 +128,3 @@ export async function callAI(userId: string | null, type: string, prompt: string
 
   return { ok: true as const, content };
 }
-

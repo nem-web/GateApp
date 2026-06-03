@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { motion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
@@ -17,9 +18,12 @@ import {
   Award,
   Gamepad2,
   ClipboardCheck,
+  Table2,
   Sun,
   Moon,
   User,
+  LogIn,
+  LogOut,
   Menu,
   X,
 } from 'lucide-react'
@@ -42,12 +46,13 @@ const navItems: NavItem[] = [
   { name: 'Cutoffs', href: '/cutoffs', icon: Award },
   { name: 'Games', href: '/games', icon: Gamepad2 },
   { name: 'Test', href: '/test', icon: ClipboardCheck },
+  { name: 'Other', href: '/other', icon: Table2 },
 ]
 
 export default function SidebarNav() {
   const pathname = usePathname()
-  if (pathname.startsWith('/admin')) return null
   const { setTheme, resolvedTheme } = useTheme()
+  const { status } = useSession()
   const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [profile, setProfile] = useState<{
@@ -61,6 +66,17 @@ export default function SidebarNav() {
   }, [])
 
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      setProfile({
+        name: 'Guest',
+        targetExam: 'View-only',
+        gateDate: '2027-02-05T00:00:00.000Z',
+      })
+      return
+    }
+
+    if (status !== 'authenticated') return
+
     fetch('/api/user/me')
       .then((r) => r.json())
       .then((data) => {
@@ -73,7 +89,9 @@ export default function SidebarNav() {
         }
       })
       .catch(() => {})
-  }, [])
+  }, [status])
+
+  if (pathname.startsWith('/admin')) return null
 
   const gate = profile.gateDate ? new Date(profile.gateDate) : new Date('2027-02-05T00:00:00.000Z')
   const daysLeft = Math.max(
@@ -219,6 +237,34 @@ export default function SidebarNav() {
               <p className="text-xs text-muted-foreground truncate">{profile.targetExam}</p>
             </div>
           </div>
+
+          {!mounted || status === 'loading' ? (
+            <button
+              type="button"
+              disabled
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground transition-all disabled:opacity-50"
+            >
+              <User size={18} />
+              <span className="text-sm font-medium">Account</span>
+            </button>
+          ) : status === 'authenticated' ? (
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+            >
+              <LogOut size={18} />
+              <span className="text-sm font-medium">Sign out</span>
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+            >
+              <LogIn size={18} />
+              <span className="text-sm font-medium">Sign in to edit</span>
+            </Link>
+          )}
         </div>
       </aside>
 
@@ -245,4 +291,3 @@ export default function SidebarNav() {
     </>
   )
 }
-

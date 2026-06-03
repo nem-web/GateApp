@@ -8,7 +8,13 @@ import {
 } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
-import { GATE_EXAM_DATE_ISO, SUBJECT_COLORS } from "@/lib/gate-ee";
+import {
+  canonicalGateEESubject,
+  GATE_EE_SUBJECTS,
+  GATE_EE_WEIGHTAGE_BY_SUBJECT,
+  GATE_EXAM_DATE_ISO,
+  SUBJECT_COLORS,
+} from "@/lib/gate-ee";
 import {
   collectActiveDates,
   consecutiveStreakFromToday,
@@ -23,6 +29,60 @@ type TopicBreakdown = Record<string, { correct: number; total: number }>;
 
 function scoreBreakdownEntry(v: { correct: number; total: number }): number {
   return v.total > 0 ? (100 * v.correct) / v.total : 100;
+}
+
+function inferLectureFolderSubject(folder: string | null | undefined, fallbackSubject: string): string | null {
+  const raw = folder?.trim() ?? "";
+  const normalized = raw.toLowerCase();
+  if (!raw) {
+    return canonicalGateEESubject(fallbackSubject);
+  }
+
+  if (
+    ["overall", "all lectures", "complete course", "full course", "gate ee"].includes(normalized) ||
+    ["overall", "combined", "mixed", "complete playlist", "complete gate ee"].some((word) =>
+      normalized.includes(word),
+    )
+  ) {
+    return null;
+  }
+
+  const exact = canonicalGateEESubject(raw);
+  if ((GATE_EE_SUBJECTS as readonly string[]).includes(exact)) return exact;
+
+  for (const subject of GATE_EE_SUBJECTS) {
+    if (normalized.includes(subject.toLowerCase())) return subject;
+  }
+
+  const aliasPairs: Array<[string, string]> = [
+    ["math", "Engineering Mathematics"],
+    ["network", "Network Theory"],
+    ["signal", "Signals and Systems"],
+    ["control", "Control Systems"],
+    ["machine", "Electrical Machines"],
+    ["power system", "Power Systems"],
+    ["power electronic", "Power Electronics"],
+    ["analog", "Analog Electronics"],
+    ["digital", "Digital Electronics"],
+    ["measurement", "Measurements"],
+    ["emft", "Electromagnetic Fields"],
+    ["electromagnetic", "Electromagnetic Fields"],
+    ["aptitude", "Aptitude"],
+  ];
+  for (const [needle, subject] of aliasPairs) {
+    if (normalized.includes(needle)) return subject;
+  }
+
+  return canonicalGateEESubject(fallbackSubject);
+}
+
+async function readDashboardValue<T>(label: string, promise: Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await promise;
+  } catch (error) {
+    console.error(`Dashboard query failed: ${label}`, error);
+    return fallback;
+  }
 }
 
 /** Merge weak signals from tests, open tasks, and difficult flashcard reviews (GATE EE subjects only). */
@@ -135,7 +195,10 @@ export async function GET() {
       orderBy: { sortOrder: "asc" },
     });
 
-    const [user, syllabus] = await Promise.all([userPromise, syllabusPromise]);
+    const [user, syllabus] = await Promise.all([
+      readDashboardValue("user", userPromise, null),
+      readDashboardValue("syllabus", syllabusPromise, []),
+    ]);
     const syllabusTitles = new Set(syllabus.map((s) => s.title));
 
     const gateDate = gateExam;
@@ -155,57 +218,65 @@ export async function GET() {
       attempts,
       topicPerf,
       slots,
+      lectures,
       recentAttempts,
       badReviews,
       openTasksBySubject,
     ] = await Promise.all([
-      prisma.studySessionLog.aggregate({
+      readDashboardValue("studyTodayAgg", prisma.studySessionLog.aggregate({
         where: { userId, startedAt: { gte: todayStart, lte: todayEnd } },
         _sum: { durationMinutes: true },
-      }),
-      prisma.studySessionLog.aggregate({
+      }), { _sum: { durationMinutes: null } }),
+      readDashboardValue("studyWeekAgg", prisma.studySessionLog.aggregate({
         where: { userId, startedAt: { gte: weekStart } },
         _sum: { durationMinutes: true },
-      }),
-      prisma.studySessionLog.aggregate({
+      }), { _sum: { durationMinutes: null } }),
+      readDashboardValue("studyMonthAgg", prisma.studySessionLog.aggregate({
         where: { userId, startedAt: { gte: monthStart } },
         _sum: { durationMinutes: true },
-      }),
-      prisma.task.count({ where: { userId, completed: true } }),
-      prisma.task.count({
+      }), { _sum: { durationMinutes: null } }),
+      readDashboardValue("tasksCompletedAll", prisma.task.count({ where: { userId, completed: true } }), 0),
+      readDashboardValue("tasksCompletedToday", prisma.task.count({
         where: { userId, completed: true, updatedAt: { gte: todayStart, lte: todayEnd } },
-      }),
-      prisma.task.count({ where: { userId, completed: false } }),
-      prisma.note.count({ where: { userId } }),
-      prisma.lecture.count({ where: { userId } }),
-      prisma.flashcard.count({
+      }), 0),
+      readDashboardValue("tasksOpen", prisma.task.count({ where: { userId, completed: false } }), 0),
+      readDashboardValue("notesCount", prisma.note.count({ where: { userId } }), 0),
+      readDashboardValue("lecturesCount", prisma.lecture.count({ where: { userId } }), 0),
+      readDashboardValue("flashcardsDue", prisma.flashcard.count({
         where: {
           userId,
           mastered: false,
           nextReview: { lte: new Date() },
         },
-      }),
-      prisma.flashcard.count({ where: { userId, mastered: true } }),
-      prisma.testAttempt.findMany({
+      }), 0),
+      readDashboardValue("flashcardsMastered", prisma.flashcard.count({ where: { userId, mastered: true } }), 0),
+      readDashboardValue("attempts", prisma.testAttempt.findMany({
         where: { userId },
         orderBy: { createdAt: "asc" },
         take: 24,
-      }),
-      prisma.topicPerformance.findMany({
+      }), []),
+      readDashboardValue("topicPerf", prisma.topicPerformance.findMany({
         where: { userId },
         include: { subject: true },
-      }),
-      prisma.timetableSlot.findMany({
+      }), []),
+      readDashboardValue("slots", prisma.timetableSlot.findMany({
         where: { userId },
         include: { subject: true },
-      }),
-      prisma.testAttempt.findMany({
+      }), []),
+      readDashboardValue("lectures", prisma.lecture.findMany({
+        where: { userId },
+        include: {
+          subject: true,
+          watches: { where: { userId } },
+        },
+      }), []),
+      readDashboardValue("recentAttempts", prisma.testAttempt.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
         take: 8,
         select: { topicBreakdown: true, weakTopics: true },
-      }),
-      prisma.flashcardReview.findMany({
+      }), []),
+      readDashboardValue("badReviews", prisma.flashcardReview.findMany({
         where: {
           userId,
           grade: { lte: 1 },
@@ -213,12 +284,12 @@ export async function GET() {
         },
         take: 400,
         include: { flashcard: { include: { subject: true } } },
-      }),
-      prisma.task.groupBy({
+      }), []),
+      readDashboardValue("openTasksBySubject", prisma.task.groupBy({
         by: ["subjectId"],
         where: { userId, completed: false, subjectId: { not: null } },
         _count: { _all: true },
-      }),
+      }), []),
     ]);
 
     const hoursToday = Math.round(((studyTodayAgg._sum.durationMinutes ?? 0) / 60) * 10) / 10;
@@ -237,30 +308,43 @@ export async function GET() {
       ]),
     );
 
-    const slotSubjectTotals = new Map<string, { done: number; all: number }>();
-    syllabus.forEach((s) => slotSubjectTotals.set(s.title, { done: 0, all: 0 }));
-
-    for (const sl of slots) {
-      const title = sl.subject.title;
+    const lectureSubjectTotals = new Map<string, { done: number; all: number; watchedPctSum: number }>();
+    for (const lecture of lectures) {
+      const title = inferLectureFolderSubject(lecture.topic, lecture.subject.title);
+      if (!title) continue;
       if (!syllabusTitles.has(title)) continue;
-      const cur = slotSubjectTotals.get(title) ?? { done: 0, all: 0 };
+      const watch = lecture.watches[0];
+      const cur = lectureSubjectTotals.get(title) ?? { done: 0, all: 0, watchedPctSum: 0 };
       cur.all += 1;
-      if (sl.completed) cur.done += 1;
-      slotSubjectTotals.set(title, cur);
+      cur.done += watch?.completed ? 1 : 0;
+      cur.watchedPctSum += Math.min(100, Math.max(0, watch?.watchedPercent ?? 0));
+      lectureSubjectTotals.set(title, cur);
     }
 
-    const subjectProgress = syllabus.map((row) => {
-      const pctFromPerf = perfMap[row.title];
-      const st = slotSubjectTotals.get(row.title) ?? { done: 0, all: 0 };
-      const pctFromSlots = st.all === 0 ? null : Math.round((100 * st.done) / st.all);
-      const progress = pctFromPerf ?? pctFromSlots ?? 0;
-      return {
-        subjectId: row.id,
-        subject: row.title,
-        progress: Math.min(100, progress),
-        color: SUBJECT_COLORS[row.title] ?? "#6C63FF",
-      };
-    });
+    const subjectsWithLectures = new Set(lectureSubjectTotals.keys());
+    const subjectProgress = syllabus
+      .filter((row) => subjectsWithLectures.has(row.title))
+      .map((row) => {
+        const lectureStats = lectureSubjectTotals.get(row.title) ?? { done: 0, all: 0, watchedPctSum: 0 };
+        const lectureProgress =
+          lectureStats.all > 0 ? Math.round((100 * lectureStats.done) / lectureStats.all) : 0;
+        const testAccuracy = perfMap[row.title];
+        const weightage = GATE_EE_WEIGHTAGE_BY_SUBJECT[row.title];
+        return {
+          subjectId: row.id,
+          subject: row.title,
+          progress: Math.min(100, lectureProgress),
+          lectureDone: lectureStats.done,
+          lectureTotal: lectureStats.all,
+          averageWatchPercent:
+            lectureStats.all > 0 ? Math.round(lectureStats.watchedPctSum / lectureStats.all) : 0,
+          testAccuracy,
+          weightageAverage: weightage?.average ?? null,
+          weightageLatest: weightage?.latest ?? null,
+          color: SUBJECT_COLORS[row.title] ?? "#6C63FF",
+        };
+      })
+      .sort((a, b) => (b.weightageAverage ?? 0) - (a.weightageAverage ?? 0));
 
     const weakFromPerf = [...topicPerf]
       .filter((t) => t.attempts >= 2)
@@ -279,20 +363,24 @@ export async function GET() {
     else if (weakFromProfile.length > 0) weakSubjects = weakFromProfile.slice(0, 5);
     else weakSubjects = [];
 
-    const tasksPreview = await prisma.task.findMany({
+    const tasksPreview = await readDashboardValue("tasksPreview", prisma.task.findMany({
       where: { userId },
       orderBy: [{ completed: "asc" }, { dueDate: "asc" }, { createdAt: "desc" }],
       take: 5,
-    });
+    }), []);
 
-    const activeDates = await collectActiveDates(prisma, userId);
+    const activeDates = await readDashboardValue("activeDates", collectActiveDates(prisma, userId), new Set<string>());
     const streak = consecutiveStreakFromToday(activeDates);
     const consistency = consistencyLastNDays(activeDates, 30);
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { studyStreakDays: streak, lastStreakDate: startOfDay(new Date()) },
-    });
+    await readDashboardValue(
+      "userStreakUpdate",
+      prisma.user.update({
+        where: { id: userId },
+        data: { studyStreakDays: streak, lastStreakDate: startOfDay(new Date()) },
+      }),
+      null,
+    );
 
     const topicsDoneSlots = slots.filter((s) => s.completed).length;
 

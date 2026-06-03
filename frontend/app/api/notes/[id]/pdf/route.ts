@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
-import { uploadBuffer } from "@/lib/supabase-admin";
+import { writeLocalUpload, toLocalStoragePath } from "@/lib/local-upload-storage";
+import { getSupabaseAdmin, uploadBuffer } from "@/lib/supabase-admin";
 
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
@@ -19,30 +20,40 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
 
   const buf = Buffer.from(await file.arrayBuffer());
   const safeName = (file as File).name.replace(/[^\w.\-]+/g, "_");
-  const path = `${userId}/${id}/${Date.now()}_${safeName}`;
+  const relativePath = `${userId}/${id}/${Date.now()}_${safeName}`;
+  let storagePath = relativePath;
+  let storageProvider: "supabase" | "local" = "supabase";
 
-  try {
-    await uploadBuffer({
-      bucket: "notes",
-      path,
-      body: buf,
-      contentType: "application/pdf",
-    });
-  } catch {
-    return NextResponse.json(
-      {
-        error:
-          "Supabase Storage upload failed. Create bucket `notes` and set NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY.",
-      },
-      { status: 503 },
-    );
+  if (getSupabaseAdmin()) {
+    try {
+      await uploadBuffer({
+        bucket: "notes",
+        path: relativePath,
+        body: buf,
+        contentType: "application/pdf",
+      });
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error:
+            error instanceof Error
+              ? `Supabase Storage upload failed: ${error.message}`
+              : "Supabase Storage upload failed.",
+        },
+        { status: 503 },
+      );
+    }
+  } else {
+    await writeLocalUpload(relativePath, buf);
+    storagePath = toLocalStoragePath(relativePath);
+    storageProvider = "local";
   }
 
   const pdfRow = await prisma.notePdf.create({
     data: {
       noteId: id,
       userId,
-      storagePath: path,
+      storagePath,
       fileName: safeName,
       pageCount: null,
     },
@@ -50,8 +61,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
 
   await prisma.note.update({
     where: { id },
-    data: { pdfStoragePath: path, pdfFileName: safeName, readingLastPage: 1 },
+    data: { pdfStoragePath: storagePath, pdfFileName: safeName, readingLastPage: 1 },
   });
 
-  return NextResponse.json({ ok: true, pdf: pdfRow });
+  return NextResponse.json({ ok: true, storageProvider, pdf: pdfRow });
 }

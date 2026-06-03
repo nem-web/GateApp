@@ -1,9 +1,0 @@
----
-pid: 22532
-cwd: |
-  C:\Users\katha
----
-PS C:\Users\katha> 
- *  History restored 
-
-PS C:\Users\katha>

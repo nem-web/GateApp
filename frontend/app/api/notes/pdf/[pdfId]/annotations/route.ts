@@ -2,6 +2,22 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 
+export async function GET(_req: Request, ctx: { params: Promise<{ pdfId: string }> }) {
+  const { pdfId } = await ctx.params;
+  const userId = await getSessionUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const pdf = await prisma.notePdf.findFirst({ where: { id: pdfId, userId } });
+  if (!pdf) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const rows = await prisma.noteAnnotation.findMany({
+    where: { notePdfId: pdfId },
+    orderBy: { page: "asc" },
+  });
+
+  return NextResponse.json({ annotations: rows });
+}
+
 export async function POST(req: Request, ctx: { params: Promise<{ pdfId: string }> }) {
   const { pdfId } = await ctx.params;
   const userId = await getSessionUserId();

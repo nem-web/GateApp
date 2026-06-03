@@ -66,6 +66,25 @@ const SAMPLE_DRILL_QUESTIONS: {
   },
 ];
 
+const GATE_EE_CUTOFFS: {
+  year: number;
+  gen: number;
+  obc: number;
+  scst: number;
+  remarks: string;
+}[] = [
+  { year: 2016, gen: 25.1, obc: 22.5, scst: 16.7, remarks: "GATE EE qualifying marks" },
+  { year: 2017, gen: 25.2, obc: 22.6, scst: 16.7, remarks: "GATE EE qualifying marks" },
+  { year: 2018, gen: 29.1, obc: 26.1, scst: 19.4, remarks: "GATE EE qualifying marks" },
+  { year: 2019, gen: 39.6, obc: 35.6, scst: 26.4, remarks: "GATE EE qualifying marks" },
+  { year: 2020, gen: 33.4, obc: 30.0, scst: 22.2, remarks: "GATE EE qualifying marks" },
+  { year: 2021, gen: 30.3, obc: 27.2, scst: 20.2, remarks: "GATE EE qualifying marks" },
+  { year: 2022, gen: 30.7, obc: 27.6, scst: 20.4, remarks: "GATE EE qualifying marks" },
+  { year: 2023, gen: 25.0, obc: 22.5, scst: 16.6, remarks: "GATE EE qualifying marks" },
+  { year: 2024, gen: 25.7, obc: 23.1, scst: 17.1, remarks: "GATE EE qualifying marks" },
+  { year: 2025, gen: 25.0, obc: 22.5, scst: 16.6, remarks: "GATE EE qualifying marks" },
+];
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -123,6 +142,25 @@ async function main() {
       },
     });
   }
+
+  for (const row of GATE_EE_CUTOFFS) {
+    const categoryMarks = [
+      ["GEN", row.gen],
+      ["OBC", row.obc],
+      ["EWS", row.obc],
+      ["SC", row.scst],
+      ["ST", row.scst],
+      ["PWD", row.scst],
+    ] as const;
+
+    for (const [category, marks] of categoryMarks) {
+      await prisma.gateEeCutoff.upsert({
+        where: { year_category: { year: row.year, category } },
+        update: { marks, remarks: row.remarks },
+        create: { year: row.year, category, marks, remarks: row.remarks },
+      });
+    }
+  }
 }
 
 main()
@@ -132,4 +170,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-
