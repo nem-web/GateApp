@@ -15,9 +15,8 @@ This guide explains how to test the fixed API endpoints after the authentication
 # Copy environment template
 cp .env.example .env
 
-# Update .env with your values:
-# DATABASE_URL format: ******localhost:5432/gateprep
-DATABASE_URL="******localhost:5432/gateprep"
+# Update .env with your values (note: *** below represent masked credentials in this example):
+DATABASE_URL="***://***:***@localhost:5432/gateprep"  # Format: ******host:port/dbname
 NEXTAUTH_SECRET="your-secure-random-secret-here"
 NEXTAUTH_URL="http://localhost:3000"
 ANTHROPIC_API_KEY="sk-ant-..." # Optional for AI features
@@ -163,10 +162,11 @@ Open browser DevTools:
 
 ### Database Verification
 ```bash
-# Connect to PostgreSQL (replace user, password, and dbname with your values)
-psql ******localhost:5432/gateprep
+# Connect to PostgreSQL (replace user, password, and dbname with your actual values)
+# Format option 1 - URI:
+psql "******localhost:5432/gateprep"
 
-# Alternative method:
+# Format option 2 - Component flags:
 psql -h localhost -p 5432 -d gateprep -U user
 
 # Check users table
