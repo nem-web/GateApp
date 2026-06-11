@@ -39,8 +39,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true })
   }
 
-  const [, rawToken = ''] = text.split(/\s+/, 2)
-  const token = rawToken.trim()
+  const [, token = ''] = text.split(/\s+/, 2)
   if (!token) {
     await sendTelegramMessage(chatId, 'Open the connect link from GatePrep settings to link your account.')
     return NextResponse.json({ ok: true })

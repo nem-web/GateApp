@@ -30,7 +30,7 @@ export default function SettingsPage() {
         telegramLinked: Boolean(data.telegramLinked),
         telegramUsername:
           typeof data.telegramUsername === 'string' && data.telegramUsername.trim()
-            ? data.telegramUsername
+            ? data.telegramUsername.trim()
             : null,
         telegramLinkedAt:
           typeof data.telegramLinkedAt === 'string' ? data.telegramLinkedAt : null,
