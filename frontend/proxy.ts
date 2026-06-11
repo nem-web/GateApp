@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
-const PUBLIC_MUTATION_PATHS = new Set(['/api/auth/register', '/api/telegram/webhook'])
+const PUBLIC_MUTATION_PATHS = new Set(['/api/auth/register'])
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl

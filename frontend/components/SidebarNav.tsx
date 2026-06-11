@@ -19,7 +19,6 @@ import {
   Gamepad2,
   ClipboardCheck,
   Table2,
-  Settings,
   Sun,
   Moon,
   User,
@@ -48,7 +47,6 @@ const navItems: NavItem[] = [
   { name: 'Games', href: '/games', icon: Gamepad2 },
   { name: 'Test', href: '/test', icon: ClipboardCheck },
   { name: 'Other', href: '/other', icon: Table2 },
-  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export default function SidebarNav() {

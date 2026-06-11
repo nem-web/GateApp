@@ -13,9 +13,6 @@ Import this repo in Vercel and set **Root Directory** to `frontend` (this Next.j
 | `NEXTAUTH_URL` | Yes | Your production URL, e.g. `https://your-app.vercel.app` |
 | `GROQ_API_KEY` | Recommended (AI) | [Groq Console](https://console.groq.com/keys) — free, fast inference |
 | `GEMINI_API_KEY` | Optional fallback | [Google AI Studio](https://aistudio.google.com/apikey) — free Gemini tier |
-| `TELEGRAM_BOT_TOKEN` | Required for Telegram reminders/webhook replies | [@BotFather](https://t.me/BotFather) bot token |
-| `TELEGRAM_BOT_USERNAME` | Required for Telegram connect deep links | Bot username from BotFather (without `@`) |
-| `TELEGRAM_WEBHOOK_SECRET` | Recommended | Any random secret string used for Telegram webhook verification |
 
 AI calls try **Groq first**, then **Gemini**. No paid Anthropic key is required.
 

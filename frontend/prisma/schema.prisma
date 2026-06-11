@@ -31,9 +31,6 @@ model User {
   name               String?
   email              String               @unique
   password           String?
-  telegramChatId     String?              @unique
-  telegramUsername   String?
-  telegramLinkedAt   DateTime?
   gateDate           DateTime?
   branch             String               @default("EE")
   streamLabel        String               @default("GATE - EE")
@@ -63,20 +60,6 @@ model User {
   streakDays         StreakDay[]
   weakSubjectLinks   UserWeakSubject[]
   htmlGames          HtmlGame[]
-  telegramLinkTokens TelegramLinkToken[]
-}
-
-model TelegramLinkToken {
-  id         String   @id @default(cuid())
-  userId     String
-  tokenHash  String   @unique
-  expiresAt  DateTime
-  consumedAt DateTime?
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([expiresAt])
 }
 
 /// Join table for prioritized weak syllabus areas per user.
