@@ -19,18 +19,25 @@ export default function SettingsPage() {
   const [connecting, setConnecting] = useState(false)
 
   const loadProfile = async () => {
-    const res = await fetch('/api/user/me', { cache: 'no-store' })
-    if (!res.ok) return
-    const data = await res.json()
-    setProfile({
-      telegramLinked: Boolean(data.telegramLinked),
-      telegramUsername:
-        typeof data.telegramUsername === 'string' && data.telegramUsername.trim()
-          ? data.telegramUsername
-          : null,
-      telegramLinkedAt:
-        typeof data.telegramLinkedAt === 'string' ? data.telegramLinkedAt : null,
-    })
+    try {
+      const res = await fetch('/api/user/me', { cache: 'no-store' })
+      if (!res.ok) {
+        setStatus('Could not load Telegram integration status.')
+        return
+      }
+      const data = await res.json()
+      setProfile({
+        telegramLinked: Boolean(data.telegramLinked),
+        telegramUsername:
+          typeof data.telegramUsername === 'string' && data.telegramUsername.trim()
+            ? data.telegramUsername
+            : null,
+        telegramLinkedAt:
+          typeof data.telegramLinkedAt === 'string' ? data.telegramLinkedAt : null,
+      })
+    } catch {
+      setStatus('Could not load Telegram integration status.')
+    }
   }
 
   useEffect(() => {

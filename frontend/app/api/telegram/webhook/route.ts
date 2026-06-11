@@ -1,6 +1,6 @@
-import crypto from 'crypto'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendTelegramMessage, telegramTokenHash } from '@/lib/telegram'
 
 type TelegramUpdate = {
   message?: {
@@ -14,21 +14,6 @@ type TelegramUpdate = {
       username?: string
     }
   }
-}
-
-function tokenHash(value: string) {
-  return crypto.createHash('sha256').update(value).digest('hex')
-}
-
-async function sendTelegramMessage(chatId: number, text: string) {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim()
-  if (!botToken) return
-
-  await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text }),
-  })
 }
 
 export async function POST(req: Request) {
@@ -63,7 +48,7 @@ export async function POST(req: Request) {
 
   const now = new Date()
   const linkToken = await prisma.telegramLinkToken.findUnique({
-    where: { tokenHash: tokenHash(token) },
+    where: { tokenHash: telegramTokenHash(token) },
     select: { id: true, userId: true, expiresAt: true, consumedAt: true },
   })
 

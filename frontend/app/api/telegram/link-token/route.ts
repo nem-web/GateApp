@@ -2,12 +2,9 @@ import crypto from 'crypto'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSessionUserId } from '@/lib/session'
+import { telegramTokenHash } from '@/lib/telegram'
 
 const LINK_TOKEN_TTL_MINUTES = 15
-
-function tokenHash(value: string) {
-  return crypto.createHash('sha256').update(value).digest('hex')
-}
 
 export async function POST() {
   const userId = await getSessionUserId()
@@ -29,7 +26,7 @@ export async function POST() {
   await prisma.telegramLinkToken.create({
     data: {
       userId,
-      tokenHash: tokenHash(token),
+      tokenHash: telegramTokenHash(token),
       expiresAt,
     },
   })
