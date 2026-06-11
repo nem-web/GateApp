@@ -40,5 +40,8 @@ export async function GET() {
     streamLabel: user.streamLabel ?? "GATE - EE",
     hoursPerDay: user.hoursPerDay ?? 4,
     weakSubjects: user.weakSubjectLinks.map((l) => l.subject.title),
+    telegramLinked: Boolean(user.telegramChatId),
+    telegramUsername: user.telegramUsername ?? null,
+    telegramLinkedAt: user.telegramLinkedAt?.toISOString() ?? null,
   });
 }
