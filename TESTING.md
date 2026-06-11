@@ -16,6 +16,7 @@ This guide explains how to test the fixed API endpoints after the authentication
 cp .env.example .env
 
 # Update .env with your values:
+# DATABASE_URL format: ******localhost:5432/gateprep
 DATABASE_URL="******localhost:5432/gateprep"
 NEXTAUTH_SECRET="your-secure-random-secret-here"
 NEXTAUTH_URL="http://localhost:3000"
@@ -162,8 +163,11 @@ Open browser DevTools:
 
 ### Database Verification
 ```bash
-# Connect to PostgreSQL
-psql "******localhost:5432/gateprep"
+# Connect to PostgreSQL (replace user, password, and dbname with your values)
+psql ******localhost:5432/gateprep
+
+# Alternative method:
+psql -h localhost -p 5432 -d gateprep -U user
 
 # Check users table
 SELECT id, email, name FROM "User" LIMIT 10;
