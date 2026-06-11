@@ -50,13 +50,13 @@ curl -X POST http://localhost:3000/api/tasks \
 - Status: 401
 - Body: `{"error": "Sign in to edit or save changes."}`
 
-#### Test 1.2: Unauthenticated GET Request Should Succeed
+#### Test 1.2: Unauthenticated GET Request Should Also Be Protected
 ```bash
 curl -X GET http://localhost:3000/api/tasks
 ```
 **Expected Response:** 
-- Status: 200
-- Body: `[]` (empty array initially)
+- Status: 401
+- Body: `{"error": "Unauthorized"}`
 
 ### 2. Tasks Endpoint Tests
 
@@ -211,6 +211,7 @@ SELECT id, "userId", type, "generatedAt" FROM "AISuggestion" LIMIT 10;
 
 - [ ] Build succeeds: `npm run build` completes without errors
 - [ ] Unauthenticated POST requests return 401
+- [ ] Unauthenticated GET requests return 401
 - [ ] Authenticated users can create tasks
 - [ ] Tasks are user-isolated (userId working)
 - [ ] AI endpoints require authentication
@@ -222,7 +223,7 @@ SELECT id, "userId", type, "generatedAt" FROM "AISuggestion" LIMIT 10;
 ## Success Criteria
 
 All fixes are working correctly when:
-1. **Authentication Works**: Middleware blocks unauthenticated mutations
+1. **Authentication Works**: Middleware blocks unauthenticated mutations and reads
 2. **UserID Extraction**: Each endpoint correctly gets userId from session
 3. **Data Isolation**: Users only see their own data
 4. **Error Handling**: Proper 401/500 responses for different scenarios
