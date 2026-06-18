@@ -7,7 +7,7 @@ export const metadata = createMetadata({
   description:
     'Private GATE EE study dashboard for tracking subjects, streaks, tests, weak areas, tasks, notes, lectures, and flashcards.',
   path: '/',
-  noIndex: true,
+  // noIndex: true,
   verification: {
     google: 'U-oJ-qB-eYH3oMEy6D4dTQXDvokCVxM7ACfsGKiYnHY',
   },
