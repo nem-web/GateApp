@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { GATE_EXAM_DATE_ISO } from "@/lib/gate-ee";
+import { getUserPlan } from "@/lib/subscription";
 
 export async function GET() {
   const userId = await getSessionUserId();
@@ -27,6 +28,7 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  const [plan] = await Promise.all([getUserPlan(userId)]);
   const gateDate = user.gateDate?.toISOString() ?? GATE_EXAM_DATE_ISO;
 
   return NextResponse.json({
@@ -39,6 +41,9 @@ export async function GET() {
     targetExam: user.streamLabel ?? "GATE - EE",
     streamLabel: user.streamLabel ?? "GATE - EE",
     hoursPerDay: user.hoursPerDay ?? 4,
+    planType: plan?.planType ?? user.planType,
+    subscriptionStatus: plan?.subscriptionStatus ?? user.subscriptionStatus,
+    isPremium: Boolean(plan?.isPremium),
     weakSubjects: user.weakSubjectLinks.map((l) => l.subject.title),
   });
 }

@@ -15,6 +15,8 @@ async function ensureSingleUserId(): Promise<string> {
       name: SINGLE_USER_NAME,
       streamLabel: SINGLE_USER_STREAM,
       branch: "EE",
+      approved: true,
+      approvedAt: new Date(),
     },
     create: {
       email: SINGLE_USER_EMAIL,
@@ -22,6 +24,8 @@ async function ensureSingleUserId(): Promise<string> {
       branch: "EE",
       streamLabel: SINGLE_USER_STREAM,
       gateDate: new Date("2027-02-05T00:00:00.000Z"),
+      approved: true,
+      approvedAt: new Date(),
     },
     select: { id: true },
   });

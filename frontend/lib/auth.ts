@@ -3,6 +3,11 @@ import { compare } from "bcryptjs";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import {
+  isConfiguredAdminEmail,
+  upsertConfiguredAdminUser,
+  verifyConfiguredAdminPassword,
+} from "@/lib/admin-config";
 import { prisma } from "@/lib/prisma";
 
 const providers: NextAuthOptions["providers"] = [
@@ -11,7 +16,16 @@ const providers: NextAuthOptions["providers"] = [
     credentials: { email: {}, password: {} },
     async authorize(credentials) {
       if (!credentials?.email || !credentials.password) return null;
-      const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+
+      const email = credentials.email.trim().toLowerCase();
+      if (isConfiguredAdminEmail(email)) {
+        const ok = await verifyConfiguredAdminPassword(email, credentials.password);
+        if (!ok) return null;
+        const admin = await upsertConfiguredAdminUser(email);
+        return { id: admin.id, email: admin.email, name: admin.name };
+      }
+
+      const user = await prisma.user.findUnique({ where: { email } });
       if (!user?.password) return null;
       const ok = await compare(credentials.password, user.password);
       if (!ok) return null;
@@ -51,4 +65,3 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
 };
-

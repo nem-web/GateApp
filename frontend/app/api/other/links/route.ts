@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
+import { byteLength, requireMemoryQuota } from "@/lib/memory-quota";
 import { getSessionUserId } from "@/lib/session";
 
 export const runtime = "nodejs";
@@ -102,6 +103,9 @@ export async function POST(req: Request) {
 
   const links = await readLinks(userId);
   const next = [link, ...links].slice(0, 200);
+  const quotaError = await requireMemoryQuota(userId, byteLength(JSON.stringify(next)));
+  if (quotaError) return quotaError;
+
   await writeLinks(userId, next);
   return NextResponse.json({ ok: true, link, links: next });
 }

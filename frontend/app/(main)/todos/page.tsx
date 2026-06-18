@@ -150,7 +150,7 @@ export default function TodosPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-4 lg:p-8">
+    <div className="mx-auto w-full min-w-0 max-w-3xl overflow-x-hidden p-4 lg:p-8">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -167,19 +167,19 @@ export default function TodosPage() {
             transition={{ duration: 0.15, ease: 'easeOut', delay: 0.05 }}
             className="bg-card border border-border rounded-xl p-4 mb-6"
           >
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <input
                 type="text"
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addTodo()}
                 placeholder="Add a new task..."
-                className="flex-1 px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                className="min-w-0 flex-1 rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
               <select
                 value={newPriority}
                 onChange={(e) => setNewPriority(e.target.value as 'high' | 'medium' | 'low')}
-                className="px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                className="rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
               >
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
@@ -188,7 +188,7 @@ export default function TodosPage() {
               <button
                 type="button"
                 onClick={addTodo}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:brightness-110 transition-all"
+                className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all hover:brightness-110"
               >
                 <Plus size={16} />
                 Add
@@ -200,7 +200,7 @@ export default function TodosPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.15, ease: 'easeOut', delay: 0.1 }}
-            className="flex items-center gap-4 mb-4"
+            className="mb-4 flex flex-wrap items-center gap-3 sm:gap-4"
           >
             <button
               type="button"
@@ -313,4 +313,3 @@ export default function TodosPage() {
     </div>
   )
 }
-

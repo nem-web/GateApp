@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AppProviders } from '@/components/AppProviders'
+import { JsonLd, SITE_NAME, SITE_URL, organizationSchema, websiteSchema } from '@/lib/seo'
 import './globals.css'
 
 const inter = Inter({ 
@@ -10,14 +11,66 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'GATEPrep Pro - Your GATE Exam Companion',
-  description: 'A comprehensive study platform for GATE exam preparation with AI-powered insights, flashcards, PYQ papers, and personalized study plans.',
-  keywords: ['GATE', 'exam preparation', 'study', 'engineering', 'CS', 'GATE 2025'],
-  applicationName: 'GATEPrep Pro',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'GATEPrep Pro | GATE EE Study Planner, PYQs, Flashcards and Tests',
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    'GATEPrep Pro helps GATE Electrical Engineering aspirants plan study weeks, revise formulas, solve PYQs, track tests, manage notes, and analyze cutoffs.',
+  keywords: [
+    'GATE EE preparation',
+    'GATE Electrical Engineering',
+    'GATE study planner',
+    'GATE PYQ',
+    'GATE flashcards',
+    'GATE cutoff',
+  ],
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: {
+    canonical: '/',
+  },
   manifest: '/manifest.webmanifest',
+  openGraph: {
+    type: 'website',
+    siteName: SITE_NAME,
+    url: '/',
+    title: 'GATEPrep Pro | GATE EE Study Planner, PYQs, Flashcards and Tests',
+    description:
+      'Prepare for GATE Electrical Engineering with study plans, notes, lectures, PYQs, flashcards, tests, cutoff analysis, and AI coaching.',
+    images: [
+      {
+        url: '/pwa-icon-512.png',
+        width: 512,
+        height: 512,
+        alt: `${SITE_NAME} app icon`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GATEPrep Pro | GATE EE Study Planner, PYQs, Flashcards and Tests',
+    description:
+      'Prepare for GATE Electrical Engineering with study plans, notes, lectures, PYQs, flashcards, tests, cutoff analysis, and AI coaching.',
+    images: ['/pwa-icon-512.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   appleWebApp: {
     capable: true,
-    title: 'GATEPrep Pro',
+    title: SITE_NAME,
     statusBarStyle: 'black-translucent',
   },
   icons: {
@@ -44,6 +97,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="bg-background">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <JsonLd data={[organizationSchema(), websiteSchema()]} />
         <AppProviders>
           {children}
           {process.env.NODE_ENV === 'production' && <Analytics />}
@@ -52,4 +106,3 @@ export default function RootLayout({
     </html>
   )
 }
-

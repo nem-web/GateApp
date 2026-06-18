@@ -2,10 +2,10 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'GATEPrep Pro - Your GATE Exam Companion',
+    name: 'GATEPrep Pro - GATE EE Study Companion',
     short_name: 'GATEPrep Pro',
     description:
-      'A comprehensive study platform for GATE exam preparation with AI-powered insights, flashcards, PYQ papers, and personalized study plans.',
+      'A GATE Electrical Engineering study platform with AI-powered planning, notes, flashcards, PYQ papers, tests, lectures, and cutoff analysis.',
     start_url: '/',
     scope: '/',
     display: 'standalone',

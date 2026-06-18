@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
+import { requireApprovedForStorage } from "@/lib/admin-access";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { toLocalStoragePath, writeLocalUpload } from "@/lib/local-upload-storage";
+import { requireMemoryQuota } from "@/lib/memory-quota";
 import { getSupabaseAdmin, uploadBuffer } from "@/lib/supabase-admin";
 import { resolveSubject } from "@/lib/subject-resolve";
+import { checkFeatureLimit, quotaResponse } from "@/lib/subscription";
 
 export async function GET() {
   const userId = await getSessionUserId();
@@ -35,6 +38,9 @@ export async function GET() {
 export async function POST(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const approvalError = await requireApprovedForStorage(userId);
+  if (approvalError) return approvalError;
+
   const form = await req.formData();
 
   const kind = String(form.get("kind") ?? "question");
@@ -46,6 +52,12 @@ export async function POST(req: Request) {
   if (!(file instanceof Blob) || file.size === 0) {
     return NextResponse.json({ error: "PDF required" }, { status: 400 });
   }
+  if (kind === "question") {
+    const featureLimit = await checkFeatureLimit(userId, "pyq_papers");
+    if (!featureLimit.ok) return quotaResponse(featureLimit);
+  }
+  const quotaError = await requireMemoryQuota(userId, file.size);
+  if (quotaError) return quotaError;
 
   const buf = Buffer.from(await file.arrayBuffer());
   const name = ((file as File).name || "paper.pdf").replace(/[^\w.\-]+/g, "_");

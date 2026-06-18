@@ -8,6 +8,7 @@ import {
   FileUp,
   Flag,
   Play,
+  Sparkles,
   UploadCloud,
   XCircle,
 } from 'lucide-react'
@@ -51,6 +52,25 @@ type SubmitResult = {
   }>
 }
 
+type MakerSubject = {
+  id: string
+  title: string
+  slug: string
+}
+
+type MakerTopicGroup = {
+  subjectId: string
+  subject: string
+  topic: string
+  lectureCount: number
+  lectureTitles: string[]
+}
+
+type MakerContext = {
+  subjects: MakerSubject[]
+  topicGroups: MakerTopicGroup[]
+}
+
 async function readJsonResponse(res: Response) {
   const text = await res.text()
   if (!text.trim()) return {}
@@ -92,6 +112,15 @@ export default function TestPage() {
   const [submitting, setSubmitting] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadStatus, setUploadStatus] = useState<string | null>(null)
+  const [makerContext, setMakerContext] = useState<MakerContext>({ subjects: [], topicGroups: [] })
+  const [makerSubjectId, setMakerSubjectId] = useState('')
+  const [makerTopicMode, setMakerTopicMode] = useState<'all_done' | 'topic'>('all_done')
+  const [makerTopic, setMakerTopic] = useState('')
+  const [makerSourceMode, setMakerSourceMode] = useState<'pyq' | 'ai'>('ai')
+  const [makerDurationMinutes, setMakerDurationMinutes] = useState(30)
+  const [makerQuestionCount, setMakerQuestionCount] = useState(10)
+  const [makerLoading, setMakerLoading] = useState(false)
+  const [makerStatus, setMakerStatus] = useState<string | null>(null)
 
   const loadSavedTests = async () => {
     const res = await fetch('/api/test', { cache: 'no-store' })
@@ -101,6 +130,16 @@ export default function TestPage() {
     setSavedTests(rows)
     const firstPending = rows.find((row: SavedTest) => !row.answerKeyBound)
     if (firstPending && !uploadTargetSlug) setUploadTargetSlug(firstPending.slug)
+  }
+
+  const loadMakerContext = async () => {
+    const res = await fetch('/api/test/maker/context', { cache: 'no-store' })
+    if (!res.ok) return
+    const data = await res.json()
+    const subjects = Array.isArray(data.subjects) ? data.subjects : []
+    const topicGroups = Array.isArray(data.topicGroups) ? data.topicGroups : []
+    setMakerContext({ subjects, topicGroups })
+    setMakerSubjectId((current) => current || topicGroups[0]?.subjectId || subjects[0]?.id || '')
   }
 
   const loadTest = async (packSlug?: string) => {
@@ -131,6 +170,7 @@ export default function TestPage() {
   useEffect(() => {
     void loadTest()
     void loadSavedTests()
+    void loadMakerContext()
   }, [])
 
   const answered = useMemo(() => answers.filter((a) => a >= 0).length, [answers])
@@ -139,6 +179,16 @@ export default function TestPage() {
   const currentQuestion = questions[currentQuestionIndex]
   const readySavedTests = savedTests.filter((test) => test.answerKeyBound)
   const pendingSavedTests = savedTests.filter((test) => !test.answerKeyBound)
+  const makerSubjectTopics = useMemo(
+    () => makerContext.topicGroups.filter((group) => group.subjectId === makerSubjectId),
+    [makerContext.topicGroups, makerSubjectId],
+  )
+  const makerSubject = makerContext.subjects.find((subject) => subject.id === makerSubjectId)
+  const makerSelectedTopic =
+    makerTopic && makerSubjectTopics.some((group) => group.topic === makerTopic)
+      ? makerTopic
+      : makerSubjectTopics[0]?.topic ?? ''
+  const makerHasCompletedLectures = makerSubjectTopics.length > 0
   const timerLabel = `${String(Math.floor(remainingSeconds / 60)).padStart(2, '0')}:${String(remainingSeconds % 60).padStart(2, '0')}`
 
   const comparisonById = useMemo(() => {
@@ -277,6 +327,50 @@ export default function TestPage() {
     }
   }
 
+  const createMakerTest = async () => {
+    if (makerLoading) return
+    if (!makerSubjectId) {
+      setMakerStatus('Choose a subject first.')
+      return
+    }
+    if (!makerHasCompletedLectures) {
+      setMakerStatus('No completed lectures found for this subject.')
+      return
+    }
+    if (makerTopicMode === 'topic' && !makerSelectedTopic) {
+      setMakerStatus('Choose a completed topic/chapter.')
+      return
+    }
+
+    setMakerLoading(true)
+    setMakerStatus(null)
+    try {
+      const res = await fetch('/api/test/maker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subjectId: makerSubjectId,
+          durationMinutes: makerDurationMinutes,
+          questionCount: makerQuestionCount,
+          sourceMode: makerSourceMode,
+          topicMode: makerTopicMode,
+          topic: makerTopicMode === 'topic' ? makerSelectedTopic : undefined,
+        }),
+      })
+      const data = await readJsonResponse(res)
+      if (!res.ok) {
+        setMakerStatus(typeof data.error === 'string' ? data.error : 'Could not create test.')
+        return
+      }
+      setMakerStatus(typeof data.message === 'string' ? data.message : 'Test created.')
+      const created = responseTest(data)
+      await loadSavedTests()
+      if (created?.slug) void loadTest(created.slug)
+    } finally {
+      setMakerLoading(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-6xl p-4 lg:p-8">
       <div className="mb-6">
@@ -285,6 +379,105 @@ export default function TestPage() {
           Upload a question PDF to create a saved test, then bind its answer key before taking it.
         </p>
       </div>
+
+      <section className="mb-6 rounded-xl border border-border bg-card p-4">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold">Test Maker</h2>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Completed lectures only{makerSubject ? ` - ${makerSubject.title}` : ''}
+          </p>
+        </div>
+
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.2fr)_150px_150px_180px]">
+          <select
+            value={makerSubjectId}
+            onChange={(e) => {
+              setMakerSubjectId(e.target.value)
+              setMakerTopicMode('all_done')
+              setMakerTopic('')
+            }}
+            className="rounded border border-border bg-input px-3 py-2 text-sm"
+          >
+            {makerContext.subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.title}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={makerTopicMode === 'all_done' ? 'all_done' : makerSelectedTopic}
+            onChange={(e) => {
+              if (e.target.value === 'all_done') {
+                setMakerTopicMode('all_done')
+                setMakerTopic('')
+                return
+              }
+              setMakerTopicMode('topic')
+              setMakerTopic(e.target.value)
+            }}
+            disabled={!makerHasCompletedLectures}
+            className="rounded border border-border bg-input px-3 py-2 text-sm disabled:opacity-50"
+          >
+            <option value="all_done">Complete till lectures done</option>
+            {makerSubjectTopics.map((group) => (
+              <option key={`${group.subjectId}-${group.topic}`} value={group.topic}>
+                {group.topic} ({group.lectureCount})
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="number"
+            min={1}
+            max={65}
+            value={makerQuestionCount}
+            onChange={(e) => setMakerQuestionCount(Math.max(1, Math.min(65, Number(e.target.value) || 10)))}
+            title="Number of questions"
+            className="rounded border border-border bg-input px-3 py-2 text-sm"
+          />
+
+          <input
+            type="number"
+            min={5}
+            max={360}
+            value={makerDurationMinutes}
+            onChange={(e) => setMakerDurationMinutes(Math.max(5, Math.min(360, Number(e.target.value) || 30)))}
+            title="Duration in minutes"
+            className="rounded border border-border bg-input px-3 py-2 text-sm"
+          />
+
+          <select
+            value={makerSourceMode}
+            onChange={(e) => setMakerSourceMode(e.target.value as 'pyq' | 'ai')}
+            className="rounded border border-border bg-input px-3 py-2 text-sm"
+          >
+            <option value="ai">AI created</option>
+            <option value="pyq">PYQ based</option>
+          </select>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">
+            {makerHasCompletedLectures
+              ? `${makerSubjectTopics.reduce((sum, group) => sum + group.lectureCount, 0)} completed lectures available for this subject.`
+              : 'Complete at least one lecture in this subject to unlock test creation.'}
+          </p>
+          <button
+            type="button"
+            onClick={createMakerTest}
+            disabled={makerLoading || !makerHasCompletedLectures}
+            className="inline-flex items-center justify-center gap-2 rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
+          >
+            <Sparkles className="h-4 w-4" />
+            {makerLoading ? 'Creating' : 'Create test'}
+          </button>
+        </div>
+        {makerStatus && <p className="mt-3 text-sm text-muted-foreground">{makerStatus}</p>}
+      </section>
 
       <section className="mb-6 rounded-xl border border-border bg-card p-4">
         <div className="mb-4 flex items-center gap-2">

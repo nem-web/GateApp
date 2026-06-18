@@ -34,6 +34,13 @@ type SlotEditor =
 type LectureFolderOption = {
   label: string
   subject: string
+  folder: string
+  value: string
+}
+
+type SelectedLectureFolder = {
+  subject: string
+  folder: string
 }
 
 function timeToMinutes(value: string | null | undefined, fallback: number): number {
@@ -103,6 +110,10 @@ function inferSubjectFromLectureFolder(folder: string | null | undefined, fallba
   return aliasPairs.find(([needle]) => normalized.includes(needle))?.[1] ?? canonicalGateEESubject(fallbackSubject)
 }
 
+function lectureFolderValue(subject: string, folder: string) {
+  return `${encodeURIComponent(subject)}::${encodeURIComponent(folder)}`
+}
+
 function buildWeekly(
   rows: Array<{
     id?: string
@@ -140,6 +151,8 @@ export default function StudyPlanPage() {
   const [folderFocusOptions, setFolderFocusOptions] = useState<LectureFolderOption[]>([])
   const [focusSelect, setFocusSelect] = useState('')
   const [selectedFocus, setSelectedFocus] = useState<string[]>([])
+  const [lectureFolderSelect, setLectureFolderSelect] = useState('')
+  const [selectedLectureFolders, setSelectedLectureFolders] = useState<SelectedLectureFolder[]>([])
   const [aiPlanText, setAiPlanText] = useState<string | null>(null)
   const [aiPreviewSlots, setAiPreviewSlots] = useState<
     Array<{
@@ -197,17 +210,20 @@ export default function StudyPlanPage() {
         const rows = Array.isArray(data.lectures) ? data.lectures : []
         const options = new Map<string, LectureFolderOption>()
         for (const row of rows) {
+          if (Boolean(row.completed)) continue
           const topic = typeof row.topic === 'string' ? row.topic : ''
           const fallback = typeof row.subject === 'string' ? row.subject : 'Engineering Mathematics'
           const subject = inferSubjectFromLectureFolder(topic, fallback)
           if (!subject) continue
-          const label = topic.trim() && topic.trim().toLowerCase() !== subject.toLowerCase() ? `${topic.trim()} (${subject})` : subject
-          options.set(subject, { label, subject })
+          const folder = topic.trim() || 'Single lectures'
+          const value = lectureFolderValue(subject, folder)
+          const label = `${folder} (${subject})`
+          options.set(value, { label, subject, folder, value })
         }
-        const next = [...options.values()].sort((a, b) => a.subject.localeCompare(b.subject))
+        const next = [...options.values()].sort((a, b) => a.subject.localeCompare(b.subject) || a.folder.localeCompare(b.folder))
         if (!cancelled) {
           setFolderFocusOptions(next)
-          setFocusSelect(next[0]?.subject ?? '')
+          setLectureFolderSelect(next[0]?.value ?? '')
         }
       } catch {
         if (!cancelled) setFolderFocusOptions([])
@@ -223,16 +239,20 @@ export default function StudyPlanPage() {
     setSelectedFocus((current) => (current.includes(focusSelect) ? current : [...current, focusSelect]))
   }
 
+  const addLectureFolder = () => {
+    const option = folderFocusOptions.find((folder) => folder.value === lectureFolderSelect)
+    if (!option) return
+    setSelectedLectureFolders((current) =>
+      current.some((folder) => folder.subject === option.subject && folder.folder === option.folder)
+        ? current
+        : [...current, { subject: option.subject, folder: option.folder }],
+    )
+    setSelectedFocus((current) => (current.includes(option.subject) ? current : [...current, option.subject]))
+  }
+
   const focusOptions = useMemo(() => {
-    const options = new Map<string, LectureFolderOption>()
-    for (const subjectName of GATE_EE_SUBJECTS) {
-      options.set(subjectName, { subject: subjectName, label: subjectName })
-    }
-    for (const option of folderFocusOptions) {
-      options.set(option.subject, option)
-    }
-    return [...options.values()].sort((a, b) => a.subject.localeCompare(b.subject))
-  }, [folderFocusOptions])
+    return GATE_EE_SUBJECTS.map((subjectName) => ({ subject: subjectName, label: subjectName }))
+  }, [])
 
   const generateAiPlan = async () => {
     if (endTime <= startTime) {
@@ -252,6 +272,7 @@ export default function StudyPlanPage() {
           endTime,
           holiday,
           focusSubjects: selectedFocus,
+          selectedLectureFolders,
           weak: selectedFocus.length ? selectedFocus : GATE_EE_SUBJECTS.slice(6, 9),
           style: studyStyle,
         }),
@@ -259,7 +280,7 @@ export default function StudyPlanPage() {
       const data = await res.json()
       if (Array.isArray(data.previewSlots)) {
         setAiPreviewSlots(data.previewSlots)
-        setAiPlanText(`Generated ${data.previewSlots.length} slots. Review and apply to timetable.`)
+        setAiPlanText(typeof data.message === 'string' ? data.message : `Generated ${data.previewSlots.length} slots. Review and apply to timetable.`)
       } else {
         setAiPlanText(typeof data.error === 'string' ? data.error : 'Unexpected AI response.')
       }
@@ -291,6 +312,7 @@ export default function StudyPlanPage() {
           holiday,
           focusSubjects: selectedFocus,
           selectedSubjects: selectedFocus,
+          selectedLectureFolders,
           fullDayFree: holiday,
           studyHoursPerDay: hoursPerDay,
           style: studyStyle,
@@ -301,7 +323,9 @@ export default function StudyPlanPage() {
         setAiPreviewSlots(data.previewSlots)
         const focusLabel = selectedFocus.length ? selectedFocus.join(', ') : 'balanced GATE EE subjects'
         setAiPlanText(
-          `Generated ${data.previewSlots.length} rescheduled slots using ${hoursPerDay}h/day, ${startTime}-${endTime}, ${holiday ? 'full-day-free spacing' : 'normal spacing'}, and focus: ${focusLabel}. Review and apply.`,
+          typeof data.message === 'string'
+            ? `${data.message} Focus: ${focusLabel}.`
+            : `Generated ${data.previewSlots.length} rescheduled slots using ${hoursPerDay}h/day, ${startTime}-${endTime}, ${holiday ? 'full-day-free spacing' : 'normal spacing'}, and focus: ${focusLabel}. Review and apply.`,
         )
       } else {
         setAiPlanText(typeof data.error === 'string' ? data.error : 'Unexpected AI response.')
@@ -378,7 +402,7 @@ export default function StudyPlanPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl p-4 lg:p-8">
+    <div className="mx-auto w-full min-w-0 max-w-7xl overflow-x-hidden p-4 lg:p-8">
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -393,7 +417,7 @@ export default function StudyPlanPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.15, ease: 'easeOut', delay: 0.05 }}
-        className="bg-card border border-border rounded-xl p-5 mb-6"
+        className="mb-6 rounded-xl border border-border bg-card p-4 sm:p-5"
       >
         <div className="flex items-center gap-2 mb-5">
           <Sparkles size={18} className="text-primary" />
@@ -445,14 +469,14 @@ export default function StudyPlanPage() {
             Holiday / full day free
           </label>
           <div>
-              <label className="block text-xs text-muted-foreground mb-2">Selected subjects</label>
-              <div className="flex gap-2">
-                <select
-                  value={focusSelect}
+            <label className="block text-xs text-muted-foreground mb-2">Selected subjects</label>
+            <div className="flex gap-2">
+              <select
+                value={focusSelect}
                 onChange={(e) => setFocusSelect(e.target.value)}
                 className="min-w-0 flex-1 px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                >
-                <option value="">Select subject or lecture folder</option>
+              >
+                <option value="">Select subject</option>
                 {focusOptions.map((option) => (
                   <option key={option.subject} value={option.subject}>
                     {option.label}
@@ -482,6 +506,54 @@ export default function StudyPlanPage() {
                       style={{ color: fg, backgroundColor: `${fg}1A` }}
                     >
                       {subjectName} x
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-2">Lecture playlist folders</label>
+            <div className="flex gap-2">
+              <select
+                value={lectureFolderSelect}
+                onChange={(e) => setLectureFolderSelect(e.target.value)}
+                className="min-w-0 flex-1 px-3 py-2 rounded-lg bg-input border border-border text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              >
+                <option value="">Select playlist folder</option>
+                {folderFocusOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={addLectureFolder}
+                disabled={!lectureFolderSelect}
+                className="inline-flex items-center justify-center rounded-lg border border-border px-3 text-sm text-foreground hover:bg-secondary disabled:opacity-50"
+                title="Add playlist folder"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+            {selectedLectureFolders.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {selectedLectureFolders.map((folder) => {
+                  const fg = SUBJECT_COLORS[folder.subject] ?? '#CBD5F5'
+                  return (
+                    <button
+                      type="button"
+                      key={`${folder.subject}-${folder.folder}`}
+                      onClick={() =>
+                        setSelectedLectureFolders((current) =>
+                          current.filter((item) => item.subject !== folder.subject || item.folder !== folder.folder),
+                        )
+                      }
+                      className="rounded border border-border px-2 py-1 text-[11px]"
+                      style={{ color: fg, backgroundColor: `${fg}1A` }}
+                    >
+                      {folder.folder} x
                     </button>
                   )
                 })}
@@ -560,10 +632,10 @@ export default function StudyPlanPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.15, ease: 'easeOut', delay: 0.1 }}
-        className="bg-card border border-border rounded-xl overflow-hidden"
+        className="min-w-0 overflow-hidden rounded-xl border border-border bg-card"
       >
         <div className="overflow-x-auto">
-          <div className="min-w-[800px]">
+          <div className="min-w-[640px] sm:min-w-[800px]">
             <div className="grid grid-cols-8 border-b border-border">
               <div className="p-3 text-xs text-muted-foreground" />
               {weeklySchedule.map((day) => (
@@ -573,7 +645,7 @@ export default function StudyPlanPage() {
               ))}
             </div>
 
-            <div className="max-h-[500px] overflow-y-auto">
+            <div className="max-h-[500px] overflow-y-auto overscroll-contain">
               {displayTimeSlots.map((time) => (
                 <div key={time} className="grid grid-cols-8 border-b border-border/50">
                   <div className="p-2 text-xs text-muted-foreground text-right pr-3">{time}</div>

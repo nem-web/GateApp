@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/session";
+import { checkFeatureLimit, quotaResponse, recordUsage } from "@/lib/subscription";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,8 @@ function uploadRoot() {
 export async function GET() {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const exportLimit = await checkFeatureLimit(userId, "exports");
+  if (!exportLimit.ok) return quotaResponse(exportLimit);
 
   try {
     const meta = JSON.parse(
@@ -30,6 +33,7 @@ export async function GET() {
     }
 
     const bytes = await readFile(target);
+    await recordUsage(userId, "exports", 1, { type: "excel_workbook" });
     return new NextResponse(bytes, {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

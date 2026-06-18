@@ -14,9 +14,18 @@ export async function runAICall(
     const prompt = promptBuilder(body as Record<string, unknown>);
     const result = await callAI(userId, type, prompt);
     if (!result.ok) {
+      const quotaExceeded = "quotaExceeded" in result && result.quotaExceeded;
       return NextResponse.json(
-        { error: result.content, content: result.content },
-        { status: result.unavailable ? 503 : 500 },
+        {
+          error: result.content,
+          content: result.content,
+          ...(quotaExceeded && {
+            quotaExceeded: true,
+            upgradeRequired: true,
+            billingUrl: "/api/billing/checkout",
+          }),
+        },
+        { status: quotaExceeded ? 402 : result.unavailable ? 503 : 500 },
       );
     }
     return NextResponse.json({ content: result.content });

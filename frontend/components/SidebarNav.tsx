@@ -19,6 +19,7 @@ import {
   Gamepad2,
   ClipboardCheck,
   Table2,
+  GraduationCap,
   Sun,
   Moon,
   User,
@@ -26,6 +27,7 @@ import {
   LogOut,
   Menu,
   X,
+  CreditCard,
 } from 'lucide-react'
 type NavItem = {
   name: string
@@ -47,6 +49,8 @@ const navItems: NavItem[] = [
   { name: 'Games', href: '/games', icon: Gamepad2 },
   { name: 'Test', href: '/test', icon: ClipboardCheck },
   { name: 'Other', href: '/other', icon: Table2 },
+  { name: 'Billing', href: '/billing', icon: CreditCard },
+  { name: 'GATE EE Guide', href: '/gate-ee', icon: GraduationCap },
 ]
 
 export default function SidebarNav() {
@@ -59,6 +63,7 @@ export default function SidebarNav() {
     name: string
     targetExam: string
     gateDate: string | null
+    isPremium?: boolean
   }>({ name: 'Nem', targetExam: 'GATE-EE', gateDate: '2027-02-05T00:00:00.000Z' })
 
   useEffect(() => {
@@ -69,9 +74,10 @@ export default function SidebarNav() {
     if (status === 'unauthenticated') {
       setProfile({
         name: 'Guest',
-        targetExam: 'View-only',
-        gateDate: '2027-02-05T00:00:00.000Z',
-      })
+          targetExam: 'View-only',
+          gateDate: '2027-02-05T00:00:00.000Z',
+          isPremium: false,
+        })
       return
     }
 
@@ -85,6 +91,7 @@ export default function SidebarNav() {
             name: data.name,
             targetExam: data.targetExam ?? 'GATE-EE',
             gateDate: data.gateDate ?? null,
+            isPremium: Boolean(data.isPremium),
           })
         }
       })
@@ -104,14 +111,20 @@ export default function SidebarNav() {
   return (
     <>
       {/* Mobile Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-background/95 backdrop-blur-sm px-4 py-3 border-b border-border lg:hidden">
+      <div className="fixed left-0 right-0 top-0 z-[70] flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur-sm lg:hidden">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-semibold text-sm">G</span>
           </div>
           <span className="font-semibold text-foreground">GATEPrep Pro</span>
+          <Link href="/pricing" className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+            {profile.isPremium ? 'Premium' : 'Trial'}
+          </Link>
         </div>
         <button
+          type="button"
+          aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={isMobileMenuOpen}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 rounded-lg hover:bg-secondary transition-colors"
         >
@@ -125,10 +138,10 @@ export default function SidebarNav() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-40 bg-background/95 backdrop-blur-sm pt-16 lg:hidden"
+          className="fixed inset-0 z-[65] bg-background/95 pt-16 backdrop-blur-sm lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          <nav className="p-4 space-y-1">
+          <nav aria-label="Mobile navigation" className="p-4 space-y-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href
               return (
@@ -168,6 +181,9 @@ export default function SidebarNav() {
             </div>
             <span className="font-semibold text-foreground">GATEPrep Pro</span>
           </div>
+          <Link href="/pricing" className="mt-3 inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+            {profile.isPremium ? 'Premium' : 'Trial plan'}
+          </Link>
 
           {/* Countdown Badge */}
           <div
@@ -181,7 +197,7 @@ export default function SidebarNav() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        <nav aria-label="Primary navigation" className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -219,6 +235,7 @@ export default function SidebarNav() {
           <button
             type="button"
             disabled={!mounted}
+            aria-label="Toggle color theme"
             onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all disabled:opacity-50"
           >
@@ -270,7 +287,7 @@ export default function SidebarNav() {
 
       {/* Mobile Bottom Tab Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border lg:hidden">
-        <nav className="flex items-center justify-around py-2">
+        <nav aria-label="Mobile primary tabs" className="flex items-center justify-around py-2">
           {[navItems[0], navItems[1], navItems[3], navItems[6], navItems[8]].map((item) => {
             const isActive = pathname === item.href
             return (

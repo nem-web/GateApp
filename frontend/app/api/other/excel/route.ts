@@ -1,8 +1,10 @@
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
+import { requireApprovedForStorage } from "@/lib/admin-access";
 import { getSessionUserId } from "@/lib/session";
 import { toLocalStoragePath, writeLocalUpload } from "@/lib/local-upload-storage";
+import { requireMemoryQuota } from "@/lib/memory-quota";
 
 export const runtime = "nodejs";
 
@@ -57,6 +59,8 @@ export async function GET() {
 export async function POST(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const approvalError = await requireApprovedForStorage(userId);
+  if (approvalError) return approvalError;
 
   const form = await req.formData();
   const replace = String(form.get("replace") ?? "false") === "true";
@@ -64,6 +68,8 @@ export async function POST(req: Request) {
   if (!(file instanceof Blob) || file.size === 0) {
     return NextResponse.json({ error: "Excel file required" }, { status: 400 });
   }
+  const quotaError = await requireMemoryQuota(userId, file.size);
+  if (quotaError) return quotaError;
 
   const existing = await readMeta(userId);
   if (existing && !replace) {
@@ -104,6 +110,8 @@ export async function POST(req: Request) {
 export async function PATCH(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const approvalError = await requireApprovedForStorage(userId);
+  if (approvalError) return approvalError;
 
   const meta = await readMeta(userId);
   if (!meta) return NextResponse.json({ error: "Workbook not found" }, { status: 404 });
@@ -113,6 +121,8 @@ export async function PATCH(req: Request) {
   if (!(file instanceof Blob) || file.size === 0) {
     return NextResponse.json({ error: "Workbook file required" }, { status: 400 });
   }
+  const quotaError = await requireMemoryQuota(userId, file.size);
+  if (quotaError) return quotaError;
 
   const relativePath = meta.storagePath.replace(/^local:\/\//, "");
   await writeLocalUpload(relativePath, Buffer.from(await file.arrayBuffer()));

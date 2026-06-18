@@ -1,4 +1,14 @@
 import SidebarNav from '@/components/SidebarNav'
+import AppBreadcrumbs from '@/components/AppBreadcrumbs'
+import { createMetadata } from '@/lib/seo'
+
+export const metadata = createMetadata({
+  title: 'Study Dashboard',
+  description:
+    'Private GATE EE study dashboard for tracking subjects, streaks, tests, weak areas, tasks, notes, lectures, and flashcards.',
+  path: '/',
+  noIndex: true,
+})
 
 export default function MainAppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,11 +21,14 @@ export default function MainAppLayout({ children }: { children: React.ReactNode 
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
       </div>
       <SidebarNav />
-      <div className="flex min-h-0 flex-1 flex-col lg:pl-[220px] lg:pt-4">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden lg:pl-[220px] lg:pt-4">
         {/* Mobile top spacer for fixed header */}
         <div className="h-14 shrink-0 lg:hidden" aria-hidden />
-        <div className="flex min-h-[calc(100dvh-3.6rem)] flex-1 flex-col pb-24 lg:pb-12 lg:min-h-[calc(100vh-5rem)]">
-          {children}
+        <div className="flex min-h-[calc(100dvh-3.6rem)] min-w-0 flex-1 flex-col pb-24 lg:min-h-[calc(100vh-5rem)] lg:pb-12">
+          <AppBreadcrumbs />
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
         </div>
       </div>
     </div>

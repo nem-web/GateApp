@@ -196,6 +196,9 @@ export default function LoginPage() {
               <Link href="/" className="hover:text-foreground">
                 Continue in view-only mode
               </Link>
+              <Link href="/gate-ee" className="hover:text-foreground">
+                Read the GATE EE preparation guide
+              </Link>
             </div>
           </section>
         </div>

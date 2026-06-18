@@ -3,7 +3,7 @@ import path from "node:path";
 
 const LOCAL_UPLOAD_PREFIX = "local://";
 
-function uploadRoot() {
+export function uploadRoot() {
   return process.env.LOCAL_UPLOAD_DIR ?? path.join(process.cwd(), ".local-uploads");
 }
 

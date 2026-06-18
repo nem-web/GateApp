@@ -2,6 +2,18 @@
 
 This file is a fast context pack for AI agents and future contributors. Read this before changing the app.
 
+## AI Context Index
+
+For future AI agents:
+
+- `AGENTS.md`: repository-level instructions and fast-context search rule.
+- `frontend/AI_CONTEXT.md`: compact active-frontend map with routes, commands, data rules, and editing guidance.
+- `frontend/README.md`: short setup.
+- `frontend/DEPLOY.md`: Vercel deployment details.
+- `frontend/prisma/schema.prisma`: canonical active schema.
+
+When semantic search is available, query the repo with `mcp__fast-context__fast_context_search` and exclude `node_modules`, `.next`, `.git`, `dist`, `build`, and `coverage`. If the tool lacks a Windsurf API key, fall back to `rg` plus the files above.
+
 ## App Identity
 
 GATEPrep Pro is a GATE Electrical Engineering preparation platform. It includes dashboard analytics, study planning, tasks, notes with PDFs, flashcards, lectures, PYQ uploads, cutoff prediction, sample tests, and AI coaching.
@@ -19,11 +31,15 @@ Run these from `frontend/`:
 
 ```bash
 npm install
+npx prisma generate
+npx prisma db push
 npm run dev
 npm run build
 npm run db:migrate
 npm run db:seed
 ```
+
+Local dev URL: `http://localhost:3000` unless Next chooses another port because 3000 is occupied.
 
 Vercel should import the repository with Root Directory set to `frontend`.
 
@@ -38,6 +54,7 @@ Required for full production behavior:
 Optional but important:
 
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: enables Google login in addition to credentials auth.
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`: enables the `/admin` review panel. Store a bcrypt hash only; escape `$` as `\$` in Next.js `.env` files.
 - `GROQ_API_KEY`: primary AI provider.
 - `GEMINI_API_KEY`: fallback AI provider.
 - `ANTHROPIC_API_KEY`: final AI fallback if it starts with `sk-ant`.
@@ -95,6 +112,9 @@ Auth is configured in `frontend/lib/auth.ts`.
 - Credentials login is always enabled.
 - Google login is added only when Google OAuth env vars exist.
 - Sign-in page is `/login`.
+- The configured admin account is verified with `ADMIN_EMAIL` and bcrypt `ADMIN_PASSWORD_HASH`, upserted as `role = ADMIN`, and marked approved on successful credentials login.
+- Regular registered users default to `approved = false`; migration `20260610000100_add_user_approval` marks pre-existing users approved.
+- Storage-heavy upload routes use `requireApprovedForStorage()` so pending users cannot upload PDFs/workbooks before admin approval.
 
 Important behavior: `frontend/lib/session.ts` has a single-user fallback. If no authenticated session exists, APIs upsert and use a default user:
 

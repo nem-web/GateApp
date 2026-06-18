@@ -1,0 +1,8 @@
+ALTER TABLE "User" ADD COLUMN "role" TEXT NOT NULL DEFAULT 'USER';
+ALTER TABLE "User" ADD COLUMN "approved" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "User" ADD COLUMN "approvedAt" TIMESTAMP(3);
+
+UPDATE "User"
+SET "approved" = true,
+    "approvedAt" = COALESCE("approvedAt", CURRENT_TIMESTAMP);
+

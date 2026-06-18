@@ -3,10 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { GATE_EE_SAMPLE_PACK_SLUG } from "@/lib/test-packs";
 import { touchStreakDay } from "@/lib/streak-touch";
+import { checkFeatureLimit, quotaResponse } from "@/lib/subscription";
 
 export async function POST(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const featureLimit = await checkFeatureLimit(userId, "mock_tests");
+  if (!featureLimit.ok) return quotaResponse(featureLimit);
 
   try {
     const body = await req.json();

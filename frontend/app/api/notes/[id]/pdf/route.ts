@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
+import { requireApprovedForStorage } from "@/lib/admin-access";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { writeLocalUpload, toLocalStoragePath } from "@/lib/local-upload-storage";
+import { requireMemoryQuota } from "@/lib/memory-quota";
 import { getSupabaseAdmin, uploadBuffer } from "@/lib/supabase-admin";
 
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const approvalError = await requireApprovedForStorage(userId);
+  if (approvalError) return approvalError;
 
   const note = await prisma.note.findFirst({ where: { id, userId } });
   if (!note) return NextResponse.json({ error: "Note not found" }, { status: 404 });
@@ -17,6 +21,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   if (!(file instanceof Blob) || file.size === 0) {
     return NextResponse.json({ error: "Missing PDF file" }, { status: 400 });
   }
+  const quotaError = await requireMemoryQuota(userId, file.size);
+  if (quotaError) return quotaError;
 
   const buf = Buffer.from(await file.arrayBuffer());
   const safeName = (file as File).name.replace(/[^\w.\-]+/g, "_");

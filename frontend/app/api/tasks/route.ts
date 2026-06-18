@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { byteLength, requireMemoryQuota } from "@/lib/memory-quota";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { resolveSubject } from "@/lib/subject-resolve";
@@ -28,6 +29,18 @@ export async function POST(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
+  const quotaError = await requireMemoryQuota(
+    userId,
+    byteLength(
+      [
+        body.title ?? "Task",
+        body.priority ?? "medium",
+        body.topicTag ?? "",
+        body.repeat ?? "",
+      ].map(String).join(""),
+    ),
+  );
+  if (quotaError) return quotaError;
 
   let subjectId: string | undefined;
   if (typeof body.subjectId === "string") {

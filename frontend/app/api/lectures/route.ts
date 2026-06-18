@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { byteLength, requireMemoryQuota } from "@/lib/memory-quota";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { resolveSubject } from "@/lib/subject-resolve";
@@ -40,6 +41,20 @@ export async function POST(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
+  const quotaError = await requireMemoryQuota(
+    userId,
+    byteLength(
+      [
+        body.title ?? "Lecture",
+        body.topic ?? "",
+        body.youtubeVideoId ?? "",
+        body.storagePath ?? "",
+        body.difficulty ?? "",
+      ].map(String).join(""),
+    ),
+  );
+  if (quotaError) return quotaError;
+
   const subject = await resolveSubject(prisma, typeof body.subject === "string" ? body.subject : null);
 
   const lecture = await prisma.lecture.create({

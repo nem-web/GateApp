@@ -72,6 +72,19 @@ ${baseline}
 Give concise target tiers, not fake guarantees.`;
 
   const ai = await callAI(userId, "college-advisor", prompt);
+  if (!ai.ok && "quotaExceeded" in ai && ai.quotaExceeded) {
+    return NextResponse.json(
+      {
+        error: ai.content,
+        content: ai.content,
+        quotaExceeded: true,
+        upgradeRequired: true,
+        billingUrl: "/api/billing/checkout",
+      },
+      { status: 402 },
+    );
+  }
+
   const content = ai.ok ? `${baseline}\n\n${ai.content}` : baseline;
   return NextResponse.json({ content, baseline, category, score });
 }

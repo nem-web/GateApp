@@ -7,6 +7,8 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import { byteLength, requireMemoryQuota } from "@/lib/memory-quota";
+import { checkFeatureLimit, recordUsage } from "@/lib/subscription";
 
 const GROQ_MODEL = process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile";
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.0-flash";
@@ -105,6 +107,13 @@ async function callAnthropic(prompt: string): Promise<string | null> {
 }
 
 export async function callAI(userId: string | null, type: string, prompt: string) {
+  if (userId) {
+    const aiLimit = await checkFeatureLimit(userId, type.includes("advanced") ? "advanced_ai" : "ai_calls");
+    if (!aiLimit.ok) {
+      return { ok: false as const, quotaExceeded: true as const, content: aiLimit.error };
+    }
+  }
+
   const groq = await callGroq(prompt);
   const gemini = groq ? null : await callGemini(prompt);
   const anthropic = groq || gemini ? null : await callAnthropic(prompt);
@@ -118,9 +127,13 @@ export async function callAI(userId: string | null, type: string, prompt: string
 
   if (userId) {
     try {
+      const quotaError = await requireMemoryQuota(userId, byteLength(`${type}${content}`));
+      if (quotaError) return { ok: false as const, quotaExceeded: true as const, content: "Free memory limit reached. Upgrade to premium to save more AI history." };
+
       await prisma.aISuggestion.create({
         data: { userId, type, content },
       });
+      await recordUsage(userId, type.includes("advanced") ? "advanced_ai" : "ai_calls", 1, { type });
     } catch {
       /* optional persistence */
     }

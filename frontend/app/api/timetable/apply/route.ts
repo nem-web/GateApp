@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { subjectSlugFromTitle } from "@/lib/subject-resolve";
+import { checkFeatureLimit, quotaResponse, recordUsage } from "@/lib/subscription";
 
 type Incoming = {
   dayOfWeek: number;
@@ -19,6 +20,10 @@ export async function POST(req: Request) {
   const rows = body.slots as Incoming[];
   if (!Array.isArray(rows) || rows.length === 0) {
     return NextResponse.json({ error: "slots[] required" }, { status: 400 });
+  }
+  if (String(body.planSource ?? body.slotSource ?? "").includes("ai")) {
+    const featureLimit = await checkFeatureLimit(userId, "timetable_generations");
+    if (!featureLimit.ok) return quotaResponse(featureLimit);
   }
 
   const slotsSnapshot = rows as unknown as Prisma.InputJsonValue;
@@ -72,6 +77,9 @@ export async function POST(req: Request) {
       })),
     });
   });
+  if (String(body.planSource ?? body.slotSource ?? "").includes("ai")) {
+    await recordUsage(userId, "timetable_generations", 1, { slots: normalizedRows.length });
+  }
 
   const slots = await prisma.timetableSlot.findMany({
     where: { userId },

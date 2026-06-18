@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
+import { byteLength, requireMemoryQuota } from "@/lib/memory-quota";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 
@@ -48,6 +49,8 @@ export async function POST(req: Request) {
   if (html.length > 1_000_000) {
     return NextResponse.json({ error: "HTML game is too large. Keep it under 1 MB." }, { status: 400 });
   }
+  const quotaError = await requireMemoryQuota(userId, byteLength(`${title}${html}`));
+  if (quotaError) return quotaError;
 
   const id = `game_${randomUUID().replace(/-/g, "")}`;
   const rows = await prisma.$queryRaw<HtmlGameRow[]>`

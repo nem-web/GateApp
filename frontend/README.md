@@ -2,11 +2,14 @@
 
 Next.js app ready for **Vercel** with Postgres (Prisma), NextAuth, and **free-tier AI** (Groq + Gemini).
 
+For AI/codebase orientation, read [`AI_CONTEXT.md`](./AI_CONTEXT.md) first. The root [`../ARCHITECTURE.md`](../ARCHITECTURE.md) contains the full repository map.
+
 ## Quick start
 
 ```bash
 npm install
 cp .env.example .env
+npx prisma generate
 npx prisma db push
 npm run dev
 ```

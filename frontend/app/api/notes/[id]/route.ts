@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { byteLength, requireMemoryQuota } from "@/lib/memory-quota";
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/session";
 import { resolveSubject } from "@/lib/subject-resolve";
@@ -55,6 +56,18 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   const existing = await prisma.note.findFirst({ where: { id, userId }, include: { subject: true } });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const body = await req.json();
+  const incomingBytes = byteLength(
+    [
+      body.title ?? "",
+      body.content ?? "",
+      body.topic ?? "",
+      Array.isArray(body.tags) ? body.tags.join(",") : "",
+    ].map(String).join(""),
+  );
+  if (incomingBytes > 0) {
+    const quotaError = await requireMemoryQuota(userId, incomingBytes);
+    if (quotaError) return quotaError;
+  }
 
   const subjectId =
     body.subject !== undefined
