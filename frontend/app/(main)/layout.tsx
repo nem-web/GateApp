@@ -8,6 +8,9 @@ export const metadata = createMetadata({
     'Private GATE EE study dashboard for tracking subjects, streaks, tests, weak areas, tasks, notes, lectures, and flashcards.',
   path: '/',
   noIndex: true,
+  verification: {
+    google: 'U-oJ-qB-eYH3oMEy6D4dTQXDvokCVxM7ACfsGKiYnHY',
+  },
 })
 
 export default function MainAppLayout({ children }: { children: React.ReactNode }) {
