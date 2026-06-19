@@ -25,16 +25,21 @@ export async function POST(req: Request) {
   }
 
   await prisma.user.create({
-    data: {
-      email,
-      name: name || email.split('@')[0],
-      password: await hash(password, 12),
-      approved: false,
-      approvedAt: null,
-      branch: 'EE',
-      streamLabel: 'GATE-EE',
-      gateDate: new Date('2027-02-05T00:00:00.000Z'),
-    },
+  data: {
+    email,
+    name: name || email.split('@')[0],
+    password: await hash(password, 12),
+    approved: false,
+    approvedAt: null,
+    branch: 'EE',
+    streamLabel: 'GATE-EE',
+    gateDate: new Date('2027-02-05T00:00:00.000Z'),
+
+    planType: 'TRIAL',
+    subscriptionStatus: 'TRIAL',
+    trialStartedAt: new Date(),
+  },
+})
   })
 
   return NextResponse.json({ ok: true }, { status: 201 })
