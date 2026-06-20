@@ -9,6 +9,8 @@ const legalLinks = [
   ["Disclaimer", "/disclaimer"],
   ["Contact", "/contact-us"],
   ["About", "/about-us"],
+  ["Editorial", "/editorial-policy"],
+  ["Sitemap", "/html-sitemap"],
 ] as const;
 
 export function PublicFooter() {

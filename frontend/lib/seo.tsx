@@ -4,7 +4,7 @@ export const SITE_NAME = 'GATEPrep Pro'
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
   process.env.NEXTAUTH_URL ||
-  'https://gateprep.pro'
+  'https://gateprep.tech'
 
 export type SeoConfig = {
   title: string
