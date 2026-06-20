@@ -218,6 +218,27 @@ export const LEGAL_PAGES: LegalPage[] = [
       },
     ],
   },
+  {
+    slug: "editorial-policy",
+    title: "Editorial Policy",
+    description: "How GATEPrep creates, reviews, updates, and corrects educational content.",
+    sections: [
+      {
+        heading: "Content standards",
+        body: [
+          "Published content should be useful, accurate, exam-relevant, and clearly separated from user opinion or community discussion.",
+          "Authors should prioritize official syllabus alignment, previous-year paper relevance, transparent assumptions, and regular updates when exam patterns or platform features change.",
+        ],
+      },
+      {
+        heading: "Review and corrections",
+        body: [
+          "Admin-managed content supports draft, review, published, and archived states. Corrections can be made through the content management workflow and republished with updated metadata.",
+          "Readers may report errors through the contact page. Material corrections are prioritized when they affect formulas, answer keys, exam guidance, or billing and compliance information.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getLegalPage(slug: string) {
