@@ -9,19 +9,29 @@ export async function POST(req: Request) {
   const password = typeof body?.password === 'string' ? body.password : ''
 
   if (!email || !password) {
-    return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 })
+    return NextResponse.json(
+      { error: 'Email and password are required.' },
+      { status: 400 }
+    )
   }
 
   if (password.length < 8) {
     return NextResponse.json(
       { error: 'Password must be at least 8 characters.' },
-      { status: 400 },
+      { status: 400 }
     )
   }
 
-  const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } })
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  })
+
   if (existing) {
-    return NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 })
+    return NextResponse.json(
+      { error: 'An account with this email already exists.' },
+      { status: 409 }
+    )
   }
 
   await prisma.user.create({
@@ -34,6 +44,10 @@ export async function POST(req: Request) {
       branch: 'EE',
       streamLabel: 'GATE-EE',
       gateDate: new Date('2027-02-05T00:00:00.000Z'),
+
+      planType: 'TRIAL',
+      subscriptionStatus: 'TRIAL',
+      trialStartedAt: new Date(),
     },
   })
 
