@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PublicFooter } from "@/components/PublicFooter";
 import { JsonLd, absoluteUrl, breadcrumbSchema, createMetadata } from "@/lib/seo";
 import { LEGAL_LAST_UPDATED, LEGAL_PAGES, getLegalPage } from "@/lib/legal-pages";
 
@@ -87,7 +86,6 @@ export default async function LegalPage({ params }: PageProps) {
           </div>
         </section>
       </main>
-      <PublicFooter />
     </div>
   );
 }
