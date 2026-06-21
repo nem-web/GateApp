@@ -1,9 +1,12 @@
-.next
-node_modules
-.env
-dist
-coverage
-*.log
-prisma/dev.db
+# Ignore backup files
+/backup/
 
-.vercel
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.*
+
+/frontend/node_modules/
+/frontend/.next/
+/frontend/.vercel/
+
+*.log

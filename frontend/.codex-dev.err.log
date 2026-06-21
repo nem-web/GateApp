@@ -1,0 +1,140 @@
+[browser] Uncaught TypeError: Cannot read properties of undefined (reading 'stack')
+[browser] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+[browser] Uncaught Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RedirectErrorBoundary router={{...}}>
+      <InnerLayoutRouter url="/study-plan" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+        <SegmentViewNode type="page" pagePath="(main)/stu...">
+          <SegmentTrieNode>
+          <ClientPageRoot Component={function StudyPlanPage} serverProvidedParams={{...}}>
+            <StudyPlanPage params={Promise} searchParams={Promise}>
+              <div className="mx-auto ma...">
+                <motion.div>
+                <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{duration:0.15, ...}} ...>
+                  <div className="bg-card bo..." style={{opacity:0, ...}} ref={function useMotionRef.useCallback}>
+                    <div>
+                    <p>
+                    <div className="grid grid-...">
+                      <div>
+                      <div>
+                      <label>
+                      <div>
+                        <label>
+                        <div className="flex gap-2">
+                          <select value="" onChange={function onChange} className="min-w-0 fl...">
+                            <option value="">
++                             Select subject or lecture folder
+-                             Select subject
+                            ...
+                          ...
+                      ...
+                    ...
+                ...
+        ...
+      ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at option (<anonymous>)
+    at StudyPlanPage (app/(main)/study-plan/page.tsx:472:14)
+  470 |           </label>
+  471 |           <div>
+> 472 |             <label className="block text-xs text-muted-foreground mb-2">Selected subjects...
+      |              ^
+  473 |             <div className="flex gap-2">
+  474 |               <select
+  475 |                 value={focusSelect}
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].timetableSlot.findMany()` invocation in
+C:\Users\katha\.cursor\projects\empty-window\frontend\.next\dev\server\chunks\[root-of-the-server]__0rga1yy._.js:661:161
+
+  658 }, {
+  659     status: 401
+  660 });
+→ 661 const slots = await {imported module ./lib/prisma.ts}["prisma"].timetableSlot.findMany(
+Can't reach database server at `aws-1-ap-northeast-2.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-ap-northeast-2.pooler.supabase.com:5432`.
+    at <unknown> (app\api\timetable\route.ts:9:44)
+    at async GET (app\api\timetable\route.ts:9:17)
+   7 |   const userId = await getSessionUserId();
+   8 |   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+>  9 |   const slots = await prisma.timetableSlot.findMany({
+     |                                            ^
+  10 |     where: { userId },
+  11 |     orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
+  12 |     include: { subject: true }, {
+  code: 'P1001',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'TimetableSlot',
+    database_host: 'aws-1-ap-northeast-2.pooler.supabase.com',
+    database_port: 5432
+  }
+}
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].timetableSlot.findMany()` invocation in
+C:\Users\katha\.cursor\projects\empty-window\frontend\.next\dev\server\chunks\[root-of-the-server]__0rga1yy._.js:661:161
+
+  658 }, {
+  659     status: 401
+  660 });
+→ 661 const slots = await {imported module ./lib/prisma.ts}["prisma"].timetableSlot.findMany(
+Can't reach database server at `aws-1-ap-northeast-2.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-ap-northeast-2.pooler.supabase.com:5432`.
+    at <unknown> (app\api\timetable\route.ts:9:44)
+    at async GET (app\api\timetable\route.ts:9:17)
+   7 |   const userId = await getSessionUserId();
+   8 |   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+>  9 |   const slots = await prisma.timetableSlot.findMany({
+     |                                            ^
+  10 |     where: { userId },
+  11 |     orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
+  12 |     include: { subject: true }, {
+  code: 'P1001',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'TimetableSlot',
+    database_host: 'aws-1-ap-northeast-2.pooler.supabase.com',
+    database_port: 5432
+  }
+}
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].timetableSlot.findMany()` invocation in
+C:\Users\katha\.cursor\projects\empty-window\frontend\.next\dev\server\chunks\[root-of-the-server]__0rga1yy._.js:661:161
+
+  658 }, {
+  659     status: 401
+  660 });
+→ 661 const slots = await {imported module ./lib/prisma.ts}["prisma"].timetableSlot.findMany(
+Can't reach database server at `aws-1-ap-northeast-2.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-ap-northeast-2.pooler.supabase.com:5432`.
+    at <unknown> (app\api\timetable\route.ts:9:44)
+    at async GET (app\api\timetable\route.ts:9:17)
+   7 |   const userId = await getSessionUserId();
+   8 |   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+>  9 |   const slots = await prisma.timetableSlot.findMany({
+     |                                            ^
+  10 |     where: { userId },
+  11 |     orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
+  12 |     include: { subject: true }, {
+  code: 'P1001',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'TimetableSlot',
+    database_host: 'aws-1-ap-northeast-2.pooler.supabase.com',
+    database_port: 5432
+  }
+}
