@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { AppProviders } from '@/components/AppProviders'
 import { JsonLd, SITE_NAME, SITE_URL, organizationSchema, websiteSchema } from '@/lib/seo'
 import './globals.css'
@@ -103,7 +104,13 @@ export default function RootLayout({
 
         <AppProviders>
           {children}
-          {process.env.NODE_ENV === 'production' && <Analytics />}
+
+          {process.env.NODE_ENV === 'production' && (
+            <>
+              <Analytics />
+              <SpeedInsights />
+            </>
+          )}
         </AppProviders>
 
         <AssistLoopWidget />
