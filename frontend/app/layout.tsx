@@ -4,6 +4,8 @@ import { Analytics } from '@vercel/analytics/next'
 import { AppProviders } from '@/components/AppProviders'
 import { JsonLd, SITE_NAME, SITE_URL, organizationSchema, websiteSchema } from '@/lib/seo'
 import './globals.css'
+import AssistLoopWidget from "@/components/AssistLoopWidget";
+import { Script } from 'vm'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -98,10 +100,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className="bg-background">
       <body className={`${inter.variable} font-sans antialiased`}>
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
+
         <AppProviders>
           {children}
           {process.env.NODE_ENV === 'production' && <Analytics />}
         </AppProviders>
+
+        <AssistLoopWidget />
       </body>
     </html>
   )
