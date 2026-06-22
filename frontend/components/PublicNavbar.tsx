@@ -90,15 +90,16 @@ function getItemHref(item: NavItem): string {
 }
 
 export function PublicNavbar() {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? "/"
+
+  const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    setIsMobileMenuOpen(false)
-    setOpenDropdown(null)
-  }, [pathname])
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)
@@ -109,6 +110,26 @@ export function PublicNavbar() {
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
+  }
+
+  if (!mounted) {
+    return (
+      <header className="sticky top-0 z-50 w-full bg-background">
+        <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-3 shrink-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
+              <span className="text-xl font-bold text-primary-foreground">
+                G
+              </span>
+            </div>
+
+            <span className="hidden text-lg font-bold text-foreground sm:inline-block">
+              GATEPrep Pro
+            </span>
+          </Link>
+        </div>
+      </header>
+    )
   }
 
   return (

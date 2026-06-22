@@ -1,145 +1,167 @@
 import { NextResponse } from "next/server";
-import { getRazorpayConfig, createRazorpayOrder, createRazorpaySubscription } from "@/lib/razorpay";
 import { getSessionUserId } from "@/lib/session";
-import { PREMIUM_AMOUNT_PAISE, PREMIUM_CURRENCY, formatCurrencyPaise } from "@/lib/subscription";
+import {
+  PREMIUM_AMOUNT_PAISE,
+  PREMIUM_CURRENCY,
+  formatCurrencyPaise,
+} from "@/lib/subscription";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
+const CASHFREE_BASE =
+  process.env.CASHFREE_ENV === "PRODUCTION"
+    ? "https://api.cashfree.com/pg/orders"
+    : "https://sandbox.cashfree.com/pg/orders";
+
 export async function POST(req: Request) {
   const userId = await getSessionUserId();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const config = getRazorpayConfig();
-  if (!config.configured) {
+  if (!userId) {
     return NextResponse.json(
-      {
-        error: "Razorpay is not configured.",
-        setupRequired: true,
-        env: ["RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET", "NEXT_PUBLIC_RAZORPAY_KEY_ID"],
-      },
-      { status: 501 },
+      { error: "Unauthorized" },
+      { status: 401 }
     );
   }
 
-  const body = (await req.json().catch(() => ({}))) as { mode?: string; billingPhone?: string };
-  const mode = body.mode === "one_time" ? "one_time" : "subscription";
+  const body = (await req.json().catch(() => ({}))) as {
+    billingPhone?: string;
+  };
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, name: true },
+    select: {
+      email: true,
+      name: true,
+    },
   });
-  const receipt = `premium_${userId.slice(0, 10)}_${Date.now().toString(36)}`;
+
+  const orderId = `premium_${userId.slice(0, 8)}_${Date.now()}`;
 
   try {
-    if (mode === "subscription" && config.premiumPlanId) {
-      const razorpaySub = await createRazorpaySubscription({
-        planId: config.premiumPlanId,
-        notes: {
-          userId,
-          planType: "PREMIUM",
-          product: "GATEPrep Pro Premium",
-        },
-      });
+    const response = await fetch(CASHFREE_BASE, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-client-id": process.env.CASHFREE_CLIENT_ID!,
+        "x-client-secret": process.env.CASHFREE_CLIENT_SECRET!,
+        "x-api-version": "2023-08-01",
+      },
+      body: JSON.stringify({
+        order_id: orderId,
+        order_amount: PREMIUM_AMOUNT_PAISE / 100,
+        order_currency: PREMIUM_CURRENCY,
 
-      const subscription = await prisma.subscription.create({
+        customer_details: {
+          customer_id: userId,
+          customer_name: user?.name ?? "Student",
+          customer_email: user?.email ?? "",
+          customer_phone:
+            body.billingPhone ?? "9999999999",
+        },
+
+        order_meta: {
+          return_url:
+            `${process.env.NEXTAUTH_URL}/billing?order_id={order_id}`,
+        },
+      }),
+    });
+
+    const cfOrder = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        cfOrder.message ??
+          "Cashfree order creation failed"
+      );
+    }
+
+    const subscription =
+      await prisma.subscription.create({
         data: {
           userId,
           planType: "PREMIUM",
           status: "PENDING",
-          razorpaySubscriptionId: razorpaySub.id,
-          razorpayPlanId: config.premiumPlanId,
+
+          // Reusing existing column
+          razorpayOrderId: cfOrder.order_id,
+
           amountPaise: PREMIUM_AMOUNT_PAISE,
           currency: PREMIUM_CURRENCY,
+
+          interval: "one_time_month",
+
           billingEmail: user?.email,
           billingName: user?.name,
           billingPhone: body.billingPhone,
-          metadata: { mode, razorpayStatus: razorpaySub.status },
+
+          metadata: {
+            provider: "cashfree",
+            cashfreeOrderId: cfOrder.order_id,
+          },
         },
       });
-
-      await prisma.paymentHistory.create({
-        data: {
-          userId,
-          subscriptionId: subscription.id,
-          status: "PENDING",
-          amountPaise: PREMIUM_AMOUNT_PAISE,
-          currency: PREMIUM_CURRENCY,
-          receipt,
-          razorpaySubscriptionId: razorpaySub.id,
-          metadata: { mode },
-        },
-      });
-
-      return NextResponse.json({
-        mode,
-        keyId: config.keyId,
-        subscriptionId: razorpaySub.id,
-        amountPaise: PREMIUM_AMOUNT_PAISE,
-        currency: PREMIUM_CURRENCY,
-        displayAmount: formatCurrencyPaise(PREMIUM_AMOUNT_PAISE),
-        name: "GATEPrep Pro Premium",
-        description: "Monthly Premium subscription",
-        prefill: { name: user?.name ?? "", email: user?.email ?? "", contact: body.billingPhone ?? "" },
-      });
-    }
-
-    const order = await createRazorpayOrder({
-      amountPaise: PREMIUM_AMOUNT_PAISE,
-      currency: PREMIUM_CURRENCY,
-      receipt,
-      notes: {
-        userId,
-        planType: "PREMIUM",
-        product: "GATEPrep Pro Premium",
-      },
-    });
-
-    const subscription = await prisma.subscription.create({
-      data: {
-        userId,
-        planType: "PREMIUM",
-        status: "PENDING",
-        razorpayOrderId: order.id,
-        amountPaise: PREMIUM_AMOUNT_PAISE,
-        currency: PREMIUM_CURRENCY,
-        interval: "one_time_month",
-        billingEmail: user?.email,
-        billingName: user?.name,
-        billingPhone: body.billingPhone,
-        metadata: { mode, razorpayStatus: order.status },
-      },
-    });
 
     await prisma.paymentHistory.create({
       data: {
         userId,
         subscriptionId: subscription.id,
+
         status: "CREATED",
+
         amountPaise: PREMIUM_AMOUNT_PAISE,
         currency: PREMIUM_CURRENCY,
-        receipt,
-        razorpayOrderId: order.id,
-        metadata: { mode },
+
+        receipt: orderId,
+
+        // Reusing existing column
+        razorpayOrderId: cfOrder.order_id,
+
+        metadata: {
+          provider: "cashfree",
+          cashfreeOrderId: cfOrder.order_id,
+        },
       },
     });
 
     return NextResponse.json({
-      mode: "one_time",
-      keyId: config.keyId,
-      orderId: order.id,
-      amountPaise: order.amount,
-      currency: order.currency,
-      displayAmount: formatCurrencyPaise(order.amount),
+      paymentSessionId:
+        cfOrder.payment_session_id,
+
+      orderId: cfOrder.order_id,
+
+      amountPaise: PREMIUM_AMOUNT_PAISE,
+
+      currency: PREMIUM_CURRENCY,
+
+      displayAmount:
+        formatCurrencyPaise(
+          PREMIUM_AMOUNT_PAISE
+        ),
+
       name: "GATEPrep Pro Premium",
-      description: "One month Premium access",
-      prefill: { name: user?.name ?? "", email: user?.email ?? "", contact: body.billingPhone ?? "" },
+
+      description: "Premium Access",
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to start checkout.";
-    return NextResponse.json({ error: message }, { status: 502 });
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Unable to start checkout.";
+
+    return NextResponse.json(
+      { error: message },
+      { status: 502 }
+    );
   }
 }
 
 export async function GET() {
-  return NextResponse.redirect(new URL("/upgrade", process.env.NEXTAUTH_URL ?? "http://localhost:3000"));
+  return NextResponse.redirect(
+    new URL(
+      "/upgrade",
+      process.env.NEXTAUTH_URL ??
+        "http://localhost:3000"
+    )
+  );
 }
