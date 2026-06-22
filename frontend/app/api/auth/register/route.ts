@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       email,
       name: name || email.split('@')[0],
       password: await hash(password, 12),
-      approved: false,
+      approved: true,
       approvedAt: null,
       branch: 'EE',
       streamLabel: 'GATE-EE',
