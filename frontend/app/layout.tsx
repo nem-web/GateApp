@@ -26,6 +26,12 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  verification: {
+    other: {
+      "msvalidate.01": "E49B6F04F0754D48F88A4CBEAB62E58C",
+    },
+  },
+  
   title: {
     default:
       "GATEPrep Pro | GATE EE Study Planner, PYQs, Flashcards and Tests",
