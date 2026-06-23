@@ -6,8 +6,11 @@ export const metadata = createMetadata({
   title: 'Study Dashboard',
   description:
     'Private GATE EE study dashboard for tracking subjects, streaks, tests, weak areas, tasks, notes, lectures, and flashcards.',
-  path: '/dashboard',
-  noIndex: true,
+  path: '/',
+  // noIndex: true,
+  verification: {
+    google: 'U-oJ-qB-eYH3oMEy6D4dTQXDvokCVxM7ACfsGKiYnHY',
+  },
 })
 
 export default function MainAppLayout({ children }: { children: React.ReactNode }) {
