@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "CCMT General category opening and closing GATE scores for M.Tech VLSI & Comm.",
+  "cutoffs": [
+    { "institute": "NIT Trichy", "program": "VLSI System", "open": 790, "close": 710 },
+    { "institute": "NIT Surathkal", "program": "VLSI Design", "open": 760, "close": 680 },
+    { "institute": "NIT Warangal", "program": "Electronic Instrumentation", "open": 720, "close": 650 },
+    { "institute": "MNNIT Allahabad", "program": "Microelectronics & VLSI", "open": 700, "close": 630 },
+    { "institute": "NIT Calicut", "program": "Telecommunication", "open": 670, "close": 600 },
+    { "institute": "MNIT Jaipur", "program": "Embedded Systems", "open": 660, "close": 590 }
+  ]
+}

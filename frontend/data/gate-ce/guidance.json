@@ -1,0 +1,54 @@
+{
+  "pageSubtitle": "PSU strategies, State PSCs, and Structural/Geotech M.Tech guidance for GATE CE.",
+  "bannerText": "Get guidance from CE experts placed in NHAI, RITES, and top structural engineering firms.",
+  "topics": [
+    {
+      "title": "M.Tech Specializations",
+      "icon": "HardHat",
+      "colorClass": "text-blue-400",
+      "bgClass": "bg-blue-400/10",
+      "description": "Choosing between Structural, Geotech, and Transportation.",
+      "points": [
+        "Structural Engineering has the highest cutoffs and placement rates.",
+        "Transportation and Construction Management are highly lucrative fields.",
+        "Apply for interdisciplinary programs like Environmental or Water Resources."
+      ]
+    },
+    {
+      "title": "PSU & State Job Interviews",
+      "icon": "Building",
+      "colorClass": "text-[#f59e0b]",
+      "bgClass": "bg-[#f59e0b]/10",
+      "description": "Cracking interviews for NHAI, RITES, and State Engineering Services.",
+      "points": [
+        "Be ready with IS Code provisions (IS 456, IS 800) for structural queries.",
+        "Questions often revolve around concrete tech, soil testing, and highway materials.",
+        "Prepare practical solutions for site-related challenges."
+      ]
+    },
+    {
+      "title": "Research & SOP (MS/Ph.D.)",
+      "icon": "FileEdit",
+      "colorClass": "text-purple-400",
+      "bgClass": "bg-purple-400/10",
+      "description": "Drafting proposals for Civil Engineering research.",
+      "points": [
+        "Focus on modern challenges: sustainable materials, earthquake resistance, or GIS.",
+        "Highlight software skills like STAAD.Pro, ETABS, or AutoCAD.",
+        "Ensure your B.Tech project aligns with your proposed research area."
+      ]
+    },
+    {
+      "title": "Institute Written Rounds",
+      "icon": "MessageSquare",
+      "colorClass": "text-[#22c55e]",
+      "bgClass": "bg-[#22c55e]/10",
+      "description": "Screening tests for direct Ph.D. and MS admissions.",
+      "points": [
+        "Revise Som (Strength of Materials) and Engineering Math thoroughly.",
+        "Practice drawing Shear Force and Bending Moment Diagrams (SFD/BMD) quickly.",
+        "Expect conceptual cross-questioning during the technical interview."
+      ]
+    }
+  ]
+}

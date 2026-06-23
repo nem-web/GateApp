@@ -1,0 +1,21 @@
+{
+  "pdfDownloadLink": "/downloads/gate-me-syllabus-2026.pdf",
+  "sections": [
+    {
+      "title": "Engineering Mathematics",
+      "topics": "Linear Algebra, Calculus, Differential equations, Complex variables, Probability and Statistics, Numerical Methods."
+    },
+    {
+      "title": "Applied Mechanics and Design",
+      "topics": "Engineering Mechanics (free-body diagrams, trusses, friction, kinematics, dynamics). Mechanics of Materials (stress, strain, Mohr's circle, bending moments, deflection of beams). Theory of Machines (kinematic pairs, cams, gears, flywheels). Vibrations (free and forced, resonance). Machine Design (failure theories, fatigue, design of shafts, springs, bearings)."
+    },
+    {
+      "title": "Fluid Mechanics and Thermal Sciences",
+      "topics": "Fluid Mechanics (fluid properties, manometry, buoyancy, kinematics, Bernoulli's equation, viscous flow, boundary layer, flow through pipes). Heat-Transfer (conduction, convection, radiation, heat exchangers). Thermodynamics (Zeroth, First and Second laws, availability). Applications (Power Engineering, I.C. Engines, Refrigeration and air-conditioning, Turbomachinery)."
+    },
+    {
+      "title": "Materials, Manufacturing and Industrial Engineering",
+      "topics": "Engineering Materials (structure, phase diagrams, heat treatment). Casting, Forming and Joining Processes. Machining and Machine Tool Operations (mechanics of machining, tool life, CNC). Metrology and Inspection (limits, fits, tolerances, CMM). Computer Integrated Manufacturing. Production Planning and Control, Inventory Control, Operations Research (linear programming, PERT, CPM)."
+    }
+  ]
+}

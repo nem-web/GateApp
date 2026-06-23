@@ -1,0 +1,54 @@
+{
+  "pageSubtitle": "VLSI, Embedded Systems, and PSU strategies for GATE ECE qualifiers.",
+  "bannerText": "Connect with ECE mentors placed in ISRO, DRDO, BEL, and pursuing VLSI Design at top IITs.",
+  "topics": [
+    {
+      "title": "M.Tech: VLSI & Embedded Systems",
+      "icon": "Cpu",
+      "colorClass": "text-blue-400",
+      "bgClass": "bg-blue-400/10",
+      "description": "Securing the most sought-after ECE specializations.",
+      "points": [
+        "VLSI design at IISc, IITB, and IITM has the highest placement packages.",
+        "Prepare for coding rounds (C/C++ & Verilog) required by some IITs.",
+        "Keep Microelectronics and Communication Engineering as backup options."
+      ]
+    },
+    {
+      "title": "PSU & Govt. Labs (ISRO/DRDO)",
+      "icon": "Users",
+      "colorClass": "text-[#f59e0b]",
+      "bgClass": "bg-[#f59e0b]/10",
+      "description": "Interview strategies for core electronics recruitment.",
+      "points": [
+        "Focus heavily on Analog & Digital Circuits and Electromagnetic Theory.",
+        "Expect hands-on questions about antenna design and signal processing.",
+        "Prepare a strong final year B.Tech project presentation."
+      ]
+    },
+    {
+      "title": "MS/Ph.D. Research Proposals",
+      "icon": "FileEdit",
+      "colorClass": "text-purple-400",
+      "bgClass": "bg-purple-400/10",
+      "description": "Applying for research programs in Nanoelectronics and Comm Networks.",
+      "points": [
+        "Mention specific tools you know (Cadence, Synopsis, TCAD).",
+        "Keep the SOP focused on why you want to transition from B.Tech to Research.",
+        "Read 2-3 recent papers published by your target panel/professor."
+      ]
+    },
+    {
+      "title": "Technical Interviews",
+      "icon": "MessageSquare",
+      "colorClass": "text-[#22c55e]",
+      "bgClass": "bg-[#22c55e]/10",
+      "description": "Institute-specific screening for M.Tech/MS admissions.",
+      "points": [
+        "Be ready to draw CMOS circuits and explain their working.",
+        "Revise bode plots, Nyquist criteria, and basic network theorems.",
+        "Brush up on basic programming—it's increasingly asked in ECE interviews."
+      ]
+    }
+  ]
+}

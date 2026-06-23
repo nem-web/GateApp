@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "CCMT General category opening and closing GATE scores for M.Tech CS/IT.",
+  "cutoffs": [
+    { "institute": "NIT Trichy", "program": "Computer Science & Engineering", "open": 820, "close": 760 },
+    { "institute": "NIT Surathkal", "program": "Information Security", "open": 780, "close": 720 },
+    { "institute": "NIT Warangal", "program": "Computer Science & Engineering", "open": 800, "close": 740 },
+    { "institute": "IIIT Allahabad", "program": "Software Engineering", "open": 750, "close": 690 },
+    { "institute": "MNNIT Allahabad", "program": "Computer Science & Engineering", "open": 740, "close": 680 },
+    { "institute": "MNIT Jaipur", "program": "Computer Engineering", "open": 710, "close": 640 }
+  ]
+}

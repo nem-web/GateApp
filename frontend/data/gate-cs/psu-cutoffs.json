@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE marks (out of 100) for PSU and Govt roles in CS & IT.",
+  "cutoffs": [
+    { "name": "ONGC", "role": "Programming Officer", "gen": 76.67, "obc": 70.33, "sc": 61.00, "st": 55.67 },
+    { "name": "POSOCO", "role": "Executive Trainee (CS)", "gen": 74.33, "obc": 68.67, "sc": 58.33, "st": 52.00 },
+    { "name": "IOCL", "role": "Information Systems Officer", "gen": 75.00, "obc": 69.00, "sc": 59.67, "st": 53.33 },
+    { "name": "CRIS", "role": "Assistant Software Engineer", "gen": 71.67, "obc": 65.33, "sc": 55.00, "st": 50.00 },
+    { "name": "BARC", "role": "Scientific Officer (CS)", "gen": 78.00, "obc": 72.00, "sc": 63.33, "st": 58.00 },
+    { "name": "DRDO", "role": "Scientist 'B' (CS)", "gen": 79.33, "obc": 73.67, "sc": 64.00, "st": 59.33 }
+  ]
+}

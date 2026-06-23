@@ -1,0 +1,25 @@
+{
+  "pdfDownloadLink": "/downloads/gate-ee-syllabus-2026.pdf",
+  "sections": [
+    {
+      "title": "Engineering Mathematics",
+      "topics": "Linear Algebra, Calculus, Differential Equations, Complex Variables, Probability and Statistics."
+    },
+    {
+      "title": "Electric Circuits",
+      "topics": "Network elements, network theorems, transient response of dc and ac networks, sinusoidal steady-state analysis, resonance, two port networks, three phase circuits."
+    },
+    {
+      "title": "Electromagnetic Fields",
+      "topics": "Coulomb's Law, Electric Field Intensity, Electric Flux Density, Gauss's Law, Divergence, Electric field and potential due to point, line, plane and spherical charge distributions."
+    },
+    {
+      "title": "Electrical Machines",
+      "topics": "Single phase transformer, three phase transformers, DC machines, Induction machines, Synchronous machines."
+    },
+    {
+      "title": "Power Systems",
+      "topics": "Power generation concepts, ac and dc transmission concepts, models and performance of transmission lines and cables, series and shunt compensation, electric field distribution."
+    }
+  ]
+}

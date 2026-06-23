@@ -1,0 +1,30 @@
+{
+  "pageTitle": "Instrumentation Engineering PYQs",
+  "description": "Previous year GATE papers, mid-semester, and end-semester question papers for IN.",
+  "resources": [
+    {
+      "id": "in-pyq-001",
+      "title": "GATE 2024 Instrumentation Paper",
+      "subtitle": "GATE • Official Paper",
+      "description": "Complete question paper with the official answer key for GATE 2024 IN.",
+      "tags": ["GATE", "2024", "Full Paper"],
+      "downloadLink": "/downloads/in/pyq/gate_in_2024.pdf"
+    },
+    {
+      "id": "in-pyq-002",
+      "title": "Sensors and Industrial Instrumentation",
+      "subtitle": "2023 • End Sem",
+      "description": "Covers resistive, capacitive, inductive, and piezoelectric transducers.",
+      "tags": ["Sensors", "Transducers", "End Sem"],
+      "downloadLink": "/downloads/in/pyq/sensors_endsem_2023.pdf"
+    },
+    {
+      "id": "in-pyq-003",
+      "title": "Process Control Systems",
+      "subtitle": "2023 • Mid Sem",
+      "description": "Focuses on P, PI, PID controllers, and tuning methods like Ziegler-Nichols.",
+      "tags": ["Process Control", "PID", "Mid Sem"],
+      "downloadLink": "/downloads/in/pyq/process_control_midsem_2023.pdf"
+    }
+  ]
+}

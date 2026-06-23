@@ -1,0 +1,30 @@
+{
+  "pageTitle": "Electrical Engineering PYQs",
+  "description": "Previous year question papers, mid-sems, and end-sems for EE.",
+  "resources": [
+    {
+      "id": "ee-pyq-001",
+      "title": "Power Electronics - End Sem",
+      "subtitle": "2024 • Semester 6",
+      "description": "Covers Voltage Source Inverters, Space Vector Modulation, and Motor Braking.",
+      "tags": ["Power Electronics", "End Sem", "VSI"],
+      "downloadLink": "/downloads/ee/pyq/pe_endsem_2024.pdf"
+    },
+    {
+      "id": "ee-pyq-002",
+      "title": "Electric Drives & Control - Mid Sem",
+      "subtitle": "2023 • Semester 6",
+      "description": "Focuses on Simulink models and induction motor control strategies.",
+      "tags": ["Electric Drives", "Mid Sem", "Control"],
+      "downloadLink": "/downloads/ee/pyq/drives_midsem_2023.pdf"
+    },
+    {
+      "id": "ee-pyq-003",
+      "title": "Power Systems - End Sem",
+      "subtitle": "2023 • Semester 5",
+      "description": "Fault analysis, load flow studies, and switchgear protection.",
+      "tags": ["Power Systems", "End Sem"],
+      "downloadLink": "/downloads/ee/pyq/ps_endsem_2023.pdf"
+    }
+  ]
+}

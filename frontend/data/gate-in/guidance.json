@@ -1,0 +1,54 @@
+{
+  "pageSubtitle": "Process control, sensor tech, and allied M.Tech branch strategies for GATE IN.",
+  "bannerText": "Connect with IN mentors working at BARC, ONGC, or pursuing control systems at IIT Bombay.",
+  "topics": [
+    {
+      "title": "M.Tech Admissions (Interdisciplinary)",
+      "icon": "Activity",
+      "colorClass": "text-blue-400",
+      "bgClass": "bg-blue-400/10",
+      "description": "Leveraging GATE IN for top EE/ECE specializations.",
+      "points": [
+        "IN students can apply for Control Systems, Applied Optics, and Biomedical programs.",
+        "Check eligibility criteria carefully—some EE/ECE programs accept IN scores.",
+        "Microelectronics and VLSI are available to IN students at select IITs."
+      ]
+    },
+    {
+      "title": "PSU & Core Job Interviews",
+      "icon": "Users",
+      "colorClass": "text-[#f59e0b]",
+      "bgClass": "bg-[#f59e0b]/10",
+      "description": "Cracking ONGC, IOCL, GAIL, and BARC interviews.",
+      "points": [
+        "Focus heavily on Process Control, PID tuning, and Transducers.",
+        "Be ready to design measurement bridges and op-amp signal conditioning circuits.",
+        "Understand industrial communication protocols (HART, Modbus)."
+      ]
+    },
+    {
+      "title": "SOP & Research (MS/Ph.D.)",
+      "icon": "FileEdit",
+      "colorClass": "text-purple-400",
+      "bgClass": "bg-purple-400/10",
+      "description": "Proposals for Sensors, IoT, and Control Engineering.",
+      "points": [
+        "Highlight hands-on experience with microcontrollers (Arduino, STM32, PLC).",
+        "Align research interests with smart sensors, robotics, or automation.",
+        "Keep the SOP concise and technical."
+      ]
+    },
+    {
+      "title": "Written Tests & Screenings",
+      "icon": "MessageSquare",
+      "colorClass": "text-[#22c55e]",
+      "bgClass": "bg-[#22c55e]/10",
+      "description": "Tackling institute-specific exams for MS/Ph.D.",
+      "points": [
+        "Network Theory and Analog Electronics are major components.",
+        "Brush up on Engineering Math (especially Laplace transforms and Matrices).",
+        "Be prepared for circuit analysis on a whiteboard."
+      ]
+    }
+  ]
+}

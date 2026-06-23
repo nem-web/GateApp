@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE score requirements for top M.Tech CS & AI programs.",
+  "cutoffs": [
+    { "institute": "IISc Bangalore", "program": "Computer Science and Engineering", "gen": 890, "obc": 810, "scst": 620 },
+    { "institute": "IISc Bangalore", "program": "Artificial Intelligence", "gen": 875, "obc": 795, "scst": 600 },
+    { "institute": "IIT Bombay", "program": "Computer Science", "gen": 870, "obc": 790, "scst": 580 },
+    { "institute": "IIT Delhi", "program": "Computer Technology", "gen": 850, "obc": 770, "scst": 550 },
+    { "institute": "IIT Madras", "program": "Computer Science & Engineering", "gen": 845, "obc": 765, "scst": 540 },
+    { "institute": "IIT Kanpur", "program": "Data Science & Engineering", "gen": 830, "obc": 750, "scst": 520 }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "pageSubtitle": "Interviews, counselling, and admission strategies for GATE EE qualifiers.",
+  "bannerText": "Connect with our GATE EE mentors who have secured AIR under 100 and are currently placed in top PSUs like PGCIL & NTPC, or pursuing M.Tech at IISc/IITs.",
+  "topics": [
+    {
+      "title": "M.Tech Admissions (COAP & CCMT)",
+      "icon": "CalendarCheck",
+      "colorClass": "text-blue-400",
+      "bgClass": "bg-blue-400/10",
+      "description": "Navigate centralized portals for IITs (COAP) and NITs (CCMT).",
+      "points": [
+        "Target Power Systems, Power Electronics, and Control Systems at top IITs.",
+        "Understand 'Accept & Freeze', 'Retain & Wait', and 'Reject' rules.",
+        "Track individual IIT application deadlines for EE specializations."
+      ]
+    },
+    {
+      "title": "PSU Interview Preparation",
+      "icon": "Users",
+      "colorClass": "text-[#f59e0b]",
+      "bgClass": "bg-[#f59e0b]/10",
+      "description": "Crack technical & HR rounds at major PSUs like PGCIL, NTPC, ONGC.",
+      "points": [
+        "Revise Machines and Power Systems—expect deep cross-questioning.",
+        "Prepare for practical scenario-based questions (e.g., grid failure, fault analysis).",
+        "Stay updated with India's renewable energy sector and EV policies."
+      ]
+    },
+    {
+      "title": "SOP & Research Proposal",
+      "icon": "FileEdit",
+      "colorClass": "text-purple-400",
+      "bgClass": "bg-purple-400/10",
+      "description": "Drafting the perfect SOP for MS/Ph.D. in Electrical Engineering.",
+      "points": [
+        "Align your B.Tech project with the professor's research in Smart Grids or Drives.",
+        "Highlight simulation skills (MATLAB/Simulink) strongly in your SOP.",
+        "Secure strong Letters of Recommendation (LORs) from core EE faculty."
+      ]
+    },
+    {
+      "title": "Written Tests & Institute Interviews",
+      "icon": "MessageSquare",
+      "colorClass": "text-[#22c55e]",
+      "bgClass": "bg-[#22c55e]/10",
+      "description": "Tackle institute-specific written tests for direct Ph.D. or MS programs.",
+      "points": [
+        "Brush up on Engineering Math and Networks—heavily tested in written rounds.",
+        "Be prepared to draw and analyze circuits on a whiteboard.",
+        "Practice deriving formulas for control system stability."
+      ]
+    }
+  ]
+}

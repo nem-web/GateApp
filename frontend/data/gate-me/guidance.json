@@ -1,0 +1,54 @@
+{
+  "pageSubtitle": "PSU interviews and core manufacturing/thermal M.Tech strategies for GATE ME.",
+  "bannerText": "Connect with ME mentors working at ONGC, IOCL, BARC, or pursuing M.Tech in Design at top IITs.",
+  "topics": [
+    {
+      "title": "M.Tech Admissions (Design & Thermal)",
+      "icon": "Wrench",
+      "colorClass": "text-blue-400",
+      "bgClass": "bg-blue-400/10",
+      "description": "Navigating COAP and CCMT for Mechanical streams.",
+      "points": [
+        "Machine Design and Thermal Engineering remain the most competitive.",
+        "Consider interdisciplinary branches like Aerospace or Industrial Engineering.",
+        "Keep track of 'Accept & Freeze' rules carefully during COAP rounds."
+      ]
+    },
+    {
+      "title": "Maharatna PSU Interviews",
+      "icon": "Users",
+      "colorClass": "text-[#f59e0b]",
+      "bgClass": "bg-[#f59e0b]/10",
+      "description": "Crack technical rounds at ONGC, IOCL, NTPC, GAIL.",
+      "points": [
+        "Fluid Mechanics and Thermodynamics are heavily tested.",
+        "Be prepared to draw T-S, P-V diagrams for various cycles on the spot.",
+        "Have a deep understanding of your B.Tech project and its practical applications."
+      ]
+    },
+    {
+      "title": "BARC & ISRO Specific Prep",
+      "icon": "Target",
+      "colorClass": "text-purple-400",
+      "bgClass": "bg-purple-400/10",
+      "description": "Scientific officer interviews require a different approach.",
+      "points": [
+        "Interviews can last 45-60 minutes focusing purely on core concepts.",
+        "You will be asked to choose your top 4-5 favorite subjects—choose wisely.",
+        "Focus on derivations, basic physics, and 'why' things happen."
+      ]
+    },
+    {
+      "title": "Written Tests for MS/Ph.D.",
+      "icon": "MessageSquare",
+      "colorClass": "text-[#22c55e]",
+      "bgClass": "bg-[#22c55e]/10",
+      "description": "Securing research seats in top institutions.",
+      "points": [
+        "Engineering Mathematics is critical for passing written screening tests.",
+        "SOPs should highlight knowledge of software like ANSYS, SolidWorks, or MATLAB.",
+        "Familiarize yourself with the professor's recent publications."
+      ]
+    }
+  ]
+}

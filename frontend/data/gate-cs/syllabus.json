@@ -1,0 +1,45 @@
+{
+  "pdfDownloadLink": "/downloads/gate-cs-syllabus-2026.pdf",
+  "sections": [
+    {
+      "title": "Engineering & Discrete Mathematics",
+      "topics": "Discrete Mathematics: Propositional and first-order logic, Sets, relations, functions, partial orders, lattices, Groups, Graphs (connectivity, matching, coloring), Combinatorics. Engineering Math: Linear Algebra (Matrices, eigenvalues), Calculus (Limits, maxima/minima), Probability (Random variables, distributions, Bayes Theorem)."
+    },
+    {
+      "title": "Digital Logic",
+      "topics": "Boolean algebra, combinational and sequential circuits, minimization, number representations, and computer arithmetic (fixed and floating-point)."
+    },
+    {
+      "title": "Computer Organization and Architecture",
+      "topics": "Machine instructions and addressing modes, ALU, data path and control unit, instruction pipelining, memory hierarchy (cache, main, secondary), I/O interface (interrupt and DMA)."
+    },
+    {
+      "title": "Programming and Data Structures",
+      "topics": "Programming in C, recursion, arrays, stacks, queues, linked lists, trees, binary search trees, binary heaps, and graphs."
+    },
+    {
+      "title": "Algorithms",
+      "topics": "Searching, sorting, hashing, asymptotic worst-case time and space complexity, algorithm design techniques (greedy, dynamic programming, divide-and-conquer), graph traversals, minimum spanning trees, shortest paths."
+    },
+    {
+      "title": "Theory of Computation",
+      "topics": "Regular expressions and finite automata, context-free grammars and push-down automata, regular and context-free languages, pumping lemma, Turing machines, and undecidability."
+    },
+    {
+      "title": "Compiler Design",
+      "topics": "Lexical analysis, parsing, syntax-directed translation, runtime environments, intermediate code generation, local optimization, and data flow analyses."
+    },
+    {
+      "title": "Operating Systems",
+      "topics": "System calls, processes, threads, inter-process communication, concurrency and synchronization, deadlock, CPU and I/O scheduling, memory management, virtual memory, and file systems."
+    },
+    {
+      "title": "Databases",
+      "topics": "ER-model, relational model (relational algebra, tuple calculus, SQL), integrity constraints, normal forms, file organization, indexing (B and B+ trees), transactions, and concurrency control."
+    },
+    {
+      "title": "Computer Networks",
+      "topics": "Concept of layering (OSI, TCP/IP), switching, data link layer (framing, error detection, MAC), routing protocols, fragmentation, IPv4, NAT, transport layer (TCP, UDP), and application layer protocols (DNS, SMTP, HTTP)."
+    }
+  ]
+}

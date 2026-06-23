@@ -1,0 +1,33 @@
+{
+  "pdfDownloadLink": "/downloads/gate-ce-syllabus-2026.pdf",
+  "sections": [
+    {
+      "title": "Engineering Mathematics",
+      "topics": "Linear Algebra, Calculus, Ordinary Differential Equations (ODE), Partial Differential Equations (PDE), Probability and Statistics, Numerical Methods."
+    },
+    {
+      "title": "Structural Engineering",
+      "topics": "Engineering Mechanics, Solid Mechanics, Structural Analysis, Construction Materials and Management, Concrete Structures, Steel Structures."
+    },
+    {
+      "title": "Geotechnical Engineering",
+      "topics": "Soil Mechanics (Index properties, consolidation, shear strength), Foundation Engineering (Shallow and deep foundations, earth pressure theories)."
+    },
+    {
+      "title": "Water Resources Engineering",
+      "topics": "Fluid Mechanics, Hydraulics, Hydrology (Hydrologic cycle, hydrographs), Irrigation (Crop water requirements, canal design, dams)."
+    },
+    {
+      "title": "Environmental Engineering",
+      "topics": "Water and Waste-Water Quality and Treatment, Air Pollution (Sources, impacts, control), Municipal Solid Wastes."
+    },
+    {
+      "title": "Transportation Engineering",
+      "topics": "Highway Pavements (Design and materials), Traffic Engineering, Railway Systems, Airport Planning and Design."
+    },
+    {
+      "title": "Geomatics Engineering",
+      "topics": "Principles of Surveying (Errors, leveling, traversing, triangulation), Photogrammetry, Basics of Remote Sensing and GIS."
+    }
+  ]
+}

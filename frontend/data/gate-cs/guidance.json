@@ -1,0 +1,54 @@
+{
+  "pageSubtitle": "Admissions, coding rounds, and AI/ML strategies for GATE CS qualifiers.",
+  "bannerText": "Get 1-on-1 guidance from CS mentors at IIT Bombay and IISc Bangalore to navigate your M.Tech journey.",
+  "topics": [
+    {
+      "title": "M.Tech Specializations (AI/ML & Systems)",
+      "icon": "Code",
+      "colorClass": "text-blue-400",
+      "bgClass": "bg-blue-400/10",
+      "description": "Choosing the right path in top-tier institutes.",
+      "points": [
+        "AI/Data Science cutoffs are extremely high; apply strategically via COAP.",
+        "Don't ignore Computer Systems/Architecture—core companies prefer these.",
+        "Look into interdisciplinary programs like Computational Data Science (CDS)."
+      ]
+    },
+    {
+      "title": "Institute Coding & Written Rounds",
+      "icon": "Terminal",
+      "colorClass": "text-[#f59e0b]",
+      "bgClass": "bg-[#f59e0b]/10",
+      "description": "Many IITs conduct their own coding tests for MS/Ph.D. admissions.",
+      "points": [
+        "Practice LeetCode Medium problems (Arrays, Graphs, DP).",
+        "Revise Probability, Linear Algebra, and Discrete Math for written tests.",
+        "Be prepared to write C/C++ or Python code on a whiteboard."
+      ]
+    },
+    {
+      "title": "PSU Recruitment (NIC, DRDO, POSOCO)",
+      "icon": "Users",
+      "colorClass": "text-purple-400",
+      "bgClass": "bg-purple-400/10",
+      "description": "Navigating government sector jobs for CS/IT.",
+      "points": [
+        "PSU interviews heavily focus on DBMS, OS, and Networking.",
+        "Be ready to explain your B.Tech project architecture in detail.",
+        "Understand the current e-governance and cyber-security landscape in India."
+      ]
+    },
+    {
+      "title": "SOP for MS/Ph.D. in CS",
+      "icon": "FileEdit",
+      "colorClass": "text-[#22c55e]",
+      "bgClass": "bg-[#22c55e]/10",
+      "description": "Drafting an SOP that stands out to CS faculty.",
+      "points": [
+        "Clearly state your research interest (e.g., NLP, Cryptography, Distributed Systems).",
+        "Mention open-source contributions or relevant GitHub projects.",
+        "Align your goals with the specific labs available at the institute."
+      ]
+    }
+  ]
+}

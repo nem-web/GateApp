@@ -5,18 +5,17 @@ import { premiumExpiryFromNow } from "@/lib/subscription";
 
 export const runtime = "nodejs";
 
+// Cashfree Webhook Signature requires combining the timestamp and the raw body
 function verifyCashfreeSignature(
   rawBody: string,
-  signature: string | null
+  signature: string | null,
+  timestamp: string | null
 ) {
-  if (!signature) return false;
+  if (!signature || !timestamp) return false;
 
   const expected = crypto
-    .createHmac(
-      "sha256",
-      process.env.CASHFREE_WEBHOOK_SECRET!
-    )
-    .update(rawBody)
+    .createHmac("sha256", process.env.CASHFREE_WEBHOOK_SECRET!)
+    .update(timestamp + rawBody)
     .digest("base64");
 
   return expected === signature;
@@ -25,87 +24,58 @@ function verifyCashfreeSignature(
 export async function POST(req: Request) {
   const rawBody = await req.text();
 
-  const signature =
-    req.headers.get("x-webhook-signature");
+  const signature = req.headers.get("x-webhook-signature");
+  const timestamp = req.headers.get("x-webhook-timestamp");
 
-  if (
-    !verifyCashfreeSignature(
-      rawBody,
-      signature
-    )
-  ) {
+  if (!verifyCashfreeSignature(rawBody, signature, timestamp)) {
     return NextResponse.json(
-      {
-        error:
-          "Invalid webhook signature.",
-      },
-      {
-        status: 400,
-      }
+      { error: "Invalid webhook signature." },
+      { status: 400 }
     );
   }
 
   const payload = JSON.parse(rawBody);
+  const eventType = payload.type ?? "";
 
-  const eventType =
-    payload.type ?? "";
-
-  if (
-    eventType !==
-    "PAYMENT_SUCCESS_WEBHOOK"
-  ) {
+  // Cashfree event for successful payment
+  if (eventType !== "PAYMENT_SUCCESS_WEBHOOK") {
     return NextResponse.json({
       ok: true,
       ignored: true,
     });
   }
 
-  const orderId =
-    payload.data?.order?.order_id;
-
-  const paymentId =
-    payload.data?.payment
-      ?.cf_payment_id;
+  const orderId = payload.data?.order?.order_id;
+  
+  // cf_payment_id is often a number in Cashfree v3, converting to string for DB storage
+  const paymentId = payload.data?.payment?.cf_payment_id?.toString(); 
 
   if (!orderId) {
     return NextResponse.json(
-      {
-        error:
-          "Missing order id.",
-      },
-      {
-        status: 400,
-      }
+      { error: "Missing order id." },
+      { status: 400 }
     );
   }
 
-  const subscription =
-    await prisma.subscription.findFirst({
-      where: {
-        razorpayOrderId:
-          orderId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+  // Using razorpayOrderId to match your existing Prisma schema
+  const subscription = await prisma.subscription.findFirst({
+    where: {
+      razorpayOrderId: orderId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   if (!subscription) {
     return NextResponse.json(
-      {
-        error:
-          "Subscription not found.",
-      },
-      {
-        status: 404,
-      }
+      { error: "Subscription not found." },
+      { status: 404 }
     );
   }
 
   const now = new Date();
-
-  const expiryDate =
-    premiumExpiryFromNow();
+  const expiryDate = premiumExpiryFromNow();
 
   await prisma.$transaction([
     prisma.subscription.update({
@@ -114,35 +84,28 @@ export async function POST(req: Request) {
       },
       data: {
         status: "ACTIVE",
-        startDate:
-          subscription.startDate ??
-          now,
+        startDate: subscription.startDate ?? now,
         expiryDate,
-        renewalDate:
-          expiryDate,
+        renewalDate: expiryDate,
 
-        razorpayPaymentId:
-          paymentId,
+        // Using razorpayPaymentId to match your existing Prisma schema
+        razorpayPaymentId: paymentId,
 
         metadata: {
           ...(subscription.metadata as object),
-          provider:
-            "cashfree",
-          cashfreeOrderId:
-            orderId,
+          provider: "cashfree",
+          cashfreeOrderId: orderId,
         },
       },
     }),
 
     prisma.paymentHistory.updateMany({
       where: {
-        razorpayOrderId:
-          orderId,
+        razorpayOrderId: orderId,
       },
       data: {
         status: "CAPTURED",
-        razorpayPaymentId:
-          paymentId,
+        razorpayPaymentId: paymentId,
         paidAt: now,
       },
     }),
@@ -152,10 +115,8 @@ export async function POST(req: Request) {
         id: subscription.userId,
       },
       data: {
-        planType:
-          "PREMIUM",
-        subscriptionStatus:
-          "ACTIVE",
+        planType: "PREMIUM",
+        subscriptionStatus: "ACTIVE",
       },
     }),
   ]);

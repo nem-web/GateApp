@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE marks (out of 100) for PSU interviews in Civil Engineering.",
+  "cutoffs": [
+    { "name": "NHAI", "role": "Deputy Manager (Tech)", "gen": 74.67, "obc": 69.33, "sc": 58.00, "st": 54.67 },
+    { "name": "ONGC", "role": "AEE (Civil)", "gen": 76.33, "obc": 71.00, "sc": 59.67, "st": 56.00 },
+    { "name": "RITES", "role": "Engineer (Civil)", "gen": 72.00, "obc": 66.67, "sc": 55.33, "st": 51.00 },
+    { "name": "IOCL", "role": "Officer / Engineer", "gen": 73.67, "obc": 68.00, "sc": 56.67, "st": 53.33 },
+    { "name": "EIL", "role": "Management Trainee", "gen": 71.33, "obc": 65.67, "sc": 54.00, "st": 50.00 },
+    { "name": "HPCL", "role": "Civil Officer", "gen": 70.67, "obc": 65.00, "sc": 53.33, "st": 49.33 }
+  ]
+}

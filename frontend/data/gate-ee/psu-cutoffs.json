@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE marks (out of 100) for PSU interviews in Electrical Engineering.",
+  "cutoffs": [
+    { "name": "PGCIL", "role": "Executive Trainee (EE)", "gen": 75.33, "obc": 71.67, "sc": 60.33, "st": 58.00 },
+    { "name": "ONGC", "role": "AEE (Electrical)", "gen": 73.00, "obc": 68.33, "sc": 55.67, "st": 52.33 },
+    { "name": "NTPC", "role": "Engineering Executive Trainee", "gen": 72.67, "obc": 67.00, "sc": 54.33, "st": 51.00 },
+    { "name": "IOCL", "role": "Officer / Engineer", "gen": 71.33, "obc": 65.67, "sc": 52.00, "st": 49.33 },
+    { "name": "HPCL", "role": "Electrical Officer", "gen": 70.00, "obc": 64.33, "sc": 50.67, "st": 48.00 },
+    { "name": "BHEL", "role": "Engineer Trainee", "gen": 74.00, "obc": 69.33, "sc": 56.67, "st": 53.00 }
+  ]
+}

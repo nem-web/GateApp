@@ -1,377 +1,317 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react' // <-- Added next-auth hook
+import { Menu, X, Star, FileText, BookOpen, Zap, Target, ArrowRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Menu,
-  X,
-  ChevronDown,
-  Calculator,
-  BarChart3,
-  BookOpen,
-  GraduationCap,
-  FileText,
-  Youtube,
-  Brain,
-  PenTool,
-  Zap,
-  Search,
-  LogIn,
-  Sparkles,
-  Layers,
-  Award,
-} from 'lucide-react'
 
-type NavLink = {
-  name: string
-  href: string
-  icon?: React.ComponentType<{ className?: string }>
-}
-
-type NavDropdown = {
-  name: string
-  icon: React.ComponentType<{ className?: string }>
-  links: NavLink[]
-}
-
-type NavItem = NavLink | NavDropdown
-
-const publicNavItems: NavItem[] = [
-  { name: 'Home', href: '/', icon: Layers },
-  {
-    name: 'Tools',
-    icon: Zap,
-    links: [
-      { name: 'Marks Calculator', href: '/gate-marks-calculator', icon: Calculator },
-      { name: 'Rank Predictor', href: '/gate-rank-predictor', icon: BarChart3 },
-      { name: 'Study Planner', href: '/study-planner', icon: Brain },
-      { name: 'Revision Tracker', href: '/revision-tracker', icon: Award },
-      { name: 'Daily Quiz', href: '/daily-quiz', icon: PenTool },
-    ],
-  },
-  {
-    name: 'Resources',
-    icon: BookOpen,
-    links: [
-      { name: 'Blogs', href: '/blog', icon: FileText },
-      { name: 'PYQ Papers', href: '/pyq', icon: BookOpen },
-      { name: 'Formula Sheets', href: '/free-formula-sheets', icon: Sparkles },
-      { name: 'Free Notes', href: '/free-gate-notes', icon: FileText },
-      { name: 'Vlogs', href: '/vlogs', icon: Youtube },
-    ],
-  },
-  {
-    name: 'Subjects',
-    icon: GraduationCap,
-    links: [
-      { name: 'All Subjects', href: '/subject', icon: Layers },
-      { name: 'GATE EE', href: '/gate-ee', icon: GraduationCap },
-      { name: 'GATE CS', href: '/gate-cs', icon: GraduationCap },
-      { name: 'GATE EC', href: '/gate-ec', icon: GraduationCap },
-      { name: 'GATE ECE', href: '/gate-ece', icon: GraduationCap },
-      { name: 'GATE CE', href: '/gate-ce', icon: GraduationCap },
-      { name: 'GATE ME', href: '/gate-me', icon: GraduationCap },
-      { name: 'GATE IN', href: '/gate-in', icon: GraduationCap },
-    ],
-  },
-  { name: 'Pricing', href: '/pricing', icon: Sparkles },
-  { name: 'Search', href: '/search', icon: Search },
+// --- Mega Menu Data Structure ---
+const popularResources = [
+  { name: 'GATE EE PYQs', href: '/resources/gate-ee/pyq' },
+  { name: 'Subject-wise PYQs', href: '/pyq/subjects' },
+  { name: 'Formula Sheets', href: '/formula-sheets' },
+  { name: 'Rank Predictor', href: '/tools/rank-predictor' },
 ]
 
-function isDropdown(item: NavItem): item is NavDropdown {
-  return 'links' in item && Array.isArray((item as NavDropdown).links)
-}
+const practiceResources = [
+  { name: 'Previous Year Papers', href: '/pyqs' },
+  { name: 'Topic-wise PYQs', href: '/pyq/topics' },
+  { name: 'Mock Tests', href: '/mock-tests' },
+  { name: 'Daily Quiz', href: '/daily-quiz' },
+]
 
-function getItemHref(item: NavItem): string {
-  if (isDropdown(item)) return item.links[0]?.href ?? '#'
-  return item.href
-}
+const materialResources = [
+  { name: 'Subject Notes', href: '/free-notes' },
+  { name: 'Revision Shortcuts', href: '/revision-notes' },
+]
+
+const toolResources = [
+  { name: 'Marks Calculator', href: '/tools/marks-calculator' },
+  { name: 'Study Planner', href: '/study-planner' },
+]
+
+// Removed "Login" from static array to handle it conditionally based on auth state
+const baseNavItems = [
+  { name: 'Blog', href: '/blog' },
+  { name: 'Resources', href: '/resources' },
+  { name: 'Pricing', href: '/pricing' },
+]
 
 export function PublicNavbar() {
   const pathname = usePathname() ?? "/"
-
-  // const [mounted, setMounted] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
-  const [scrolled, setScrolled] = useState(false)
-
-  // useEffect(() => {
-  //   setMounted(true)
-  // }, [])
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  
+  // Use NextAuth session to check logged in status
+  const { data: session, status } = useSession()
+  const isLoading = status === 'loading'
+  const isLoggedIn = !!session
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
   }
 
-  // if (!mounted) {
-  //   return (
-  //     <header className="sticky top-0 z-50 w-full bg-background">
-  //       <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-  //         <Link href="/" className="flex items-center gap-3 shrink-0">
-  //           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-  //             <span className="text-xl font-bold text-primary-foreground">
-  //               G
-  //             </span>
-  //           </div>
-
-  //           <span className="hidden text-lg font-bold text-foreground sm:inline-block">
-  //             GATEPrep Pro
-  //           </span>
-  //         </Link>
-  //       </div>
-  //     </header>
-  //   )
-  // }
-
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? 'bg-background/80 shadow-sm backdrop-blur-xl border-b border-border/40'
-          : 'bg-background'
-      }`}
-    >
-      <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full bg-[#111216] border-b border-gray-800/50 text-white">
+      <div className="mx-auto flex h-[4.5rem] w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* Logo */}
+        {/* Left: Logo & Brand */}
         <Link 
           href="/" 
           className="flex items-center gap-3 shrink-0 group transition-transform duration-200 hover:scale-[1.02]"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-sm group-hover:shadow-md transition-all">
-            <span className="text-xl font-bold text-primary-foreground">G</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#22c55e] shadow-sm">
+            <span className="text-base font-bold text-black">G</span>
           </div>
-          <span className="hidden text-lg font-bold text-foreground sm:inline-block tracking-tight">
+          <span className="text-base font-semibold tracking-wide text-white">
             GATEPrep Pro
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav aria-label="Public navigation" className="hidden lg:flex items-center gap-1.5">
-          {publicNavItems.map((item) => {
-            if (isDropdown(item)) {
-              const isOpen = openDropdown === item.name
-              const hasActiveChild = item.links.some((link) => isActive(link.href))
-
-              return (
-                <div
-                  key={item.name}
-                  className="relative"
-                  onMouseEnter={() => setOpenDropdown(item.name)}
-                  onMouseLeave={() => setOpenDropdown(null)}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenDropdown(isOpen ? null : item.name)}
-                    className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
-                      hasActiveChild
-                        ? 'text-primary bg-primary/5'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
-                    }`}
-                    aria-expanded={isOpen}
-                    aria-haspopup="true"
-                  >
-                    {item.icon && <item.icon className="h-4 w-4" />}
-                    {item.name}
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 opacity-70 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180' : ''
+        {/* Right: Desktop Navigation */}
+        <div className="hidden lg:flex items-center gap-8 h-full">
+          <nav aria-label="Public navigation" className="flex items-center gap-8 h-full">
+            {baseNavItems.map((item) => {
+              
+              // MEGA MENU LOGIC
+              if (item.name === 'Resources') {
+                return (
+                  <div key={item.name} className="group relative h-full flex items-center">
+                    <Link
+                      href={item.href}
+                      className={`text-sm font-medium transition-colors hover:text-white ${
+                        isActive(item.href) ? 'text-white' : 'text-gray-400'
                       }`}
-                    />
-                  </button>
+                    >
+                      {item.name}
+                    </Link>
 
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ duration: 0.15, ease: "easeOut" }}
-                        className="absolute left-0 top-full mt-2 w-60 rounded-xl border border-border/50 bg-background/95 backdrop-blur-xl p-2.5 shadow-xl ring-1 ring-black/5"
-                      >
-                        <div className="flex flex-col gap-1">
-                          {item.links.map((link) => (
-                            <Link
-                              key={link.href}
-                              href={link.href}
-                              onClick={() => setOpenDropdown(null)}
-                              className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                                isActive(link.href)
-                                  ? 'bg-primary/10 text-primary'
-                                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
-                              }`}
-                            >
-                              {link.icon && (
-                                <link.icon 
-                                  className={`h-4 w-4 shrink-0 transition-colors ${
-                                    isActive(link.href) ? 'text-primary' : 'text-muted-foreground/70'
-                                  }`} 
-                                />
-                              )}
-                              {link.name}
-                            </Link>
-                          ))}
+                    <div className="invisible absolute top-full z-50 w-[900px] -right-16 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                      
+                      {/* Actual Mega Menu Card */}
+                      <div className="rounded-2xl border border-gray-800 bg-[#111216] p-8 shadow-2xl cursor-default">
+                        <div className="grid grid-cols-4 gap-8">
+                          
+                          {/* Col 1: Most Popular */}
+                          <div>
+                            <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
+                              <Star className="h-4 w-4 text-[#22c55e]" /> Most Popular
+                            </h3>
+                            <div className="space-y-3">
+                              {popularResources.map((link) => (
+                                <Link key={link.name} href={link.href} className="block text-sm text-gray-400 transition-colors hover:text-white">
+                                  {link.name}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Col 2: PYQs & Practice */}
+                          <div>
+                            <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
+                              <FileText className="h-4 w-4 text-[#22c55e]" /> PYQs & Practice
+                            </h3>
+                            <div className="space-y-3">
+                              {practiceResources.map((link) => (
+                                <Link key={link.name} href={link.href} className="block text-sm text-gray-400 transition-colors hover:text-white">
+                                  {link.name}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Col 3: Notes & Tools (Stacked) */}
+                          <div className="space-y-8">
+                            <div>
+                              <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
+                                <BookOpen className="h-4 w-4 text-[#22c55e]" /> Notes & Subjects
+                              </h3>
+                              <div className="space-y-3">
+                                {materialResources.map((link) => (
+                                  <Link key={link.name} href={link.href} className="block text-sm text-gray-400 transition-colors hover:text-white">
+                                    {link.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                            <div>
+                              <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
+                                <Zap className="h-4 w-4 text-[#22c55e]" /> Smart Tools
+                              </h3>
+                              <div className="space-y-3">
+                                {toolResources.map((link) => (
+                                  <Link key={link.name} href={link.href} className="block text-sm text-gray-400 transition-colors hover:text-white">
+                                    {link.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Col 4: Featured Card */}
+                          <div className="h-full">
+                            <div className="flex h-full flex-col justify-between rounded-xl border border-[#22c55e]/20 bg-gradient-to-br from-[#22c55e]/10 to-transparent p-5">
+                              <div>
+                                <span className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-[#22c55e]">
+                                  Featured
+                                </span>
+                                <h4 className="mb-2 text-base font-bold text-white">
+                                  GATE 2027 Complete Roadmap
+                                </h4>
+                                <p className="text-xs leading-relaxed text-gray-400">
+                                  Step-by-step preparation strategy, timeline, and resource guide to crack GATE.
+                                </p>
+                              </div>
+                              <Link
+                                href="/login?mode=register"
+                                className="mt-6 flex w-full items-center justify-center rounded-lg bg-[#22c55e] px-4 py-2 text-xs font-bold text-black transition-colors hover:bg-[#22c55e]/90"
+                              >
+                                Start Free
+                              </Link>
+                            </div>
+                          </div>
+
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )
-            }
 
-            const href = getItemHref(item)
-            return (
+                        {/* Mega Menu Footer */}
+                        <div className="mt-8 border-t border-gray-800 pt-6">
+                          <Link
+                            href="/resources"
+                            className="group inline-flex items-center text-sm font-medium text-[#22c55e] transition-colors hover:text-[#22c55e]/80"
+                          >
+                            View all resources <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+
+              // STANDARD LINKS
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`text-sm font-medium transition-colors hover:text-white ${
+                    isActive(item.href) ? 'text-white' : 'text-gray-400'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
+
+            {/* CONDITIONAL LOGIN LINK (Only show if logged out and not loading) */}
+            {!isLoggedIn && !isLoading && (
               <Link
-                key={item.name}
-                href={href}
-                className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
-                  isActive(href)
-                    ? 'text-primary bg-primary/5'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
+                href="/login"
+                className={`text-sm font-medium transition-colors hover:text-white ${
+                  isActive('/login') ? 'text-white' : 'text-gray-400'
                 }`}
               >
-                {item.icon && <item.icon className="h-4 w-4" />}
-                {item.name}
+                Login
               </Link>
-            )
-          })}
-        </nav>
+            )}
+          </nav>
 
-        {/* Desktop Auth Button - FIXED PADDING & STYLING */}
-        <div className="hidden lg:flex items-center gap-4">
-          <Link
-            href="/login"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:bg-primary/90 active:scale-95"
-          >
-            <LogIn className="h-4 w-4" />
-            Sign In
-          </Link>
+          {/* Top Right CTA Button (Conditional Based on Auth) */}
+          <div className="min-w-[110px] flex justify-end">
+            {!isLoading && (
+              isLoggedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center justify-center rounded-lg bg-[#22c55e] px-5 py-2 text-sm font-semibold text-black transition-all duration-200 hover:bg-[#22c55e]/90 hover:-translate-y-0.5"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/login?mode=register"
+                  className="inline-flex items-center justify-center rounded-lg bg-[#22c55e] px-5 py-2 text-sm font-semibold text-black transition-all duration-200 hover:bg-[#22c55e]/90 hover:-translate-y-0.5"
+                >
+                  Start Free
+                </Link>
+              )
+            )}
+          </div>
         </div>
 
         {/* Mobile Menu Toggle */}
         <button
           type="button"
           aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={isMobileMenuOpen}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="inline-flex items-center justify-center rounded-lg p-2.5 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors lg:hidden active:scale-95"
+          className="inline-flex items-center justify-center rounded-lg p-2.5 text-gray-400 hover:bg-gray-800 hover:text-white transition-colors lg:hidden"
         >
           {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-xl lg:hidden shadow-inner"
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden border-t border-gray-800 bg-[#111216] lg:hidden"
           >
-            <nav aria-label="Mobile public navigation" className="space-y-1.5 px-4 py-6 max-h-[calc(100vh-4.5rem)] overflow-y-auto">
-              {publicNavItems.map((item) => {
-                if (isDropdown(item)) {
-                  const isOpen = openDropdown === item.name
-                  const hasActiveChild = item.links.some((link) => isActive(link.href))
-
-                  return (
-                    <div key={item.name} className="flex flex-col gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setOpenDropdown(isOpen ? null : item.name)}
-                        className={`flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                          hasActiveChild
-                            ? 'text-primary bg-primary/5'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
-                        }`}
-                      >
-                        <span className="flex items-center gap-3">
-                          {item.icon && <item.icon className="h-5 w-5 opacity-80" />}
-                          {item.name}
-                        </span>
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform duration-300 ${
-                            isOpen ? 'rotate-180 text-foreground' : 'opacity-70'
-                          }`}
-                        />
-                      </button>
-
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="ml-6 mt-1 space-y-1 border-l-2 border-border/50 pl-4 py-1">
-                              {item.links.map((link) => (
-                                <Link
-                                  key={link.href}
-                                  href={link.href}
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                  className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
-                                    isActive(link.href)
-                                      ? 'bg-primary/10 text-primary'
-                                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
-                                  }`}
-                                >
-                                  {link.icon && (
-                                    <link.icon 
-                                      className={`h-4 w-4 shrink-0 ${
-                                        isActive(link.href) ? 'text-primary' : 'text-muted-foreground/70'
-                                      }`} 
-                                    />
-                                  )}
-                                  {link.name}
-                                </Link>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )
-                }
-
-                const href = getItemHref(item)
-                return (
-                  <Link
-                    key={item.name}
-                    href={href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                      isActive(href)
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
-                    }`}
-                  >
-                    {item.icon && <item.icon className="h-5 w-5 opacity-80" />}
-                    {item.name}
-                  </Link>
-                )
-              })}
-
-              <div className="mt-6 border-t border-border/50 pt-6">
+            <nav className="flex flex-col space-y-2 px-4 py-6">
+              {baseNavItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                    isActive(item.href)
+                      ? 'bg-gray-800 text-white'
+                      : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              
+              {/* Conditional Mobile Login Link */}
+              {!isLoggedIn && !isLoading && (
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-base font-semibold text-primary-foreground shadow-sm hover:shadow-md hover:bg-primary/90 transition-all active:scale-[0.98]"
+                  className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                    isActive('/login')
+                      ? 'bg-gray-800 text-white'
+                      : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
+                  }`}
                 >
-                  <LogIn className="h-5 w-5" />
-                  Sign In
+                  Login
                 </Link>
+              )}
+
+              <div className="mt-4 border-t border-gray-800 pt-4">
+                {/* Conditional Mobile CTA */}
+                {!isLoading && (
+                  isLoggedIn ? (
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex w-full items-center justify-center rounded-lg bg-[#22c55e] px-4 py-3 text-sm font-semibold text-black transition-colors hover:bg-[#22c55e]/90"
+                    >
+                      Dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/login?mode=register"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex w-full items-center justify-center rounded-lg bg-[#22c55e] px-4 py-3 text-sm font-semibold text-black transition-colors hover:bg-[#22c55e]/90"
+                    >
+                      Start Free
+                    </Link>
+                  )
+                )}
               </div>
             </nav>
           </motion.div>

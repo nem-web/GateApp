@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE marks (out of 100) for PSU interviews in Mechanical Engineering.",
+  "cutoffs": [
+    { "name": "ONGC", "role": "AEE (Mechanical)", "gen": 78.33, "obc": 73.00, "sc": 62.67, "st": 58.33 },
+    { "name": "NTPC", "role": "Engineering Executive Trainee", "gen": 77.00, "obc": 71.67, "sc": 61.00, "st": 56.67 },
+    { "name": "IOCL", "role": "Officer / Engineer", "gen": 76.67, "obc": 71.00, "sc": 60.33, "st": 55.00 },
+    { "name": "BPCL", "role": "Management Trainee", "gen": 75.33, "obc": 69.67, "sc": 59.00, "st": 54.33 },
+    { "name": "HPCL", "role": "Mechanical Officer", "gen": 74.00, "obc": 68.33, "sc": 57.67, "st": 53.00 },
+    { "name": "GAIL", "role": "Executive Trainee (Mech)", "gen": 76.00, "obc": 70.33, "sc": 59.67, "st": 55.67 }
+  ]
+}

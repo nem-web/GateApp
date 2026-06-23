@@ -3,6 +3,17 @@ import type { Metadata } from "next";
 import { createMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { readingTimeMinutes, plainTextFromMarkdown } from "@/lib/content-utils";
+import { 
+  ArrowRight, 
+  ArrowDown, 
+  Calculator, 
+  TrendingUp, 
+  Zap, 
+  Bell, 
+  ChevronRight, 
+  PenSquare 
+} from "lucide-react";
+import NewsletterForm from '@/components/NewsletterForm'
 
 export const metadata: Metadata = createMetadata({
   title: "GATE Preparation Blog",
@@ -20,6 +31,28 @@ const formatDate = (date: Date) => {
   }).format(date);
 };
 
+// Helper for dynamic category colors
+const getCategoryColor = (category: string | null) => {
+  const cat = (category || "").toUpperCase();
+  if (cat.includes("PYQ")) return "bg-blue-500/10 text-blue-400";
+  if (cat.includes("STRATEGY")) return "bg-[#22c55e]/10 text-[#22c55e]";
+  if (cat.includes("GUIDE")) return "bg-[#f59e0b]/10 text-[#f59e0b]";
+  if (cat.includes("CUTOFF") || cat.includes("RANK")) return "bg-pink-500/10 text-pink-400";
+  if (cat.includes("TOOL")) return "bg-teal-500/10 text-teal-400";
+  return "bg-[#22c55e]/10 text-[#22c55e]";
+};
+
+// Helper for dynamic author avatar colors
+const getAuthorAvatar = (name: string | null) => {
+  const initial = (name?.[0] || "G").toUpperCase();
+  const colorMap: Record<string, string> = {
+    N: "bg-blue-500 text-white",
+    P: "bg-[#f59e0b] text-black",
+    A: "bg-pink-500 text-white",
+  };
+  return colorMap[initial] || "bg-[#22c55e] text-black";
+};
+
 export default async function BlogIndexPage() {
   const posts = await prisma.blogPost.findMany({
     where: { status: "PUBLISHED" },
@@ -28,63 +61,286 @@ export default async function BlogIndexPage() {
     take: 48,
   });
 
+  const featuredPost = posts[0];
+  const latestPosts = posts.slice(1);
+
   return (
-    <div className="relative min-h-screen bg-background text-foreground flex flex-col items-center">
-      {/* Decorative background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-
-      {/* Aligned with standard max-w-7xl constraint to match Navbar/Footer */}
-      <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col gap-12 px-4 py-12 sm:px-6 lg:px-8 md:py-16">
-        <header className="space-y-5 max-w-3xl">
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            GATE Preparation Blog
-          </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Strategies, subject guides, PYQ analysis, formula revision, and exam planning content published by GATEPrep authors.
-          </p>
-        </header>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <Link
-              key={post.id}
-              href={`/blog/${post.slug}`}
-              className="group flex flex-col rounded-2xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/5"
-            >
-              <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground mb-4">
-                <span className="uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-md">
-                  {post.category ?? "GATE"}
+    <div className="min-h-screen bg-[#0e0f14] text-white font-sans pt-10 pb-24 selection:bg-[#22c55e]/30">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        
+        {/* PAGE HEADER */}
+        <div className="mb-14 flex flex-col md:flex-row md:items-start justify-between gap-8">
+          <div className="space-y-6 flex-1">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-1.5 rounded-full bg-[#22c55e]" />
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                GATE Preparation Blog
+              </h1>
+            </div>
+            <p className="max-w-2xl text-gray-400 text-sm sm:text-base">
+              Strategies, subject guides, PYQ analysis, formula revision, and exam planning.
+            </p>
+            
+            {/* CATEGORY PILLS */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <span className="cursor-pointer rounded-full bg-[#22c55e] px-5 py-1.5 text-xs font-semibold text-black transition-transform hover:scale-105">
+                All
+              </span>
+              {["PYQ Analysis", "Preparation Strategy", "Subject Guides", "Cutoff & Rank", "Tools"].map((cat) => (
+                <span 
+                  key={cat} 
+                  className="cursor-pointer rounded-full border border-gray-800 bg-transparent px-5 py-1.5 text-xs font-medium text-gray-400 transition-colors hover:border-gray-600 hover:text-white"
+                >
+                  {cat}
                 </span>
-                <span className="flex items-center gap-1.5 opacity-80">
-                  {readingTimeMinutes(plainTextFromMarkdown(post.content))} min read
-                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* WRITE POST CTA BUTTON */}
+          <Link
+            href="/blog/write"
+            className="group flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#22c55e] px-6 py-3.5 text-sm font-bold text-black transition-all hover:bg-[#22c55e]/90 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-95"
+          >
+            <PenSquare className="h-4 w-4" />
+            Write a Post
+          </Link>
+        </div>
+
+        {/* MAIN LAYOUT GRID */}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_340px]">
+          
+          {/* LEFT: CONTENT AREA */}
+          <div className="space-y-12">
+            
+            {/* FEATURED POST */}
+            {featuredPost && (
+              <section>
+                <div className="mb-6 flex items-center gap-4">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Featured</span>
+                  <div className="h-px flex-1 bg-gray-800/60" />
+                </div>
+                
+                <Link
+                  href={`/blog/${featuredPost.slug}`}
+                  className="group flex flex-col md:flex-row overflow-hidden rounded-2xl border border-gray-800 bg-[#111216] transition-colors hover:border-gray-700"
+                >
+                  <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                      <div className="mb-5 flex flex-wrap items-center gap-3 text-xs">
+                        <span className={`rounded px-2.5 py-1 font-bold tracking-wide uppercase ${getCategoryColor(featuredPost.category)}`}>
+                          {featuredPost.category || "PYQ ANALYSIS"}
+                        </span>
+                        <span className="text-gray-400 font-medium">
+                          {readingTimeMinutes(plainTextFromMarkdown(featuredPost.content))} min read
+                        </span>
+                        <span className="rounded bg-gray-800/50 border border-gray-700/50 px-2 py-0.5 text-gray-400 ml-auto md:ml-0">
+                          Featured
+                        </span>
+                      </div>
+                      <h2 className="mb-4 text-2xl font-bold leading-snug text-white transition-colors group-hover:text-[#22c55e]">
+                        {featuredPost.title}
+                      </h2>
+                      <p className="line-clamp-3 text-sm leading-relaxed text-gray-400">
+                        {featuredPost.excerpt}
+                      </p>
+                    </div>
+
+                    <div className="mt-8 flex items-center justify-between text-xs font-medium">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${getAuthorAvatar(featuredPost.author?.name)}`}>
+                          {(featuredPost.author?.name?.[0] || "G").toUpperCase()}
+                        </div>
+                        <span className="text-gray-300">{featuredPost.author?.name || "GATEPrep Author"}</span>
+                        <span className="text-gray-600 mx-1">•</span>
+                        <span className="text-gray-500">{formatDate(featuredPost.publishedAt || new Date())}</span>
+                      </div>
+                      <span className="flex items-center gap-1 text-[#22c55e] opacity-90 transition-transform group-hover:translate-x-1">
+                        Read article <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Abstract Graphic representing Subject Weightage */}
+                  <div className="hidden md:flex w-[300px] border-l border-gray-800/50 bg-[#0B0C10] flex-col items-center justify-center p-8">
+                    <div className="relative flex h-full w-full flex-col items-center justify-center space-y-6 opacity-80 group-hover:opacity-100 transition-opacity">
+                       <div className="flex w-full items-center justify-between gap-4">
+                         <div className="flex-1 space-y-3">
+                            <div className="h-3 w-full rounded-full bg-gray-800"></div>
+                            <div className="h-3 w-4/5 rounded-full bg-gray-800"></div>
+                            <div className="h-3 w-full rounded-full bg-gray-800"></div>
+                         </div>
+                         <div className="h-16 w-16 rounded-full border-[6px] border-gray-800/50 relative">
+                            <div className="absolute top-0 right-0 h-1/2 w-1/2 border-t-[6px] border-r-[6px] border-[#22c55e] rounded-tr-full -m-[6px]"></div>
+                         </div>
+                       </div>
+                       <div className="flex w-full gap-2 pt-4">
+                          <div className="h-6 w-1/4 rounded bg-[#22c55e]"></div>
+                          <div className="h-6 w-1/4 rounded bg-blue-500"></div>
+                          <div className="h-6 w-1/4 rounded bg-[#f59e0b]"></div>
+                          <div className="h-6 w-1/4 rounded bg-[#22c55e]"></div>
+                       </div>
+                       <p className="text-[10px] text-gray-500 font-medium">Subject Weightage Chart</p>
+                    </div>
+                  </div>
+                </Link>
+              </section>
+            )}
+
+            {/* LATEST ARTICLES */}
+            <section>
+              <div className="mb-6 flex items-center gap-4">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Latest Articles</span>
+                <div className="h-px flex-1 bg-gray-800/60" />
+                <span className="text-[10px] text-gray-500">{latestPosts.length} articles</span>
               </div>
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {latestPosts.map((post) => (
+                  <Link
+                    key={post.id}
+                    href={`/blog/${post.slug}`}
+                    className="group flex flex-col rounded-2xl border border-gray-800 bg-[#111216] p-6 transition-colors hover:border-gray-700"
+                  >
+                    <div className="mb-4 flex items-center justify-between text-xs">
+                      <span className={`rounded px-2.5 py-1 font-bold tracking-wide uppercase ${getCategoryColor(post.category)}`}>
+                        {post.category || "GATE"}
+                      </span>
+                      <span className="text-gray-400 font-medium">
+                        {readingTimeMinutes(plainTextFromMarkdown(post.content))} min read
+                      </span>
+                    </div>
+                    
+                    <h2 className="mb-3 text-lg font-bold leading-tight text-white transition-colors group-hover:text-[#22c55e]">
+                      {post.title}
+                    </h2>
+                    
+                    <p className="mb-6 line-clamp-3 text-sm leading-relaxed text-gray-400 flex-1">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center justify-between border-t border-gray-800/60 pt-4 text-xs font-medium">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${getAuthorAvatar(post.author?.name)}`}>
+                          {(post.author?.name?.[0] || "G").toUpperCase()}
+                        </div>
+                        <span className="text-gray-300">{post.author?.name || "GATEPrep Author"}</span>
+                      </div>
+                      <span className="text-gray-500">
+                        {post.publishedAt ? formatDate(post.publishedAt) : ""}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            {/* LOAD MORE BUTTON */}
+            <div className="flex justify-center pt-4">
+              <button className="flex items-center gap-2 rounded-lg border border-gray-700 px-6 py-2.5 text-sm font-medium text-[#22c55e] transition-colors hover:border-[#22c55e]/50 hover:bg-[#22c55e]/5">
+                Load more articles <ArrowDown className="h-4 w-4" />
+              </button>
+            </div>
+
+          </div>
+
+          {/* RIGHT: SIDEBAR */}
+          <aside className="space-y-6">
+            
+            {/* Widget: Quick Tools */}
+            <div className="rounded-2xl border border-gray-800 bg-[#111216] p-6">
+              <h3 className="text-base font-bold text-white">Quick Tools</h3>
+              <p className="mb-6 text-xs text-gray-400 mt-1">Essential tools for GATE prep</p>
               
-              <h2 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-200">
-                {post.title}
-              </h2>
+              <div className="space-y-3">
+                <Link href="/gate-marks-calculator" className="group flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0C10] p-3 transition-colors hover:border-gray-700">
+                   <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#22c55e]/10 text-[#22c55e]">
+                         <Calculator className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">Marks Calculator</p>
+                        <p className="text-[10px] text-gray-500">Estimate your score</p>
+                      </div>
+                   </div>
+                   <ChevronRight className="h-4 w-4 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-gray-400" />
+                </Link>
+                
+                <Link href="/gate-rank-predictor" className="group flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0C10] p-3 transition-colors hover:border-gray-700">
+                   <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#22c55e]/10 text-[#22c55e]">
+                         <TrendingUp className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">Rank Predictor</p>
+                        <p className="text-[10px] text-gray-500">Predict your AIR</p>
+                      </div>
+                   </div>
+                   <ChevronRight className="h-4 w-4 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-gray-400" />
+                </Link>
+
+                <Link href="/daily-quiz" className="group flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0C10] p-3 transition-colors hover:border-gray-700">
+                   <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500">
+                         <Zap className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">Daily Quiz</p>
+                        <p className="text-[10px] text-gray-500">5 questions daily</p>
+                      </div>
+                   </div>
+                   <ChevronRight className="h-4 w-4 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-gray-400" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Widget: Popular Subjects */}
+            <div className="rounded-2xl border border-gray-800 bg-[#111216] p-6">
+              <h3 className="text-base font-bold text-white">Popular Subjects</h3>
+              <p className="mb-6 text-xs text-gray-400 mt-1">Browse articles by subject</p>
               
-              <p className="mt-3 mb-6 line-clamp-3 text-sm leading-relaxed text-muted-foreground flex-1">
-                {post.excerpt}
+              <div className="flex flex-wrap gap-2.5">
+                {[
+                  { name: "Networks", color: "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" },
+                  { name: "Signals", color: "bg-[#22c55e]/20 text-[#22c55e] hover:bg-[#22c55e]/30" },
+                  { name: "Control", color: "bg-[#f59e0b]/20 text-[#f59e0b] hover:bg-[#f59e0b]/30" },
+                  { name: "Maths", color: "bg-teal-500/20 text-teal-300 hover:bg-teal-500/30" },
+                  { name: "Power Systems", color: "bg-pink-500/20 text-pink-300 hover:bg-pink-500/30" },
+                  { name: "EMT", color: "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" },
+                  { name: "Machines", color: "bg-[#22c55e]/20 text-[#22c55e] hover:bg-[#22c55e]/30" },
+                  { name: "Digital", color: "bg-[#f59e0b]/20 text-[#f59e0b] hover:bg-[#f59e0b]/30" },
+                  { name: "Analog", color: "bg-teal-500/20 text-teal-300 hover:bg-teal-500/30" },
+                  { name: "C Programming", color: "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" },
+                ].map((subject) => (
+                  <Link
+                    key={subject.name}
+                    href={`/subject/${subject.name.toLowerCase().replace(" ", "-")}`}
+                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${subject.color}`}
+                  >
+                    {subject.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Widget: Weekly Digest */}
+            <div className="rounded-2xl border border-gray-800 bg-[#111216] p-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 h-32 w-32 bg-[#22c55e]/5 blur-3xl rounded-full pointer-events-none"></div>
+              <div className="flex items-center gap-2 mb-2">
+                <Bell className="h-4 w-4 text-[#22c55e]" />
+                <h3 className="text-base font-bold text-white">Weekly Digest</h3>
+              </div>
+              <p className="mb-6 text-xs text-gray-400 leading-relaxed">
+                Get the latest GATE tips and PYQ analysis every week.
               </p>
               
-              <div className="flex items-center justify-between border-t border-border/50 pt-4 text-xs font-medium text-muted-foreground">
-                <div className="flex items-center gap-2 text-foreground">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">
-                    {(post.author.name?.[0] ?? "G").toUpperCase()}
-                  </div>
-                  {post.author.name ?? "GATEPrep Author"}
-                </div>
-                {post.publishedAt && (
-                  <time dateTime={post.publishedAt.toISOString()} className="opacity-80">
-                    {formatDate(post.publishedAt)}
-                  </time>
-                )}
-              </div>
-            </Link>
-          ))}
+              <NewsletterForm />
+            </div>
+
+          </aside>
         </div>
-      </main>
+        
+      </div>
     </div>
   );
 }
