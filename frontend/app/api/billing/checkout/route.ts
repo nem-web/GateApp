@@ -5,7 +5,7 @@ export async function POST() {
     const orderId = `order_${Date.now()}`;
 
     const response = await fetch(
-      "https://sandbox.cashfree.com/pg/orders",
+      "https://api.cashfree.com/pg/orders",
       {
         method: "POST",
         headers: {
@@ -16,7 +16,7 @@ export async function POST() {
         },
         body: JSON.stringify({
           order_id: orderId,
-          order_amount: 299,
+          order_amount: 5,
           order_currency: "INR",
           customer_details: {
             customer_id: orderId,
