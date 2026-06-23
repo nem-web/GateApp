@@ -17,6 +17,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
+      url: absoluteUrl('/'),
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    {
       url: absoluteUrl('/gate-ee'),
       lastModified: now,
       changeFrequency: 'weekly',
