@@ -21,7 +21,7 @@ export default function LoginPage() {
 
   const callbackUrl = useMemo(() => {
     if (typeof window === 'undefined') return '/'
-    return new URLSearchParams(window.location.search).get('callbackUrl') || '/'
+    return new URLSearchParams(window.location.search).get('callbackUrl') || '/dashboard'
   }, [])
 
   useEffect(() => {

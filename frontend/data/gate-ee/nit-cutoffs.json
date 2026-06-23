@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "CCMT General category opening and closing GATE scores for M.Tech EE.",
+  "cutoffs": [
+    { "institute": "NIT Trichy", "program": "Power Systems", "open": 710, "close": 630 },
+    { "institute": "NIT Surathkal", "program": "Power & Energy Systems", "open": 680, "close": 600 },
+    { "institute": "NIT Warangal", "program": "Power Electronics & Drives", "open": 690, "close": 610 },
+    { "institute": "MNIT Jaipur", "program": "Power Systems Management", "open": 640, "close": 570 },
+    { "institute": "MNNIT Allahabad", "program": "Control & Instrumentation", "open": 650, "close": 580 },
+    { "institute": "VNIT Nagpur", "program": "Integrated Power Systems", "open": 610, "close": 540 }
+  ]
+}

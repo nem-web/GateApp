@@ -6,7 +6,7 @@ export const metadata = createMetadata({
   title: 'Study Dashboard',
   description:
     'Private GATE EE study dashboard for tracking subjects, streaks, tests, weak areas, tasks, notes, lectures, and flashcards.',
-  path: '/',
+  path: '/dashboard',
   noIndex: true,
 })
 

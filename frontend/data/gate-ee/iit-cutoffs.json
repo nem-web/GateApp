@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE score requirements for top M.Tech EE programs.",
+  "cutoffs": [
+    { "institute": "IISc Bangalore", "program": "Systems Science & Automation", "gen": 850, "obc": 780, "scst": 550 },
+    { "institute": "IIT Bombay", "program": "Power Electronics & Power Systems", "gen": 820, "obc": 750, "scst": 520 },
+    { "institute": "IIT Delhi", "program": "Control & Automation", "gen": 800, "obc": 730, "scst": 500 },
+    { "institute": "IIT Madras", "program": "Integrated Circuits & Systems", "gen": 830, "obc": 760, "scst": 530 },
+    { "institute": "IIT Kanpur", "program": "Power & Control", "gen": 790, "obc": 720, "scst": 490 },
+    { "institute": "IIT Kharagpur", "program": "Machine Drives & Power Electronics", "gen": 770, "obc": 700, "scst": 480 }
+  ]
+}

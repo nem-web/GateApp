@@ -6,7 +6,9 @@ import { AppProviders } from '@/components/AppProviders'
 import { JsonLd, SITE_NAME, SITE_URL, organizationSchema, websiteSchema } from '@/lib/seo'
 import './globals.css'
 import AssistLoopWidget from "@/components/AssistLoopWidget";
-import { Script } from 'vm'
+// import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
+import ClarityProvider from "@/components/ClarityProvider";
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -100,6 +102,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="bg-background">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <ClarityProvider />
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
 
         <AppProviders>
@@ -114,6 +117,20 @@ export default function RootLayout({
         </AppProviders>
 
         <AssistLoopWidget />
+
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-S7VC4NL8GN"
+          strategy="afterInteractive"
+        />
+
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-S7VC4NL8GN');
+          `}
+        </Script>
       </body>
     </html>
   )

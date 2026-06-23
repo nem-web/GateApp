@@ -1,0 +1,22 @@
+{
+  "pageTitle": "Instrumentation Formula Sheets",
+  "description": "Quick revision formula sheets and cheat sheets for GATE IN preparation.",
+  "resources": [
+    {
+      "id": "in-formulas-001",
+      "title": "Measurements & Transducers Cheat Sheet",
+      "subtitle": "Quick Revision",
+      "description": "All formulas related to error analysis, bridges (Wheatstone, Maxwell), and sensor characteristics.",
+      "tags": ["Measurements", "Formulas", "Bridges"],
+      "downloadLink": "/downloads/in/formulas/measurements_cheat_sheet.pdf"
+    },
+    {
+      "id": "in-formulas-002",
+      "title": "Signals and Systems Formula Bank",
+      "subtitle": "Quick Revision",
+      "description": "Fourier series, Laplace transforms, Z-transforms, and system properties at a glance.",
+      "tags": ["Signals", "Transforms", "Formulas"],
+      "downloadLink": "/downloads/in/formulas/signals_systems.pdf"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "CCMT General category opening and closing GATE scores for M.Tech Civil.",
+  "cutoffs": [
+    { "institute": "NIT Trichy", "program": "Structural Engineering", "open": 730, "close": 650 },
+    { "institute": "NIT Surathkal", "program": "Geotechnical Engineering", "open": 690, "close": 610 },
+    { "institute": "NIT Warangal", "program": "Transportation Engineering", "open": 700, "close": 630 },
+    { "institute": "MNIT Jaipur", "program": "Structural Engineering", "open": 670, "close": 590 },
+    { "institute": "VNIT Nagpur", "program": "Water Resources Engineering", "open": 640, "close": 560 },
+    { "institute": "MNNIT Allahabad", "program": "Environmental Engineering", "open": 650, "close": 570 }
+  ]
+}

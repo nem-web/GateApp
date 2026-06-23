@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "CCMT General category opening and closing GATE scores for M.Tech IN & Allied.",
+  "cutoffs": [
+    { "institute": "NIT Trichy", "program": "Process Control & Instrumentation", "open": 680, "close": 600 },
+    { "institute": "NIT Jalandhar", "program": "Control & Instrumentation", "open": 620, "close": 540 },
+    { "institute": "NIT Silchar", "program": "Instrumentation Engineering", "open": 590, "close": 510 },
+    { "institute": "NIT Kurukshetra", "program": "Control Systems", "open": 610, "close": 530 },
+    { "institute": "MNIT Jaipur", "program": "Power & Control", "open": 630, "close": 560 },
+    { "institute": "IIITDM Kancheepuram", "program": "Smart Manufacturing", "open": 580, "close": 500 }
+  ]
+}

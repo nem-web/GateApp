@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE marks (out of 100) for PSU interviews in Instrumentation.",
+  "cutoffs": [
+    { "name": "ONGC", "role": "AEE (Instrumentation)", "gen": 69.33, "obc": 64.00, "sc": 52.67, "st": 48.00 },
+    { "name": "IOCL", "role": "Officer (Instrumentation)", "gen": 68.00, "obc": 62.67, "sc": 51.33, "st": 46.67 },
+    { "name": "GAIL", "role": "Executive Trainee (Inst)", "gen": 67.67, "obc": 62.33, "sc": 50.00, "st": 45.33 },
+    { "name": "NTPC", "role": "Engineering Executive Trainee", "gen": 70.00, "obc": 65.33, "sc": 53.67, "st": 49.00 },
+    { "name": "BPCL", "role": "Management Trainee", "gen": 66.33, "obc": 61.00, "sc": 49.33, "st": 44.67 },
+    { "name": "EIL", "role": "Management Trainee (Inst)", "gen": 65.00, "obc": 59.67, "sc": 48.00, "st": 43.33 }
+  ]
+}

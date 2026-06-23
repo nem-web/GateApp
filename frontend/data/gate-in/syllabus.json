@@ -1,0 +1,41 @@
+{
+  "pdfDownloadLink": "/downloads/gate-in-syllabus-2026.pdf",
+  "sections": [
+    {
+      "title": "Engineering Mathematics",
+      "topics": "Linear Algebra, Calculus, Differential Equations, Analysis of complex variables, Probability and Statistics, Numerical Methods."
+    },
+    {
+      "title": "Electricity and Magnetism",
+      "topics": "Coulomb's Law, Electric Field Intensity, Electric Flux Density, Gauss's Law, Divergence, Capacitance of simple configurations, Biot‐Savart’s law, Ampere’s law, Curl, Faraday’s law, Lorentz force."
+    },
+    {
+      "title": "Electrical Circuits and Machines",
+      "topics": "Voltage and current sources, Kirchhoff's laws, mesh and nodal analysis, network theorems. Single-phase transformers, DC machines, induction machines, synchronous machines."
+    },
+    {
+      "title": "Signals and Systems",
+      "topics": "Periodic, aperiodic and impulse signals, Laplace, Fourier and z-transforms, transfer function, frequency response of first and second-order linear time-invariant systems, impulse response."
+    },
+    {
+      "title": "Control Systems",
+      "topics": "Feedback principles, signal flow graphs, transient response, steady-state errors, Bode plot, phase and gain margins, Routh and Nyquist criteria, root loci, design of lead, lag and lead-lag compensators, state-space representation."
+    },
+    {
+      "title": "Analog & Digital Electronics",
+      "topics": "Characteristics and applications of diodes, BJT, MOSFET; Op-amp circuits (amplifiers, integrators, filters, oscillators). Combinational and sequential logic circuits, multiplexers, ADCs, DACs, microprocessors (8085) basics."
+    },
+    {
+      "title": "Measurements",
+      "topics": "SI units, standards, systematic and random errors in measurement, expression of uncertainty. Bridges, measurement of voltage, current, power, energy, power factor, phase, time and frequency, Q-meter, oscilloscopes."
+    },
+    {
+      "title": "Sensors and Industrial Instrumentation",
+      "topics": "Resistive, capacitive, inductive, piezoelectric, Hall effect sensors; transducers for industrial instrumentation (displacement, velocity, acceleration, force, torque, pressure, flow, temperature, liquid level, pH, conductivity)."
+    },
+    {
+      "title": "Communication and Optical Instrumentation",
+      "topics": "Amplitude and frequency modulation, sampling theorem. Optical sources and detectors (LED, laser, photo-diode, PIN, avalanche), interferometers, optical fibers."
+    }
+  ]
+}

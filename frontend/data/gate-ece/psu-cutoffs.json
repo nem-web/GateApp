@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE marks (out of 100) for PSU interviews in Electronics.",
+  "cutoffs": [
+    { "name": "ONGC", "role": "AEE (Electronics)", "gen": 71.67, "obc": 65.33, "sc": 53.00, "st": 49.67 },
+    { "name": "AAI", "role": "Junior Executive (ATC)", "gen": 68.00, "obc": 63.33, "sc": 51.67, "st": 48.00 },
+    { "name": "HAL", "role": "Management Trainee (Tech)", "gen": 69.33, "obc": 64.00, "sc": 52.33, "st": 48.67 },
+    { "name": "BEL", "role": "Probationary Engineer", "gen": 70.67, "obc": 66.00, "sc": 54.00, "st": 50.33 },
+    { "name": "NLC", "role": "Graduate Executive Trainee", "gen": 67.33, "obc": 62.67, "sc": 50.00, "st": 46.33 },
+    { "name": "PGCIL", "role": "Executive Trainee (Telecom)", "gen": 72.00, "obc": 67.33, "sc": 55.67, "st": 51.00 }
+  ]
+}

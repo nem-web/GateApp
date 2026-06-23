@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE score requirements for core Mechanical programs.",
+  "cutoffs": [
+    { "institute": "IISc Bangalore", "program": "Mechanical Engineering", "gen": 840, "obc": 760, "scst": 540 },
+    { "institute": "IIT Bombay", "program": "Thermal & Fluids Engineering", "gen": 810, "obc": 730, "scst": 510 },
+    { "institute": "IIT Bombay", "program": "Design Engineering", "gen": 830, "obc": 750, "scst": 530 },
+    { "institute": "IIT Delhi", "program": "Industrial Engineering", "gen": 790, "obc": 710, "scst": 490 },
+    { "institute": "IIT Madras", "program": "Manufacturing Engineering", "gen": 780, "obc": 700, "scst": 480 },
+    { "institute": "IIT Kanpur", "program": "Fluid & Thermal Sciences", "gen": 770, "obc": 690, "scst": 470 }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "pageTitle": "Instrumentation Engineering Notes",
+  "description": "Comprehensive handwritten and digital notes for core IN subjects.",
+  "resources": [
+    {
+      "id": "in-notes-001",
+      "title": "Control Systems Engineering",
+      "subtitle": "Handwritten Notes",
+      "description": "Detailed notes on block diagram reduction, signal flow graphs, Routh-Hurwitz, and Root Locus.",
+      "tags": ["Control Systems", "Handwritten", "Core"],
+      "downloadLink": "/downloads/in/notes/control_systems.pdf"
+    },
+    {
+      "id": "in-notes-002",
+      "title": "Optical Instrumentation",
+      "subtitle": "Digital PDF",
+      "description": "Covers optical fibers, lasers, interferometers, and their industrial applications.",
+      "tags": ["Optical", "Lasers", "Digital"],
+      "downloadLink": "/downloads/in/notes/optical_instrumentation.pdf"
+    },
+    {
+      "id": "in-notes-003",
+      "title": "Analog Electronics for IN",
+      "subtitle": "Class Notes",
+      "description": "Op-amps, active filters, oscillators, and signal conditioning circuits.",
+      "tags": ["Analog", "Op-Amps", "Electronics"],
+      "downloadLink": "/downloads/in/notes/analog_electronics.pdf"
+    }
+  ]
+}

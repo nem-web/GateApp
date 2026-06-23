@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "CCMT General category opening and closing GATE scores for M.Tech Mechanical.",
+  "cutoffs": [
+    { "institute": "NIT Trichy", "program": "Thermal Power Engineering", "open": 740, "close": 670 },
+    { "institute": "NIT Surathkal", "program": "Manufacturing Engineering", "open": 710, "close": 640 },
+    { "institute": "NIT Warangal", "program": "Machine Design", "open": 730, "close": 660 },
+    { "institute": "MNIT Jaipur", "program": "Thermal Engineering", "open": 680, "close": 610 },
+    { "institute": "MNNIT Allahabad", "program": "Design Engineering", "open": 690, "close": 620 },
+    { "institute": "NIT Calicut", "program": "Industrial Engineering", "open": 650, "close": 580 }
+  ]
+}

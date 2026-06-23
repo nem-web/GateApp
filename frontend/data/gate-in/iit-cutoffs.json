@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE score requirements for Instrumentation & interdisciplinary programs.",
+  "cutoffs": [
+    { "institute": "IISc Bangalore", "program": "Instrumentation & Systems", "gen": 780, "obc": 700, "scst": 490 },
+    { "institute": "IIT Bombay", "program": "Systems & Control Engineering", "gen": 760, "obc": 680, "scst": 470 },
+    { "institute": "IIT Delhi", "program": "Instrument Technology", "gen": 740, "obc": 660, "scst": 450 },
+    { "institute": "IIT Madras", "program": "Clinical Engineering", "gen": 720, "obc": 640, "scst": 430 },
+    { "institute": "IIT Kanpur", "program": "Control & Automation (EE Dept)", "gen": 750, "obc": 670, "scst": 460 },
+    { "institute": "IIT Kharagpur", "program": "Medical Imaging & Informatics", "gen": 710, "obc": 630, "scst": 420 }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "pdfDownloadLink": "/downloads/gate-ece-syllabus-2026.pdf",
+  "sections": [
+    {
+      "title": "Engineering Mathematics",
+      "topics": "Linear Algebra (Matrix algebra, eigenvalues, eigenvectors), Calculus (mean value theorems, partial derivatives), Differential equations, Vector Analysis, Complex variables, and Probability & Statistics."
+    },
+    {
+      "title": "Networks, Signals and Systems",
+      "topics": "Circuit Analysis (Node/mesh analysis, superposition, Thevenin's, Norton's), Continuous-time and Discrete-time signals (Fourier series, Fourier transform, z-transform, sampling theorem), LTI systems (impulse response, convolution)."
+    },
+    {
+      "title": "Electronic Devices",
+      "topics": "Energy bands in semiconductors, equilibrium carrier concentration, carrier transport (diffusion, drift, mobility), generation and recombination, P-N junction, Zener diode, BJT, MOS capacitor, MOSFET, LED, and solar cell."
+    },
+    {
+      "title": "Analog Circuits",
+      "topics": "Diode circuits (clipping, clamping, rectifiers), BJT and MOSFET amplifiers (biasing, small signal analysis, frequency response), Current mirrors, Op-amp circuits (amplifiers, summers, active filters, oscillators)."
+    },
+    {
+      "title": "Digital Circuits",
+      "topics": "Number representations, Combinatorial circuits (Boolean algebra, Karnaugh map, multiplexers, decoders), Sequential circuits (latches, flip-flops, counters, shift-registers), Data converters (ADCs, DACs), Semiconductor memories."
+    },
+    {
+      "title": "Control Systems",
+      "topics": "Basic components, feedback principle, transfer function, block diagrams, signal flow graphs, transient and steady-state analysis, frequency response (Bode, Nyquist), Routh-Hurwitz, state variable model."
+    },
+    {
+      "title": "Communications",
+      "topics": "Random processes (autocorrelation, power spectral density), Analog communications (AM, FM), Information theory (entropy, channel capacity), Digital communications (PCM, ASK, PSK, FSK, QAM, SNR, BER), Fundamentals of error correction."
+    },
+    {
+      "title": "Electromagnetics",
+      "topics": "Maxwell's Equations (differential and integral forms), Plane waves (reflection, refraction, polarization, skin depth), Transmission lines (characteristic impedance, Smith chart), Waveguides, and Antennas (dipole, arrays)."
+    }
+  ]
+}

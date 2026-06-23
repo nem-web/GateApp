@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE score requirements for VLSI and Communication programs.",
+  "cutoffs": [
+    { "institute": "IISc Bangalore", "program": "Microelectronics & VLSI Design", "gen": 880, "obc": 800, "scst": 590 },
+    { "institute": "IIT Bombay", "program": "Electronic Systems", "gen": 860, "obc": 780, "scst": 560 },
+    { "institute": "IIT Delhi", "program": "Communications Engineering", "gen": 830, "obc": 750, "scst": 530 },
+    { "institute": "IIT Madras", "program": "Microelectronics & VLSI Design", "gen": 850, "obc": 770, "scst": 550 },
+    { "institute": "IIT Kanpur", "program": "RF & Microwave", "gen": 800, "obc": 720, "scst": 500 },
+    { "institute": "IIT Kharagpur", "program": "Telecommunication Systems", "gen": 780, "obc": 710, "scst": 490 }
+  ]
+}

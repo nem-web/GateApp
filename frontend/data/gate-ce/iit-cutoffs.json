@@ -1,0 +1,11 @@
+{
+  "pageSubtitle": "Previous year GATE score requirements for top Civil Engineering specializations.",
+  "cutoffs": [
+    { "institute": "IISc Bangalore", "program": "Civil Engineering", "gen": 820, "obc": 740, "scst": 520 },
+    { "institute": "IIT Bombay", "program": "Structural Engineering", "gen": 800, "obc": 720, "scst": 500 },
+    { "institute": "IIT Delhi", "program": "Geotechnical Engineering", "gen": 770, "obc": 690, "scst": 470 },
+    { "institute": "IIT Madras", "program": "Transportation Engineering", "gen": 760, "obc": 680, "scst": 460 },
+    { "institute": "IIT Kanpur", "program": "Environmental Engineering", "gen": 750, "obc": 670, "scst": 450 },
+    { "institute": "IIT Kharagpur", "program": "Water Resources Engineering", "gen": 740, "obc": 660, "scst": 440 }
+  ]
+}

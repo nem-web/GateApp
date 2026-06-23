@@ -238,3 +238,18 @@
 .thinking-dots span:nth-child(3) {
   animation-delay: 0.4s;
 }
+
+/* =========================================================
+   UIW React MD Editor Overrides
+   ========================================================= */
+
+/* Hide the uiw/react-md-editor view-only warning ONLY inside public wrappers */
+.public-markdown-viewer .wmde-markdown-var, 
+.public-markdown-viewer .w-md-editor-bar[data-name="view-only"],
+.public-markdown-viewer div[data-color-mode] > div > div[style*="background-color: rgb(255, 243, 205)"] {
+  display: none !important;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
