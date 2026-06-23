@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, Variants } from "framer-motion";
 import { 
   Zap, 
   Monitor, 
@@ -14,7 +14,8 @@ import {
   Sigma,
   FunctionSquare,
   Calculator,
-  Pi
+  Pi,
+  HelpCircle
 } from "lucide-react";
 
 // --- Branch Data Configuration ---
@@ -195,7 +196,7 @@ const FormulaTiltCard = ({ branch, setHovering }: { branch: any, setHovering: (v
             {branch.name}
           </h2>
           <p className="text-sm text-[#9CA3AF] leading-relaxed">
-            Ultimate cheat sheets, key derivations, and quick-revision formula mind maps for {branch.short}.
+            Downloadable PDFs, ultimate cheat sheets, and quick-revision formula mind maps for {branch.short}.
           </p>
         </div>
 
@@ -236,12 +237,50 @@ const FormulaTiltCard = ({ branch, setHovering }: { branch: any, setHovering: (v
   );
 };
 
+// --- SEO FAQ Section ---
+function FaqSection() {
+  const faqs = [
+    {
+      q: "Are these GATE formula sheets free to download?",
+      a: "Yes, all our branch-specific formula sheets are completely free. Simply select your branch to view and download the PDFs."
+    },
+    {
+      q: "Which branches are covered?",
+      a: "We currently provide comprehensive formula cheat sheets for Electrical (EE), Computer Science (CS), Mechanical (ME), Electronics (EC), Civil (CE), and Instrumentation (IN)."
+    },
+    {
+      q: "How should I use these formula sheets for revision?",
+      a: "We recommend reviewing these sheets daily during the last 60 days of your preparation. They are perfect for quick recall before attempting full-length mock tests or PYQs."
+    }
+  ];
+
+  return (
+    <section className="py-24 px-4 mx-auto max-w-4xl relative z-10">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl font-bold text-white">Frequently Asked Questions</h2>
+        <p className="mt-4 text-gray-400">Everything you need to know about our free resources.</p>
+      </div>
+
+      <div className="space-y-4">
+        {faqs.map((faq, i) => (
+          <div key={i} className="rounded-xl border border-gray-800 bg-[#111216]/80 backdrop-blur-md p-6">
+            <h3 className="flex items-center gap-3 text-lg font-bold text-white mb-2">
+              <HelpCircle className="h-5 w-5 text-[#6C63FF]" /> {faq.q}
+            </h3>
+            <p className="text-gray-400 text-sm leading-relaxed ml-8">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // --- Main Page Component ---
 export default function FormulaSheetsPage() {
   const [isHoveringCard, setIsHoveringCard] = useState(false);
 
   // Framer Motion Variants for Staggered Load
-  const containerVariants = {
+ const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -249,14 +288,48 @@ export default function FormulaSheetsPage() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 40, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100, damping: 20 } },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { type: "spring", stiffness: 100, damping: 20 } 
+    },
+  };
+
+  // --- STRUCTURED DATA (JSON-LD) ---
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Are these GATE formula sheets free to download?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, all our branch-specific formula sheets are completely free. Simply select your branch to view and download the PDFs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which branches are covered?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We currently provide comprehensive formula cheat sheets for Electrical (EE), Computer Science (CS), Mechanical (ME), Electronics (EC), Civil (CE), and Instrumentation (IN)."
+        }
+      }
+    ]
   };
 
   return (
     <div className="relative min-h-screen bg-[#0F1117] text-[#E5E7EB] font-sans selection:bg-[#6C63FF]/30 overflow-hidden md:cursor-none">
       
+      {/* Inject Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Interactive Cursor Component */}
       <CustomCursor isHovering={isHoveringCard} />
 
@@ -295,10 +368,10 @@ export default function FormulaSheetsPage() {
             <Sigma size={14} /> Quick Revision Hub
           </div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6">
-            Ultimate <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6C63FF] to-[#818CF8]">Formula Sheets</span>
+            Free GATE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6C63FF] to-[#818CF8]">Formula Sheets</span>
           </h1>
-          <p className="max-w-2xl mx-auto text-[#9CA3AF] text-lg leading-relaxed">
-            Stop digging through textbooks. Access beautifully formatted, branch-specific cheat sheets designed for high-speed retention and rapid revision.
+          <p className="max-w-3xl mx-auto text-[#9CA3AF] text-lg leading-relaxed">
+            Download our beautifully formatted, branch-specific cheat sheets designed for high-speed retention. Whether you are preparing for <strong>GATE EE, CSE, ME, or ECE</strong>, these PDF guides will accelerate your revision.
           </p>
         </motion.div>
 
@@ -315,6 +388,9 @@ export default function FormulaSheetsPage() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* SEO FAQ Section */}
+        <FaqSection />
 
       </main>
     </div>
