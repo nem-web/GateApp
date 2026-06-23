@@ -5,7 +5,7 @@ import { Check, X, HelpCircle } from "lucide-react";
 
 // --- HIGHLY OPTIMIZED METADATA ---
 export const metadata: Metadata = {
-  title: "GATE Preparation 2027 | Best Platform for CSE, ECE, EE & ME | GATEPrep Pro",
+  title: "GATE Preparation 2027 | Best Platform for CS, EE | GATEPrep Pro",
   description: "The ultimate GATE preparation platform. Access AI study planners, PYQs, flashcards, and notes for Computer Science (CSE), ECE, Electrical (EE), and Mechanical. Start for free!",
   keywords: [
     "gate preparation",
