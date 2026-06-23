@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { createMetadata } from "@/lib/seo";
@@ -11,14 +12,15 @@ import {
   Zap, 
   Bell, 
   ChevronRight, 
-  PenSquare 
+  PenSquare,
+  Target
 } from "lucide-react";
 import NewsletterForm from '@/components/NewsletterForm'
 
+// --- HIGH-INTENT SEO METADATA ---
 export const metadata: Metadata = createMetadata({
-  title: "GATE Preparation Blog",
-  description:
-    "Published GATE preparation articles, strategies, subject guides, PYQ analysis, and revision resources from GATEPrep.",
+  title: "GATE Preparation Blog 2027 | Strategies for CSE, ECE, EE & ME",
+  description: "Master your GATE preparation for CSE, ECE, and EE. Read expert strategies, PYQ analysis, and discover why smart notes beat traditional GATE preparation books.",
   path: "/blog",
 });
 
@@ -64,8 +66,35 @@ export default async function BlogIndexPage() {
   const featuredPost = posts[0];
   const latestPosts = posts.slice(1);
 
+  // --- STRUCTURED DATA (JSON-LD) FOR RICH CAROUSELS ---
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "GATE Preparation Blog | GATEPrep Pro",
+    "description": "Expert strategies, subject guides, and PYQ analysis for GATE CSE, ECE, EE, and ME.",
+    "url": "https://www.gateprep.tech/blog",
+    "blogPost": posts.map((post) => ({
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "url": `https://www.gateprep.tech/blog/${post.slug}`,
+      "datePublished": post.publishedAt?.toISOString(),
+      "dateModified": post.updatedAt?.toISOString(),
+      "author": {
+        "@type": "Person",
+        "name": post.author?.name || "GATEPrep Editorial Team"
+      }
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-[#0e0f14] text-white font-sans pt-10 pb-24 selection:bg-[#22c55e]/30">
+      
+      {/* Inject Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* PAGE HEADER */}
@@ -74,11 +103,13 @@ export default async function BlogIndexPage() {
             <div className="flex items-center gap-3">
               <div className="h-8 w-1.5 rounded-full bg-[#22c55e]" />
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                GATE Preparation Blog
+                GATE Preparation Blog 2027
               </h1>
             </div>
-            <p className="max-w-2xl text-gray-400 text-sm sm:text-base">
-              Strategies, subject guides, PYQ analysis, formula revision, and exam planning.
+            
+            {/* SEO-Optimized Description capturing long-tail keywords */}
+            <p className="max-w-3xl text-gray-400 text-sm sm:text-base leading-relaxed">
+              Master your <strong>GATE preparation for CSE, ECE, EE, and ME</strong>. Discover topper strategies, PYQ breakdowns, and learn why smart AI tools are replacing traditional GATE preparation books.
             </p>
             
             {/* CATEGORY PILLS */}
@@ -123,19 +154,16 @@ export default async function BlogIndexPage() {
                 
                 <Link
                   href={`/blog/${featuredPost.slug}`}
-                  className="group flex flex-col md:flex-row overflow-hidden rounded-2xl border border-gray-800 bg-[#111216] transition-colors hover:border-gray-700"
+                  className="group flex flex-col md:flex-row overflow-hidden rounded-2xl border border-gray-800 bg-[#111216] transition-colors hover:border-gray-700 shadow-xl"
                 >
                   <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
                     <div>
                       <div className="mb-5 flex flex-wrap items-center gap-3 text-xs">
                         <span className={`rounded px-2.5 py-1 font-bold tracking-wide uppercase ${getCategoryColor(featuredPost.category)}`}>
-                          {featuredPost.category || "PYQ ANALYSIS"}
+                          {featuredPost.category || "STRATEGY"}
                         </span>
                         <span className="text-gray-400 font-medium">
                           {readingTimeMinutes(plainTextFromMarkdown(featuredPost.content))} min read
-                        </span>
-                        <span className="rounded bg-gray-800/50 border border-gray-700/50 px-2 py-0.5 text-gray-400 ml-auto md:ml-0">
-                          Featured
                         </span>
                       </div>
                       <h2 className="mb-4 text-2xl font-bold leading-snug text-white transition-colors group-hover:text-[#22c55e]">
@@ -151,7 +179,7 @@ export default async function BlogIndexPage() {
                         <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${getAuthorAvatar(featuredPost.author?.name)}`}>
                           {(featuredPost.author?.name?.[0] || "G").toUpperCase()}
                         </div>
-                        <span className="text-gray-300">{featuredPost.author?.name || "GATEPrep Author"}</span>
+                        <span className="text-gray-300">{featuredPost.author?.name || "GATEPrep Editorial"}</span>
                         <span className="text-gray-600 mx-1">•</span>
                         <span className="text-gray-500">{formatDate(featuredPost.publishedAt || new Date())}</span>
                       </div>
@@ -204,7 +232,7 @@ export default async function BlogIndexPage() {
                   >
                     <div className="mb-4 flex items-center justify-between text-xs">
                       <span className={`rounded px-2.5 py-1 font-bold tracking-wide uppercase ${getCategoryColor(post.category)}`}>
-                        {post.category || "GATE"}
+                        {post.category || "GATE 2027"}
                       </span>
                       <span className="text-gray-400 font-medium">
                         {readingTimeMinutes(plainTextFromMarkdown(post.content))} min read
@@ -247,13 +275,26 @@ export default async function BlogIndexPage() {
           {/* RIGHT: SIDEBAR */}
           <aside className="space-y-6">
             
+            {/* CRO WIDGET: Call to Action (Added based on SEO Report recommendations) */}
+            <div className="rounded-2xl border-2 border-[#22c55e]/30 bg-gradient-to-b from-[#22c55e]/10 to-[#111216] p-6 text-center relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#22c55e]/20 blur-3xl rounded-full pointer-events-none" />
+              <Target className="h-8 w-8 text-[#22c55e] mx-auto mb-3" />
+              <h3 className="text-lg font-bold text-white mb-2">Serious about GATE 2027?</h3>
+              <p className="text-xs text-gray-400 mb-6 leading-relaxed">
+                Stop jumping between blogs. Get the AI planner, PYQs, and flashcards in one dashboard.
+              </p>
+              <Link href="/login?mode=signup" className="block w-full rounded-xl bg-[#22c55e] py-3 text-sm font-bold text-black hover:bg-[#22c55e]/90 transition-colors shadow-lg">
+                Start Free Trial
+              </Link>
+            </div>
+
             {/* Widget: Quick Tools */}
             <div className="rounded-2xl border border-gray-800 bg-[#111216] p-6">
               <h3 className="text-base font-bold text-white">Quick Tools</h3>
               <p className="mb-6 text-xs text-gray-400 mt-1">Essential tools for GATE prep</p>
               
               <div className="space-y-3">
-                <Link href="/gate-marks-calculator" className="group flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0C10] p-3 transition-colors hover:border-gray-700">
+                <Link href="/tools/marks-calculator" className="group flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0C10] p-3 transition-colors hover:border-gray-700">
                    <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#22c55e]/10 text-[#22c55e]">
                          <Calculator className="h-4 w-4" />
@@ -266,7 +307,7 @@ export default async function BlogIndexPage() {
                    <ChevronRight className="h-4 w-4 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-gray-400" />
                 </Link>
                 
-                <Link href="/gate-rank-predictor" className="group flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0C10] p-3 transition-colors hover:border-gray-700">
+                <Link href="/tools/rank-predictor" className="group flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0C10] p-3 transition-colors hover:border-gray-700">
                    <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#22c55e]/10 text-[#22c55e]">
                          <TrendingUp className="h-4 w-4" />
@@ -296,26 +337,20 @@ export default async function BlogIndexPage() {
 
             {/* Widget: Popular Subjects */}
             <div className="rounded-2xl border border-gray-800 bg-[#111216] p-6">
-              <h3 className="text-base font-bold text-white">Popular Subjects</h3>
-              <p className="mb-6 text-xs text-gray-400 mt-1">Browse articles by subject</p>
+              <h3 className="text-base font-bold text-white">Branch Content</h3>
+              <p className="mb-6 text-xs text-gray-400 mt-1">Browse articles by branch</p>
               
               <div className="flex flex-wrap gap-2.5">
                 {[
-                  { name: "Networks", color: "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" },
-                  { name: "Signals", color: "bg-[#22c55e]/20 text-[#22c55e] hover:bg-[#22c55e]/30" },
-                  { name: "Control", color: "bg-[#f59e0b]/20 text-[#f59e0b] hover:bg-[#f59e0b]/30" },
-                  { name: "Maths", color: "bg-teal-500/20 text-teal-300 hover:bg-teal-500/30" },
-                  { name: "Power Systems", color: "bg-pink-500/20 text-pink-300 hover:bg-pink-500/30" },
-                  { name: "EMT", color: "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" },
-                  { name: "Machines", color: "bg-[#22c55e]/20 text-[#22c55e] hover:bg-[#22c55e]/30" },
-                  { name: "Digital", color: "bg-[#f59e0b]/20 text-[#f59e0b] hover:bg-[#f59e0b]/30" },
-                  { name: "Analog", color: "bg-teal-500/20 text-teal-300 hover:bg-teal-500/30" },
-                  { name: "C Programming", color: "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" },
+                  { name: "GATE CSE", color: "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30" },
+                  { name: "GATE ECE", color: "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30" },
+                  { name: "GATE EE", color: "bg-[#22c55e]/20 text-[#22c55e] hover:bg-[#22c55e]/30" },
+                  { name: "GATE ME", color: "bg-[#f59e0b]/20 text-[#f59e0b] hover:bg-[#f59e0b]/30" },
                 ].map((subject) => (
                   <Link
                     key={subject.name}
                     href={`/subject/${subject.name.toLowerCase().replace(" ", "-")}`}
-                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${subject.color}`}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${subject.color}`}
                   >
                     {subject.name}
                   </Link>
