@@ -29,7 +29,7 @@ const materialResources = [
 
 const toolResources = [
   { name: 'Marks Calculator', href: '/tools/marks-calculator' },
-  { name: 'Study Planner', href: '/study-planner' },
+  { name: 'Study Planner', href: '/tools/study-planner' },
 ]
 
 // Removed "Login" from static array to handle it conditionally based on auth state

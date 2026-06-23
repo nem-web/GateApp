@@ -16,9 +16,9 @@ const companyLinks = [
 ] as const;
 
 const toolLinks = [
-  { name: "AI Study Planner", href: "/study-plan" },
-  { name: "Mock Drill Tests", href: "/test" },
-  { name: "PYQ Bank", href: "/pyq-bank" },
+  { name: "AI Study Planner", href: "/tools/study-planner" },
+  { name: "Mock Drill Tests", href: "/mock-tests" },
+  { name: "PYQ Bank", href: "/pyqs" },
   { name: "Flashcards", href: "/flashcards" },
   { name: "Rank Predictor", href: "/tools/rank-predictor" },
 ] as const;
