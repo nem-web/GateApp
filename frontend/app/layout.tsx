@@ -141,6 +141,15 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','GTM-55MTFZWQ');
           `}
         </Script>
+
+         {/* Google AdSense */}
+        <Script
+          id="adsense-script"
+          async
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7785471383949630"
+          crossOrigin="anonymous"
+        />
         
         <noscript>
           <iframe
