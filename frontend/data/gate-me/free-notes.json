@@ -1,30 +1,86 @@
 {
-  "pageTitle": "Instrumentation Engineering Notes",
-  "description": "Comprehensive handwritten and digital notes for core IN subjects.",
+  "pageTitle": "Mechanical Engineering Notes",
+  "description": "Comprehensive handwritten and digital notes covering the complete GATE Mechanical Engineering (ME) syllabus with theory, solved examples, numerical problems, design concepts, and previous year questions.",
   "resources": [
     {
-      "id": "in-notes-001",
-      "title": "Control Systems Engineering",
+      "id": "me-notes-001",
+      "title": "Engineering Mathematics",
       "subtitle": "Handwritten Notes",
-      "description": "Detailed notes on block diagram reduction, signal flow graphs, Routh-Hurwitz, and Root Locus.",
-      "tags": ["Control Systems", "Handwritten", "Core"],
-      "downloadLink": "/downloads/in/notes/control_systems.pdf"
+      "description": "Linear Algebra, Calculus, Differential Equations, Complex Variables, Probability, Numerical Methods and Statistics with GATE PYQs.",
+      "tags": ["Engineering Mathematics", "Handwritten", "GATE", "PYQs"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/engineering-mathematics-me"
     },
     {
-      "id": "in-notes-002",
-      "title": "Optical Instrumentation",
+      "id": "me-notes-002",
+      "title": "Applied Mechanics",
       "subtitle": "Digital PDF",
-      "description": "Covers optical fibers, lasers, interferometers, and their industrial applications.",
-      "tags": ["Optical", "Lasers", "Digital"],
-      "downloadLink": "/downloads/in/notes/optical_instrumentation.pdf"
+      "description": "Engineering mechanics, statics, dynamics, equilibrium, friction, virtual work, vibrations, kinematics and kinetics.",
+      "tags": ["Applied Mechanics", "Statics", "Dynamics", "Mechanics"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/applied-mechanics"
     },
     {
-      "id": "in-notes-003",
-      "title": "Analog Electronics for IN",
+      "id": "me-notes-003",
+      "title": "Strength of Materials",
       "subtitle": "Class Notes",
-      "description": "Op-amps, active filters, oscillators, and signal conditioning circuits.",
-      "tags": ["Analog", "Op-Amps", "Electronics"],
-      "downloadLink": "/downloads/in/notes/analog_electronics.pdf"
+      "description": "Stress and strain, bending, shear, torsion, deflection of beams, columns, pressure vessels and failure theories.",
+      "tags": ["Strength of Materials", "Stress", "Strain", "Torsion"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/strength-of-materials"
+    },
+    {
+      "id": "me-notes-004",
+      "title": "Theory of Machines",
+      "subtitle": "Handwritten Notes",
+      "description": "Kinematic mechanisms, gears, cams, flywheels, governors, clutches, brakes, balancing, gyroscope and vibrations.",
+      "tags": ["Theory of Machines", "Gears", "Governors", "Mechanisms"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/theory-of-machines"
+    },
+    {
+      "id": "me-notes-005",
+      "title": "Fluid Mechanics",
+      "subtitle": "Digital Notes",
+      "description": "Fluid properties, hydrostatics, fluid kinematics, dynamics, boundary layer, pipe flow, turbomachinery and open channel flow.",
+      "tags": ["Fluid Mechanics", "Hydraulics", "Pipe Flow", "Turbomachinery"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/fluid-mechanics"
+    },
+    {
+      "id": "me-notes-006",
+      "title": "Heat Transfer",
+      "subtitle": "Class Notes",
+      "description": "Conduction, convection, radiation, heat exchangers, fins, boiling, condensation and thermal insulation.",
+      "tags": ["Heat Transfer", "Conduction", "Convection", "Radiation"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/heat-transfer"
+    },
+    {
+      "id": "me-notes-007",
+      "title": "Thermodynamics",
+      "subtitle": "Digital PDF",
+      "description": "Laws of thermodynamics, entropy, exergy, ideal gases, pure substances, thermodynamic cycles and psychrometry.",
+      "tags": ["Thermodynamics", "Entropy", "Cycles", "Exergy"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/thermodynamics"
+    },
+    {
+      "id": "me-notes-008",
+      "title": "Manufacturing Engineering",
+      "subtitle": "Handwritten Notes",
+      "description": "Metal casting, forming, welding, machining, additive manufacturing, metrology, tool design and manufacturing processes.",
+      "tags": ["Manufacturing", "Machining", "Casting", "Welding"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/manufacturing"
+    },
+    {
+      "id": "me-notes-009",
+      "title": "Machine Design",
+      "subtitle": "Class Notes",
+      "description": "Design of shafts, springs, bearings, gears, clutches, brakes, fasteners, welded joints and fatigue analysis.",
+      "tags": ["Machine Design", "Gears", "Bearings", "Design"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/machine-design"
+    },
+    {
+      "id": "me-notes-010",
+      "title": "Industrial Engineering",
+      "subtitle": "Digital Notes",
+      "description": "Production planning and control, inventory management, operations research, quality control, supply chain management and facility planning.",
+      "tags": ["Industrial Engineering", "Operations Research", "Quality", "Production"],
+      "downloadLink": "https://eduhub.gateprep.tech/me/industrial-engineering"
     }
   ]
 }
