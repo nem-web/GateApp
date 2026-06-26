@@ -1,30 +1,86 @@
 {
-  "pageTitle": "Instrumentation Engineering Notes",
-  "description": "Comprehensive handwritten and digital notes for core IN subjects.",
+  "pageTitle": "Electrical Engineering Notes",
+  "description": "Comprehensive handwritten and digital notes covering the complete GATE Electrical Engineering syllabus with theory, formulas, solved examples, and previous year questions.",
   "resources": [
     {
-      "id": "in-notes-001",
-      "title": "Control Systems Engineering",
+      "id": "ee-notes-001",
+      "title": "Engineering Mathematics",
       "subtitle": "Handwritten Notes",
-      "description": "Detailed notes on block diagram reduction, signal flow graphs, Routh-Hurwitz, and Root Locus.",
-      "tags": ["Control Systems", "Handwritten", "Core"],
-      "downloadLink": "/downloads/in/notes/control_systems.pdf"
+      "description": "Linear Algebra, Calculus, Differential Equations, Complex Variables, Probability, Numerical Methods and Vector Calculus with GATE PYQs.",
+      "tags": ["Engineering Mathematics", "Handwritten", "GATE", "PYQs"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/engineering-mathematics"
     },
     {
-      "id": "in-notes-002",
-      "title": "Optical Instrumentation",
+      "id": "ee-notes-002",
+      "title": "Circuit Theory",
       "subtitle": "Digital PDF",
-      "description": "Covers optical fibers, lasers, interferometers, and their industrial applications.",
-      "tags": ["Optical", "Lasers", "Digital"],
-      "downloadLink": "/downloads/in/notes/optical_instrumentation.pdf"
+      "description": "Network theorems, transient analysis, AC steady-state, resonance, coupled circuits, two-port networks and Laplace transform applications.",
+      "tags": ["Circuit Theory", "Network Theory", "AC Circuits", "Digital"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/circuit-theory"
     },
     {
-      "id": "in-notes-003",
-      "title": "Analog Electronics for IN",
+      "id": "ee-notes-003",
+      "title": "Control Systems",
       "subtitle": "Class Notes",
-      "description": "Op-amps, active filters, oscillators, and signal conditioning circuits.",
-      "tags": ["Analog", "Op-Amps", "Electronics"],
-      "downloadLink": "/downloads/in/notes/analog_electronics.pdf"
+      "description": "Transfer functions, block diagram reduction, signal flow graphs, stability analysis, Root Locus, Bode plots, Nyquist criterion and State Space.",
+      "tags": ["Control Systems", "Root Locus", "Bode", "State Space"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/control-systems"
+    },
+    {
+      "id": "ee-notes-004",
+      "title": "Electrical Machines",
+      "subtitle": "Handwritten Notes",
+      "description": "Transformers, DC machines, induction motors, synchronous machines, special machines, equivalent circuits and performance analysis.",
+      "tags": ["Electrical Machines", "Transformer", "Motor", "Generator"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/electrical-machines"
+    },
+    {
+      "id": "ee-notes-005",
+      "title": "Power Electronics",
+      "subtitle": "Class Notes",
+      "description": "Power semiconductor devices, controlled rectifiers, DC-DC converters, choppers, inverters, AC voltage controllers, cycloconverters and SMPS basics.",
+      "tags": ["Power Electronics", "Converter", "Inverter", "SCR"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/power-electronics"
+    },
+    {
+      "id": "ee-notes-006",
+      "title": "Power Systems",
+      "subtitle": "Class Notes",
+      "description": "Power generation, transmission lines, load flow, faults, protection, stability, economic operation, HVDC and FACTS overview.",
+      "tags": ["Power Systems", "Load Flow", "Protection", "Transmission"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/power-systems"
+    },
+    {
+      "id": "ee-notes-007",
+      "title": "Analog Electronics",
+      "subtitle": "Digital Notes",
+      "description": "Diode circuits, BJTs, MOSFETs, biasing, amplifiers, feedback, oscillators, operational amplifiers and active filters.",
+      "tags": ["Analog Electronics", "BJT", "MOSFET", "Op-Amp"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/analog-electronics-ee"
+    },
+    {
+      "id": "ee-notes-008",
+      "title": "Digital Electronics",
+      "subtitle": "Digital Notes",
+      "description": "Boolean algebra, logic gates, combinational circuits, sequential circuits, flip-flops, counters, registers, memories and ADC/DAC.",
+      "tags": ["Digital Electronics", "Logic Gates", "Flip-Flops", "Memory"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/digital-electronics-ee"
+    },
+    {
+      "id": "ee-notes-009",
+      "title": "Electromagnetic Fields",
+      "subtitle": "Handwritten Notes",
+      "description": "Electrostatics, magnetostatics, Maxwell's equations, electromagnetic waves, transmission lines, wave propagation and boundary conditions.",
+      "tags": ["EMFT", "Maxwell", "Transmission Lines", "Electromagnetics"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/electromagnetic-fields"
+    },
+    {
+      "id": "ee-notes-010",
+      "title": "Signals and Systems",
+      "subtitle": "Digital PDF",
+      "description": "Continuous and discrete-time signals, Fourier Series, Fourier Transform, Laplace Transform, Z-Transform, sampling and LTI systems.",
+      "tags": ["Signals", "Systems", "Fourier", "Laplace"],
+      "downloadLink": "https://eduhub.gateprep.tech/ee/signals-systems-ee"
     }
   ]
 }
