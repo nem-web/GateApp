@@ -131,6 +131,16 @@ export default function RootLayout({
       className="bg-background"
     >
       <body className={`${inter.variable} font-sans antialiased`}>
+        {/* Monetag */}
+        <Script
+          id="monetag-tag"
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="253559"
+          data-cfasync="false"
+          strategy="afterInteractive"
+          async
+        />
+        
         {/* Google Tag Manager */}
         {/* <GoogleTagManager gtmId="GTM-55MTFZWQ" /> */}
         <Script id="gtm" strategy="afterInteractive">
