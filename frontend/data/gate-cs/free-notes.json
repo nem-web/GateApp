@@ -1,30 +1,86 @@
 {
-  "pageTitle": "Instrumentation Engineering Notes",
-  "description": "Comprehensive handwritten and digital notes for core IN subjects.",
+  "pageTitle": "Computer Science and Information Technology Notes",
+  "description": "Comprehensive handwritten and digital notes covering the complete GATE Computer Science (CS) syllabus with theory, algorithms, solved examples, practice questions, and previous year questions.",
   "resources": [
     {
-      "id": "in-notes-001",
-      "title": "Control Systems Engineering",
+      "id": "cs-notes-001",
+      "title": "Engineering Mathematics",
       "subtitle": "Handwritten Notes",
-      "description": "Detailed notes on block diagram reduction, signal flow graphs, Routh-Hurwitz, and Root Locus.",
-      "tags": ["Control Systems", "Handwritten", "Core"],
-      "downloadLink": "/downloads/in/notes/control_systems.pdf"
+      "description": "Discrete Mathematics, Linear Algebra, Calculus, Probability, Graph Theory, Combinatorics and Numerical Methods with GATE PYQs.",
+      "tags": ["Engineering Mathematics", "Discrete Mathematics", "GATE", "PYQs"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/engineering-mathematics-cs"
     },
     {
-      "id": "in-notes-002",
-      "title": "Optical Instrumentation",
+      "id": "cs-notes-002",
+      "title": "Data Structures",
       "subtitle": "Digital PDF",
-      "description": "Covers optical fibers, lasers, interferometers, and their industrial applications.",
-      "tags": ["Optical", "Lasers", "Digital"],
-      "downloadLink": "/downloads/in/notes/optical_instrumentation.pdf"
+      "description": "Arrays, Linked Lists, Stacks, Queues, Trees, Binary Search Trees, Heaps, Hash Tables, Graphs and Trie data structures.",
+      "tags": ["Data Structures", "Trees", "Graphs", "Algorithms"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/data-structures"
     },
     {
-      "id": "in-notes-003",
-      "title": "Analog Electronics for IN",
+      "id": "cs-notes-003",
+      "title": "Algorithms",
       "subtitle": "Class Notes",
-      "description": "Op-amps, active filters, oscillators, and signal conditioning circuits.",
-      "tags": ["Analog", "Op-Amps", "Electronics"],
-      "downloadLink": "/downloads/in/notes/analog_electronics.pdf"
+      "description": "Sorting, Searching, Divide and Conquer, Greedy Algorithms, Dynamic Programming, Graph Algorithms, NP-Completeness and Complexity Analysis.",
+      "tags": ["Algorithms", "Dynamic Programming", "Greedy", "Graph"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/algorithms"
+    },
+    {
+      "id": "cs-notes-004",
+      "title": "Operating Systems",
+      "subtitle": "Handwritten Notes",
+      "description": "Processes, Threads, CPU Scheduling, Synchronization, Deadlocks, Memory Management, Virtual Memory, File Systems and I/O Management.",
+      "tags": ["Operating Systems", "Scheduling", "Memory", "Deadlocks"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/operating-systems"
+    },
+    {
+      "id": "cs-notes-005",
+      "title": "Database Management Systems",
+      "subtitle": "Digital Notes",
+      "description": "ER Model, Relational Algebra, SQL, Functional Dependencies, Normalization, Transactions, Concurrency Control and Recovery.",
+      "tags": ["DBMS", "SQL", "Normalization", "Transactions"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/dbms"
+    },
+    {
+      "id": "cs-notes-006",
+      "title": "Computer Networks",
+      "subtitle": "Class Notes",
+      "description": "OSI and TCP/IP Models, Routing, Switching, Transport Layer, Congestion Control, Network Security and Wireless Networks.",
+      "tags": ["Computer Networks", "TCP/IP", "Routing", "OSI"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/computer-networks"
+    },
+    {
+      "id": "cs-notes-007",
+      "title": "Computer Organization",
+      "subtitle": "Digital PDF",
+      "description": "Digital Logic, Processor Architecture, Instruction Set Architecture, Memory Hierarchy, Pipelining, Cache Memory and I/O Organization.",
+      "tags": ["Computer Organization", "Processor", "Memory", "Architecture"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/computer-organization"
+    },
+    {
+      "id": "cs-notes-008",
+      "title": "Theory of Computation",
+      "subtitle": "Handwritten Notes",
+      "description": "Finite Automata, Regular Expressions, Context-Free Grammars, Pushdown Automata, Turing Machines, Decidability and Computability.",
+      "tags": ["TOC", "Automata", "Grammar", "Turing Machine"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/theory-of-computation"
+    },
+    {
+      "id": "cs-notes-009",
+      "title": "Compiler Design",
+      "subtitle": "Class Notes",
+      "description": "Lexical Analysis, Parsing, Syntax-Directed Translation, Intermediate Code Generation, Code Optimization and Runtime Environments.",
+      "tags": ["Compiler Design", "Parsing", "Lexical Analysis", "Optimization"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/compiler-design"
+    },
+    {
+      "id": "cs-notes-010",
+      "title": "Digital Logic",
+      "subtitle": "Digital Notes",
+      "description": "Boolean Algebra, Logic Gates, Combinational Circuits, Sequential Circuits, Flip-Flops, Counters, Registers and Finite State Machines.",
+      "tags": ["Digital Logic", "Logic Gates", "FSM", "Flip-Flops"],
+      "downloadLink": "https://eduhub.gateprep.tech/cs/digital-logic"
     }
   ]
 }
