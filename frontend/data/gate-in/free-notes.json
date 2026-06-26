@@ -1,30 +1,86 @@
 {
   "pageTitle": "Instrumentation Engineering Notes",
-  "description": "Comprehensive handwritten and digital notes for core IN subjects.",
+  "description": "Comprehensive handwritten and digital notes covering the complete GATE Instrumentation Engineering (IN) syllabus with theory, solved examples, numerical problems, and previous year questions.",
   "resources": [
     {
       "id": "in-notes-001",
-      "title": "Control Systems Engineering",
+      "title": "Engineering Mathematics",
       "subtitle": "Handwritten Notes",
-      "description": "Detailed notes on block diagram reduction, signal flow graphs, Routh-Hurwitz, and Root Locus.",
-      "tags": ["Control Systems", "Handwritten", "Core"],
-      "downloadLink": "/downloads/in/notes/control_systems.pdf"
+      "description": "Linear Algebra, Calculus, Differential Equations, Complex Variables, Probability, Numerical Methods and Signal Processing Mathematics with GATE PYQs.",
+      "tags": ["Engineering Mathematics", "Handwritten", "GATE", "PYQs"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/engineering-mathematics-in"
     },
     {
       "id": "in-notes-002",
-      "title": "Optical Instrumentation",
+      "title": "Electrical Circuits",
       "subtitle": "Digital PDF",
-      "description": "Covers optical fibers, lasers, interferometers, and their industrial applications.",
-      "tags": ["Optical", "Lasers", "Digital"],
-      "downloadLink": "/downloads/in/notes/optical_instrumentation.pdf"
+      "description": "Circuit analysis, network theorems, transient response, AC steady-state analysis, resonance, two-port networks and coupled circuits.",
+      "tags": ["Electrical Circuits", "Network Theory", "AC Circuits", "GATE"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/electrical-circuits"
     },
     {
       "id": "in-notes-003",
-      "title": "Analog Electronics for IN",
+      "title": "Signals and Systems",
       "subtitle": "Class Notes",
-      "description": "Op-amps, active filters, oscillators, and signal conditioning circuits.",
-      "tags": ["Analog", "Op-Amps", "Electronics"],
-      "downloadLink": "/downloads/in/notes/analog_electronics.pdf"
+      "description": "Continuous and discrete-time signals, Fourier Series, Fourier Transform, Laplace Transform, Z-Transform, sampling and convolution.",
+      "tags": ["Signals", "Systems", "Fourier", "Laplace"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/signals-systems-in"
+    },
+    {
+      "id": "in-notes-004",
+      "title": "Control Systems",
+      "subtitle": "Handwritten Notes",
+      "description": "Block diagrams, signal flow graphs, stability analysis, Root Locus, Bode plots, Nyquist criterion and State Space analysis.",
+      "tags": ["Control Systems", "Root Locus", "Bode", "State Space"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/control-systems-in"
+    },
+    {
+      "id": "in-notes-005",
+      "title": "Analog Electronics",
+      "subtitle": "Digital Notes",
+      "description": "Semiconductor devices, diode circuits, BJTs, MOSFETs, operational amplifiers, oscillators, active filters and signal conditioning.",
+      "tags": ["Analog Electronics", "Op-Amp", "BJT", "MOSFET"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/analog-electronics-in"
+    },
+    {
+      "id": "in-notes-006",
+      "title": "Digital Electronics",
+      "subtitle": "Class Notes",
+      "description": "Boolean algebra, combinational logic, sequential circuits, flip-flops, counters, registers, memories and digital ICs.",
+      "tags": ["Digital Electronics", "Logic Gates", "Flip-Flops", "Memory"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/digital-electronics-in"
+    },
+    {
+      "id": "in-notes-007",
+      "title": "Sensors and Transducers",
+      "subtitle": "Handwritten Notes",
+      "description": "Resistive, capacitive, inductive, piezoelectric, temperature, pressure, flow, level sensors, smart sensors and transducer characteristics.",
+      "tags": ["Sensors", "Transducers", "Measurement", "Instrumentation"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/sensors-transducers"
+    },
+    {
+      "id": "in-notes-008",
+      "title": "Measurement Techniques",
+      "subtitle": "Digital PDF",
+      "description": "Error analysis, bridges, instrumentation amplifiers, digital measurement systems, oscilloscopes, ADCs, DACs and calibration techniques.",
+      "tags": ["Measurement", "Instrumentation", "Calibration", "Error Analysis"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/measurement"
+    },
+    {
+      "id": "in-notes-009",
+      "title": "Industrial Instrumentation",
+      "subtitle": "Class Notes",
+      "description": "Process control, controllers, PLC, DCS, SCADA, industrial sensors, control valves, actuators and industrial automation systems.",
+      "tags": ["Industrial Instrumentation", "PLC", "SCADA", "Automation"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/industrial-instrumentation"
+    },
+    {
+      "id": "in-notes-010",
+      "title": "Optical Instrumentation",
+      "subtitle": "Digital Notes",
+      "description": "Optical sources and detectors, fiber optics, lasers, interferometers, spectroscopy, optical sensors and industrial applications.",
+      "tags": ["Optical Instrumentation", "Fiber Optics", "Lasers", "Sensors"],
+      "downloadLink": "https://eduhub.gateprep.tech/in/optical-instrumentation"
     }
   ]
 }
