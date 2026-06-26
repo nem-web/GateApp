@@ -1,30 +1,86 @@
 {
-  "pageTitle": "Instrumentation Engineering Notes",
-  "description": "Comprehensive handwritten and digital notes for core IN subjects.",
+  "pageTitle": "Civil Engineering Notes",
+  "description": "Comprehensive handwritten and digital notes covering the complete GATE Civil Engineering (CE) syllabus with theory, design procedures, solved examples, numerical problems, and previous year questions.",
   "resources": [
     {
-      "id": "in-notes-001",
-      "title": "Control Systems Engineering",
+      "id": "ce-notes-001",
+      "title": "Engineering Mathematics",
       "subtitle": "Handwritten Notes",
-      "description": "Detailed notes on block diagram reduction, signal flow graphs, Routh-Hurwitz, and Root Locus.",
-      "tags": ["Control Systems", "Handwritten", "Core"],
-      "downloadLink": "/downloads/in/notes/control_systems.pdf"
+      "description": "Linear Algebra, Calculus, Differential Equations, Complex Variables, Probability, Numerical Methods and Vector Calculus with GATE PYQs.",
+      "tags": ["Engineering Mathematics", "Handwritten", "GATE", "PYQs"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/engineering-mathematics-ce"
     },
     {
-      "id": "in-notes-002",
-      "title": "Optical Instrumentation",
+      "id": "ce-notes-002",
+      "title": "Structural Analysis",
       "subtitle": "Digital PDF",
-      "description": "Covers optical fibers, lasers, interferometers, and their industrial applications.",
-      "tags": ["Optical", "Lasers", "Digital"],
-      "downloadLink": "/downloads/in/notes/optical_instrumentation.pdf"
+      "description": "Determinate and indeterminate structures, force method, displacement method, influence lines, moving loads and matrix methods.",
+      "tags": ["Structural Analysis", "Matrix Method", "Influence Lines", "GATE"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/structural-analysis"
     },
     {
-      "id": "in-notes-003",
-      "title": "Analog Electronics for IN",
+      "id": "ce-notes-003",
+      "title": "RCC Design",
       "subtitle": "Class Notes",
-      "description": "Op-amps, active filters, oscillators, and signal conditioning circuits.",
-      "tags": ["Analog", "Op-Amps", "Electronics"],
-      "downloadLink": "/downloads/in/notes/analog_electronics.pdf"
+      "description": "Limit State Design, beams, slabs, columns, footings, retaining walls, water tanks and prestressed concrete structures.",
+      "tags": ["RCC", "Concrete Design", "LSD", "Structures"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/rcc-design"
+    },
+    {
+      "id": "ce-notes-004",
+      "title": "Steel Structures Design",
+      "subtitle": "Handwritten Notes",
+      "description": "Design of tension members, compression members, beams, column bases, plate girders, welded and bolted connections.",
+      "tags": ["Steel Structures", "IS 800", "Design", "Connections"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/steel-design"
+    },
+    {
+      "id": "ce-notes-005",
+      "title": "Geotechnical Engineering",
+      "subtitle": "Digital Notes",
+      "description": "Soil mechanics, permeability, consolidation, shear strength, earth pressure, slope stability and foundation engineering.",
+      "tags": ["Geotechnical", "Soil Mechanics", "Foundations", "Slope Stability"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/geotechnical"
+    },
+    {
+      "id": "ce-notes-006",
+      "title": "Fluid Mechanics",
+      "subtitle": "Class Notes",
+      "description": "Fluid properties, hydrostatics, fluid kinematics, pipe flow, boundary layer, open channel flow and hydraulic machines.",
+      "tags": ["Fluid Mechanics", "Hydraulics", "Pipe Flow", "Open Channel"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/fluid-mechanics-ce"
+    },
+    {
+      "id": "ce-notes-007",
+      "title": "Hydrology and Water Resources",
+      "subtitle": "Digital PDF",
+      "description": "Hydrologic cycle, precipitation, infiltration, runoff, hydrographs, flood routing, groundwater and irrigation engineering.",
+      "tags": ["Hydrology", "Water Resources", "Runoff", "Groundwater"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/hydrology-ce"
+    },
+    {
+      "id": "ce-notes-008",
+      "title": "Transportation Engineering",
+      "subtitle": "Handwritten Notes",
+      "description": "Highway engineering, geometric design, pavement materials, traffic engineering, railway engineering, airport and harbour engineering.",
+      "tags": ["Transportation", "Highway", "Traffic", "Pavement"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/transportation"
+    },
+    {
+      "id": "ce-notes-009",
+      "title": "Environmental Engineering",
+      "subtitle": "Class Notes",
+      "description": "Water supply engineering, wastewater treatment, air pollution, solid waste management and environmental impact assessment.",
+      "tags": ["Environmental", "Water Treatment", "Wastewater", "Air Pollution"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/environmental"
+    },
+    {
+      "id": "ce-notes-010",
+      "title": "Surveying",
+      "subtitle": "Digital Notes",
+      "description": "Chain surveying, leveling, theodolite, traversing, contouring, total station, GPS, remote sensing and GIS fundamentals.",
+      "tags": ["Surveying", "Leveling", "Total Station", "GIS"],
+      "downloadLink": "https://eduhub.gateprep.tech/ce/surveying"
     }
   ]
 }
