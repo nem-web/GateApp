@@ -1,30 +1,86 @@
 {
-  "pageTitle": "Instrumentation Engineering Notes",
-  "description": "Comprehensive handwritten and digital notes for core IN subjects.",
+  "pageTitle": "Electronics and Communication Engineering Notes",
+  "description": "Comprehensive handwritten and digital notes covering the complete GATE Electronics and Communication Engineering (ECE) syllabus with theory, formulas, solved examples, and previous year questions.",
   "resources": [
     {
-      "id": "in-notes-001",
-      "title": "Control Systems Engineering",
+      "id": "ece-notes-001",
+      "title": "Engineering Mathematics",
       "subtitle": "Handwritten Notes",
-      "description": "Detailed notes on block diagram reduction, signal flow graphs, Routh-Hurwitz, and Root Locus.",
-      "tags": ["Control Systems", "Handwritten", "Core"],
-      "downloadLink": "/downloads/in/notes/control_systems.pdf"
+      "description": "Linear Algebra, Calculus, Differential Equations, Complex Variables, Probability, Numerical Methods and Vector Calculus with GATE PYQs.",
+      "tags": ["Engineering Mathematics", "Handwritten", "GATE", "PYQs"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/engineering-mathematics-ece"
     },
     {
-      "id": "in-notes-002",
-      "title": "Optical Instrumentation",
+      "id": "ece-notes-002",
+      "title": "Network Theory",
       "subtitle": "Digital PDF",
-      "description": "Covers optical fibers, lasers, interferometers, and their industrial applications.",
-      "tags": ["Optical", "Lasers", "Digital"],
-      "downloadLink": "/downloads/in/notes/optical_instrumentation.pdf"
+      "description": "Network theorems, transient and steady-state analysis, graph theory, two-port networks, resonance and AC circuit analysis.",
+      "tags": ["Network Theory", "Circuit Analysis", "Digital", "GATE"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/network-theory"
     },
     {
-      "id": "in-notes-003",
-      "title": "Analog Electronics for IN",
+      "id": "ece-notes-003",
+      "title": "Analog Circuits",
       "subtitle": "Class Notes",
-      "description": "Op-amps, active filters, oscillators, and signal conditioning circuits.",
-      "tags": ["Analog", "Op-Amps", "Electronics"],
-      "downloadLink": "/downloads/in/notes/analog_electronics.pdf"
+      "description": "Diode circuits, BJT and MOSFET amplifiers, operational amplifiers, feedback amplifiers, oscillators, power amplifiers and active filters.",
+      "tags": ["Analog Electronics", "BJT", "MOSFET", "Op-Amp"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/analog-circuits"
+    },
+    {
+      "id": "ece-notes-004",
+      "title": "Digital Circuits",
+      "subtitle": "Digital Notes",
+      "description": "Boolean algebra, logic gates, combinational and sequential circuits, flip-flops, counters, registers, memories, ADCs and DACs.",
+      "tags": ["Digital Electronics", "Logic Gates", "Flip-Flops", "Memory"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/digital-circuits"
+    },
+    {
+      "id": "ece-notes-005",
+      "title": "Signals and Systems",
+      "subtitle": "Handwritten Notes",
+      "description": "Continuous and discrete-time signals, Fourier Series, Fourier Transform, Laplace Transform, Z-Transform, sampling and LTI systems.",
+      "tags": ["Signals", "Systems", "Fourier", "Laplace"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/signals-systems-ece"
+    },
+    {
+      "id": "ece-notes-006",
+      "title": "Communications",
+      "subtitle": "Class Notes",
+      "description": "Analog and digital communication, modulation techniques, information theory, source and channel coding, noise analysis and wireless communication.",
+      "tags": ["Communication", "Modulation", "Information Theory", "Wireless"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/communications"
+    },
+    {
+      "id": "ece-notes-007",
+      "title": "Electromagnetics",
+      "subtitle": "Handwritten Notes",
+      "description": "Electrostatics, magnetostatics, Maxwell's equations, electromagnetic waves, transmission lines, waveguides and antennas.",
+      "tags": ["Electromagnetics", "Maxwell", "Transmission Lines", "Antennas"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/electromagnetics"
+    },
+    {
+      "id": "ece-notes-008",
+      "title": "Control Systems",
+      "subtitle": "Digital Notes",
+      "description": "Transfer functions, block diagrams, signal flow graphs, stability analysis, Root Locus, Bode plots, Nyquist criterion and State Space.",
+      "tags": ["Control Systems", "Root Locus", "Bode", "State Space"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/control-systems-ece"
+    },
+    {
+      "id": "ece-notes-009",
+      "title": "Electronic Devices",
+      "subtitle": "Class Notes",
+      "description": "Semiconductor physics, PN junction, BJT, MOSFET, FET, optoelectronic devices, fabrication technology and integrated circuits.",
+      "tags": ["Electronic Devices", "Semiconductors", "MOSFET", "BJT"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/electronic-devices"
+    },
+    {
+      "id": "ece-notes-010",
+      "title": "Microprocessors",
+      "subtitle": "Digital PDF",
+      "description": "8085 and 8086 architecture, instruction sets, programming, memory organization, interfacing, peripherals and microcontrollers.",
+      "tags": ["Microprocessor", "8085", "8086", "Microcontroller"],
+      "downloadLink": "https://eduhub.gateprep.tech/ece/microprocessors"
     }
   ]
 }
