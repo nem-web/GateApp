@@ -36,9 +36,6 @@ export const metadata: Metadata = {
       "msvalidate.01": "E49B6F04F0754D48F88A4CBEAB62E58C",
     },
   },
-
-  // ...rest of your metadata
-};
   
   title: {
     default:
