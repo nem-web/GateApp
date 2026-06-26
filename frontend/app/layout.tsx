@@ -26,11 +26,19 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+
+  other: {
+    monetag: "34eef038f7f433a9b56909d3a24753bb",
+  },
+
   verification: {
     other: {
       "msvalidate.01": "E49B6F04F0754D48F88A4CBEAB62E58C",
     },
   },
+
+  // ...rest of your metadata
+};
   
   title: {
     default:
