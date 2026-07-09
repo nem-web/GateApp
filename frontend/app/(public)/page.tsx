@@ -326,15 +326,7 @@ function Inline468Section() {
   return (
     <section className="px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <AdSlot
-          slotId="home-mid-inline-468"
-          format="banner-468x60"
-          variants={[
-            { width: 468, height: 60, minViewport: 768 },
-            { width: 320, height: 50, maxViewport: 767 },
-          ]}
-          smartLinkSource="home-mid-inline-468"
-        />
+        <Inline468Ad />
       </div>
     </section>
   );
