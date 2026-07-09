@@ -325,9 +325,16 @@ function FeaturesSection() {
 
 function Inline468Section() {
   return (
-    <section className="px-4 py-4 sm:px-6 lg:px-8">
+    <section className="px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <Inline468Ad />
+        <div className="flex items-center justify-center gap-8">
+          <Inline468Ad />
+
+          {/* Show only on large screens */}
+          <div className="hidden lg:block">
+            <Inline468Ad />
+          </div>
+        </div>
       </div>
     </section>
   );
