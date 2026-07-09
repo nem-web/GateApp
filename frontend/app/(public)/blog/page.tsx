@@ -16,6 +16,9 @@ import {
   Target
 } from "lucide-react";
 import NewsletterForm from '@/components/NewsletterForm'
+import { AdSlot } from "@/components/ads/AdSlot";
+import { NativeBannerSlot } from "@/components/ads/NativeBannerSlot";
+import { SmartLinkLink } from "@/components/ads/SmartLinkLink";
 
 // --- HIGH-INTENT SEO METADATA ---
 export const metadata: Metadata = createMetadata({
@@ -129,13 +132,14 @@ export default async function BlogIndexPage() {
           </div>
 
           {/* WRITE POST CTA BUTTON */}
-          <Link
+          <SmartLinkLink
             href="/blog/write"
+            smartLinkSource="blog-write-post"
             className="group flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#22c55e] px-6 py-3.5 text-sm font-bold text-black transition-all hover:bg-[#22c55e]/90 hover:shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-95"
           >
             <PenSquare className="h-4 w-4" />
             Write a Post
-          </Link>
+          </SmartLinkLink>
         </div>
 
         {/* MAIN LAYOUT GRID */}
@@ -223,6 +227,8 @@ export default async function BlogIndexPage() {
                 <span className="text-[10px] text-gray-500">{latestPosts.length} articles</span>
               </div>
 
+              <NativeBannerSlot slotId="blog-native-feed" className="mb-6" />
+
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 {latestPosts.map((post) => (
                   <Link
@@ -274,6 +280,20 @@ export default async function BlogIndexPage() {
 
           {/* RIGHT: SIDEBAR */}
           <aside className="space-y-6">
+            <div className="hidden lg:flex flex-col items-center gap-6">
+              <AdSlot
+                slotId="blog-side-rail-primary"
+                format="banner-160x600"
+                variants={[{ width: 160, height: 600, minViewport: 1024 }]}
+                smartLinkSource="blog-side-rail-primary"
+              />
+              <AdSlot
+                slotId="blog-side-rail-secondary"
+                format="banner-160x300"
+                variants={[{ width: 160, height: 300, minViewport: 1024 }]}
+                smartLinkSource="blog-side-rail-secondary"
+              />
+            </div>
             
             {/* CRO WIDGET: Call to Action (Added based on SEO Report recommendations) */}
             <div className="rounded-2xl border-2 border-[#22c55e]/30 bg-gradient-to-b from-[#22c55e]/10 to-[#111216] p-6 text-center relative overflow-hidden">
@@ -283,9 +303,9 @@ export default async function BlogIndexPage() {
               <p className="text-xs text-gray-400 mb-6 leading-relaxed">
                 Stop jumping between blogs. Get the AI planner, PYQs, and flashcards in one dashboard.
               </p>
-              <Link href="/login?mode=signup" className="block w-full rounded-xl bg-[#22c55e] py-3 text-sm font-bold text-black hover:bg-[#22c55e]/90 transition-colors shadow-lg">
+              <SmartLinkLink href="/login?mode=signup" smartLinkSource="blog-sidebar-start-trial" className="block w-full rounded-xl bg-[#22c55e] py-3 text-sm font-bold text-black hover:bg-[#22c55e]/90 transition-colors shadow-lg">
                 Start Free Trial
-              </Link>
+              </SmartLinkLink>
             </div>
 
             {/* Widget: Quick Tools */}
