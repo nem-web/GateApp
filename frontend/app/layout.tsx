@@ -140,6 +140,14 @@ export default function RootLayout({
           strategy="afterInteractive"
           async
         />
+
+        {/* Adsterra */}
+      <Script
+        id="monetag-social-bar"
+        src="https://contributionhobblenewlywed.com/ba/f1/ac/baf1ac0502d14cea525c25f8ede28f1f.js"
+        strategy="afterInteractive"
+        async
+      />
         
         {/* Google Tag Manager */}
         {/* <GoogleTagManager gtmId="GTM-55MTFZWQ" /> */}
