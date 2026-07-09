@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { Check, X, HelpCircle } from "lucide-react";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { Inline468Ad } from "@/components/ads/Inline468Ad";
 import { SmartLinkLink } from "@/components/ads/SmartLinkLink";
 
 // --- HIGHLY OPTIMIZED METADATA ---
