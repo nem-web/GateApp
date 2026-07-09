@@ -5,6 +5,8 @@ import { Check, X, HelpCircle } from "lucide-react";
 import { AdSlot } from "@/components/ads/AdSlot";
 import Inline468Ad from "@/components/ads/Inline468Ad";
 import { SmartLinkLink } from "@/components/ads/SmartLinkLink";
+import Banner300x250Ad from "@/components/ads/Banner300x250Ad";
+import Banner728Ad from "@/components/ads/Banner728Ad";
 
 // --- HIGHLY OPTIMIZED METADATA ---
 export const metadata: Metadata = {
@@ -218,16 +220,16 @@ function TopBannerSection() {
   return (
     <section className="border-y border-gray-800/50 bg-[#111216]/70 py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <AdSlot
-          slotId="home-top-leaderboard"
-          format="banner-728x90"
-          variants={[
-            { width: 728, height: 90, minViewport: 1024 },
-            { width: 468, height: 60, minViewport: 640, maxViewport: 1023 },
-            { width: 320, height: 50, maxViewport: 639 },
-          ]}
-          smartLinkSource="home-top-leaderboard"
-        />
+        {/* Mobile & Tablet */}
+        <div className="flex justify-center lg:hidden">
+          <Banner728Ad />
+        </div>
+
+        {/* Desktop */}
+        <div className="hidden lg:flex items-center justify-center gap-8">
+          <Banner728Ad />
+          <Banner728Ad />
+        </div>
       </div>
     </section>
   );
@@ -453,15 +455,17 @@ function Inline300x250Section() {
   return (
     <section className="px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <AdSlot
-          slotId="home-inline-300x250"
-          format="banner-300x250"
-          variants={[
-            { width: 300, height: 250, minViewport: 640 },
-            { width: 320, height: 50, maxViewport: 639 },
-          ]}
-          smartLinkSource="home-inline-300x250"
-        />
+        {/* Mobile */}
+        <div className="flex justify-center lg:hidden">
+          <Banner300x250Ad />
+        </div>
+
+        {/* Desktop */}
+        <div className="hidden lg:flex items-center justify-center gap-8">
+          <Banner300x250Ad />
+          <Banner300x250Ad />
+          <Banner300x250Ad />
+        </div>
       </div>
     </section>
   );
