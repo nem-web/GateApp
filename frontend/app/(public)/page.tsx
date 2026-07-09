@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 import { Check, X, HelpCircle } from "lucide-react";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { SmartLinkLink } from "@/components/ads/SmartLinkLink";
 
 // --- HIGHLY OPTIMIZED METADATA ---
 export const metadata: Metadata = {
@@ -94,11 +96,14 @@ export default function HomePage() {
       
       <main>
         <HeroSection />
+        <TopBannerSection />
         <StatsSection />
         <SupportedBranchesSection />
         <FeaturesSection />
+        <Inline468Section />
         <WeightageSection />
         <PricingSection />
+        <Inline300x250Section />
         <TestimonialSection />
         <FaqSection />
         <CtaSection />
@@ -132,12 +137,13 @@ function HeroSection() {
 
       {/* Buttons */}
       <div className="relative z-10 mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <Link
+        <SmartLinkLink
           href="/login?mode=signup"
+          smartLinkSource="home-hero-start-trial"
           className="inline-flex h-12 items-center justify-center rounded-lg bg-[#22c55e] px-8 text-sm font-semibold text-black transition-all hover:bg-[#22c55e]/90 shadow-lg hover:shadow-[#22c55e]/20 hover:-translate-y-0.5"
         >
           Start Free Trial
-        </Link>
+        </SmartLinkLink>
         <Link
           href="/features"
           className="inline-flex h-12 items-center justify-center rounded-lg border border-gray-700 bg-[#111216]/80 px-8 text-sm font-medium text-white transition-colors hover:bg-gray-800 backdrop-blur-sm"
@@ -202,6 +208,25 @@ function HeroSection() {
             </div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function TopBannerSection() {
+  return (
+    <section className="border-y border-gray-800/50 bg-[#111216]/70 py-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <AdSlot
+          slotId="home-top-leaderboard"
+          format="banner-728x90"
+          variants={[
+            { width: 728, height: 90, minViewport: 1024 },
+            { width: 468, height: 60, minViewport: 640, maxViewport: 1023 },
+            { width: 320, height: 50, maxViewport: 639 },
+          ]}
+          smartLinkSource="home-top-leaderboard"
+        />
       </div>
     </section>
   );
@@ -292,6 +317,24 @@ function FeaturesSection() {
             <p className="text-sm text-gray-400 leading-relaxed">{feat.desc}</p>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function Inline468Section() {
+  return (
+    <section className="px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <AdSlot
+          slotId="home-mid-inline-468"
+          format="banner-468x60"
+          variants={[
+            { width: 468, height: 60, minViewport: 768 },
+            { width: 320, height: 50, maxViewport: 767 },
+          ]}
+          smartLinkSource="home-mid-inline-468"
+        />
       </div>
     </section>
   );
@@ -406,6 +449,24 @@ function PricingSection() {
   );
 }
 
+function Inline300x250Section() {
+  return (
+    <section className="px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <AdSlot
+          slotId="home-inline-300x250"
+          format="banner-300x250"
+          variants={[
+            { width: 300, height: 250, minViewport: 640 },
+            { width: 320, height: 50, maxViewport: 639 },
+          ]}
+          smartLinkSource="home-inline-300x250"
+        />
+      </div>
+    </section>
+  );
+}
+
 function TestimonialSection() {
   const testimonials = [
     {
@@ -510,9 +571,9 @@ function CtaSection() {
           Start your structured preparation today. Get access to the best AI tools, PYQs, and study materials for your branch.
         </p>
         
-        <Link href="/login?mode=signup" className="relative z-10 inline-flex rounded-lg bg-[#22c55e] px-8 py-3.5 text-sm font-bold text-black transition-all hover:bg-[#22c55e]/90 hover:scale-105 shadow-lg">
+        <SmartLinkLink href="/login?mode=signup" smartLinkSource="home-bottom-cta" className="relative z-10 inline-flex rounded-lg bg-[#22c55e] px-8 py-3.5 text-sm font-bold text-black transition-all hover:bg-[#22c55e]/90 hover:scale-105 shadow-lg">
           Create Free Account
-        </Link>
+        </SmartLinkLink>
       </div>
     </section>
   );

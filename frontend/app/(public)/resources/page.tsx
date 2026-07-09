@@ -14,6 +14,8 @@ import {
   HelpCircle,
   Target
 } from "lucide-react";
+import { NativeBannerSlot } from "@/components/ads/NativeBannerSlot";
+import { SmartLinkLink } from "@/components/ads/SmartLinkLink";
 
 // --- HIGH-INTENT SEO METADATA ---
 export const metadata: Metadata = {
@@ -213,6 +215,8 @@ export default function ResourcesPage() {
           </div>
         </section>
 
+        <NativeBannerSlot slotId="resources-native-after-branches" />
+
         {/* SUBJECTS GRID */}
         <section>
           <div className="flex items-center gap-4 mb-8">
@@ -329,9 +333,9 @@ export default function ResourcesPage() {
             <p className="text-gray-400 mb-8 max-w-xl mx-auto leading-relaxed">
               Don&apos;t just download PDFs. Join GATEPrep Pro Premium to access interactive flashcards, AI-powered study planners, and unlimited mock tests.
             </p>
-            <Link href="/login?mode=signup" className="inline-flex rounded-xl bg-[#22c55e] px-8 py-3.5 text-sm font-bold text-black transition-all hover:bg-[#22c55e]/90 hover:scale-105 shadow-lg">
+            <SmartLinkLink href="/login?mode=signup" smartLinkSource="resources-bottom-cta" className="inline-flex rounded-xl bg-[#22c55e] px-8 py-3.5 text-sm font-bold text-black transition-all hover:bg-[#22c55e]/90 hover:scale-105 shadow-lg">
               Start Your Free Trial
-            </Link>
+            </SmartLinkLink>
           </div>
         </section>
 
