@@ -1,0 +1,14 @@
+{
+  "appName": "Duet",
+  "versionName": "1.0.2",
+  "versionCode": 2,
+  "size": "24.8 MB",
+  "minSdk": 24,
+  "updated": "2026-07-13",
+  "changelog": [
+    "Bug fixes",
+    "Improved performance",
+    "Added in-app updates"
+  ],
+  "apkUrl": "https://gateprep.tech/downloads/duet-latest.apk"
+}
